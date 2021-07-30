@@ -1,4 +1,4 @@
-import {Box, Button, Container, CircularProgress, Grid} from '@material-ui/core';
+import {Box, Button, Container, Grid} from '@material-ui/core';
 import './App.css';
 import {Component} from 'react';
 
