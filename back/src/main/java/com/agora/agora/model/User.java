@@ -5,7 +5,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 
 @Entity
-@Table(name = "user",
+@Table(name = "users",
     uniqueConstraints = @UniqueConstraint(columnNames = {"email","isVerified"}))
 public class User implements Identifiable {
     @Id
@@ -14,11 +14,9 @@ public class User implements Identifiable {
     private int id;
 
     @Column
-    @Pattern(regexp = "^[a-zA-Z]+")
     private String name;
 
     @Column
-    @Pattern(regexp = "^[a-zA-Z]+")
     private String surname;
 
     @Column
@@ -26,7 +24,6 @@ public class User implements Identifiable {
     private String email;
 
     @Column
-    @Pattern(regexp = "^(?=.*[0-9])+(?=.*[A-Z])+.")
     private String password;
 
     @Column
