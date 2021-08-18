@@ -8,9 +8,9 @@ class Navbar extends Component {
   render() {
     return (
       <div>
-        <AppBar style={{background: "#E6E2D5"}} className="appbar">
+        <AppBar id="appbar">
           <Toolbar>
-            <Grid container direction="row" justify="space-between" alignItems="center">
+            <Grid container direction="row" justifyContent="space-between" alignItems="center">
               <Grid item>
                 <img src={"/agora-logo.png"} alt="Logo" className="logo"/>
               </Grid>
@@ -25,15 +25,14 @@ class Navbar extends Component {
                     <Grid item xs={10}>
                       <Container>
                       <Chip 
-                        style={{background: "#E6E2D5"}}
+                        id="chip"
                         avatar={<AccountCircleIcon/>} 
                         label={
-                          <Typography style={{color: "#000000", fontWeight: 500}}>
+                          <Typography id="name">
                             { this.props.name }
                           </Typography>
                         }
                         clickable
-                        // onClick={}
                       />
                       </Container>
                     </Grid>
