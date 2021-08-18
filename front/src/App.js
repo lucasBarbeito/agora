@@ -1,24 +1,33 @@
 import {Box, Button, Container, Grid} from '@material-ui/core';
 import './App.css';
+import LandingPage from './screens/LandingPage/LandingPage';
 import {Component} from 'react';
+import {
+  Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+import history from './history';
+
 
 class App extends Component {
   render() {
     return (
-      <Container style={{display: "flex", flexDirection: "column"}}>
-        <h1>Agora</h1>
-        <Container style={{maxWidth: "600px"}}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Box style={{display: "flex", flexDirection: "column"}}>
-                <Button style={{alignSelf: "center"}} variant="contained" color="primary" onClick={() => alert("Hello!")}>
-                  Say hi
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Container>
+      <Router history={history}>
+        <div>
+        <Switch>
+          <Route path="/register">
+            {/*<TODO />*/}
+          </Route>
+          <Route path="/login">
+            {/*<TODO />*/}
+          </Route>
+          <Route path="/">
+            <LandingPage onRegisterClick={() => history.push('/register')} onLoginClick={() => history.push('/login')} />
+          </Route>
+        </Switch>
+        </div>
+      </Router>
     );
   }
 }
