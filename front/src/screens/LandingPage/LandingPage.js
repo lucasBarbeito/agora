@@ -11,9 +11,9 @@ class LandingPage extends Component {
     render() {
         return (
             <div className='background'>
-                <Grid container >
+                <Grid container id='main-grid'>
                     <Grid item xs={6}>
-                        <Grid container id="main-grid">
+                        <Grid container id="left-grid">
                             <Grid item xs={12}>
                                 <h1 className='welcomeText'>Bienvenidos a AGORA</h1>
                             </Grid>

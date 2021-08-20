@@ -35,9 +35,15 @@
     margin-top: 2.6vw;
 }
 
-#main-grid{
+#left-grid{
     margin-left: 10.1vw;
 }
+
+#main-grid{
+  position: absolute;
+  margin-top: 10.4vh;
+}
+
 .agoraLogo{
   width: 32.4vw;
   margin-top: 2.6vw;
