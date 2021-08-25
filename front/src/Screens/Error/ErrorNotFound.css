@@ -1,0 +1,23 @@
+.Container{
+    position: absolute;
+    top: 145px;
+    left: 139px;
+    width: 511px;
+    height: 239px;
+}
+
+.Error404{
+    top: 145px;
+    left: 139px;
+    width: 511px;
+    height: 239px;
+}
+
+.Error404_MSG_1{
+    position: absolute;
+    font-family: 'Roboto';
+    font-size: 112px;
+    letter-spacing: -1.44px;
+    color: #E3E8E6;
+    opacity: 1;
+}
