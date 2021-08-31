@@ -1,6 +1,14 @@
 // import {Box, Button, Container, Grid} from '@material-ui/core';
 import './App.css';
+import LandingPage from './screens/LandingPage/LandingPage';
 import {Component} from 'react';
+import {
+  Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+import history from './history';
+
 import Navbar from './common/Navbar/Navbar';
 import ErrorNotFound from './Screens/Error/ErrorNotFound';
 import history from './history';
@@ -9,10 +17,25 @@ import history from './history';
 class App extends Component {
   render() {
     return (
-      <>
+      <Router history={history}>
+        <div>
         <Navbar name="User name" loggedIn={true}/>
-        <ErrorNotFound history={history}></ErrorNotFound>
-      </>
+        <Switch>
+          <Route path="/register">
+            {/*<TODO />*/}
+          </Route>
+          <Route path="/login">
+            {/*<TODO />*/}
+          </Route>
+          <Route path="/">
+            <LandingPage onRegisterClick={() => history.push('/register')} onLoginClick={() => history.push('/login')} />
+          </Route>
+          <Route>
+            <ErrorNotFound history = {history}></ErrorNotFound>
+          </Route>
+        </Switch>
+        </div>
+      </Router>
     );
   }
 }
