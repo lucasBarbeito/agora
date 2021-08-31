@@ -26,6 +26,9 @@ public class User implements Identifiable {
     private String password;
 
     @Column
+    private String userVerificationToken;
+
+    @Column
     private boolean isVerified;
 
     public User(String name, String surname, String email, String password, boolean isVerified) {
@@ -82,5 +85,13 @@ public class User implements Identifiable {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public String getUserVerificationToken() {
+        return userVerificationToken;
+    }
+
+    public void setUserVerificationToken(String useVerificationToken) {
+        this.userVerificationToken = useVerificationToken;
     }
 }

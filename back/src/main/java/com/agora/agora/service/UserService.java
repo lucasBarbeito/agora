@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -25,5 +27,18 @@ public class UserService {
                 false);
         userRepository.save(u);
         return u.getId();
+    }
+
+    public Optional<User> findById(int id) {
+        return userRepository.findFirstById(id);
+    }
+
+    public void justSave(User user) {
+        userRepository.save(user);
+    }
+
+    public Optional<User> findByUserVerificationToken(String userVerificationToken) {
+        System.out.println(userVerificationToken);
+        return userRepository.findByUserVerificationToken(userVerificationToken);
     }
 }

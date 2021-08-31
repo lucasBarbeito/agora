@@ -8,6 +8,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import baseUrl from '../../baseUrl'
 
 
 export default class RegisterPage extends Component {
@@ -52,9 +53,44 @@ export default class RegisterPage extends Component {
         if(validateEmail  && validateLastName  && validatePassword  && validateName  && samePassword  && sameEmail  && completeFields){
             this.setState({
                 showErrorMsg: false
-            }, () => this.props.history.push("/allGroups"))
+            }, () => this.createUser())
         }
     }
+
+    createUser = async() =>{
+        
+        const request_url = `${baseUrl}/user`
+        
+        try{
+            fetch(request_url, {
+                method: 'POST',
+                body: JSON.stringify({
+                email: this.state.email,
+                name: this.state.nombre,
+                password: this.state.password,
+                surname: this.state.apellido
+                }),
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }}
+            )
+                .then((response) => {
+                    if (response.ok) {
+                        this.props.history.push("/allGroups");
+                    } else {
+                        this.setState({
+                            showErrorMsg: true,
+                            errorMsg: 'Ha ocurrido un error. Por favor, intente nuevamente.'
+                        });
+                    }
+                })
+                .catch(() => {
+                    this.setState({errorMsg: 'Ha ocurrido un error. Por favor, intente nuevamente.'});
+                });
+        }catch{
+            alert('Error, no es posible conectarse al back-end');
+        }
+}
 
     
 

@@ -1,18 +1,20 @@
 import './App.css';
 import {Component} from 'react';
-import LandingPage from './screens/LandingPage/LandingPage';
-import RegisterPage from './screen/Register/RegisterPage';
-import Group from './screen/Group/Group';
-import CreateGroup from './screen/CreateGroup/CreateGroup';
-import Navbar from './common/Navbar/Navbar';
-import ErrorNotFound from './screens/Error/ErrorNotFound';
 import history from './history';
+import Navbar from './common/Navbar/Navbar';
+import LandingPage from './screens/LandingPage/LandingPage';
+import RegisterPage from './screens/Register/RegisterPage';
+import Group from './screens/Group/Group';
+import CreateGroup from './screens/CreateGroup/CreateGroup';
+import ErrorNotFound from './screens/Error/ErrorNotFound';
 
 import {
   Router,
   Switch,
   Route,
+  Redirect,
 } from "react-router-dom";
+import EmailConfirmation from './screens/EmailConfirmation/EmailConfirmation';
 
 class App extends Component {
   render() {
@@ -30,6 +32,10 @@ class App extends Component {
             <Route path="/group/:id">
               <Group history={history}/>
             </Route>
+            <Route 
+            path="/user/verify-user/:id" 
+            render={(props) => <EmailConfirmation history={history} {...props}/>} 
+            />
             <Route exact path="/">
               <LandingPage onRegisterClick={() => history.push('/register')} onLoginClick={() => history.push('/login')} />
             </Route>
