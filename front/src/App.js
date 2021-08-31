@@ -1,6 +1,6 @@
 // import {Box, Button, Container, Grid} from '@material-ui/core';
 import './App.css';
-import LandingPage from './Screens/LandingPage/LandingPage';
+import LandingPage from './screens/LandingPage/LandingPage';
 import {Component} from 'react';
 import {
   Router,
@@ -10,7 +10,7 @@ import {
 import history from './history';
 
 import Navbar from './common/Navbar/Navbar';
-import ErrorNotFound from './Screens/Error/ErrorNotFound';
+import ErrorNotFound from './screens/Error/ErrorNotFound';
 
 
 class App extends Component {
@@ -18,7 +18,7 @@ class App extends Component {
     return (
       <Router history={history}>
         <div>
-        <Navbar name="User name" loggedIn={true}/>
+        <Navbar name="User name" loggedIn={false} />
         <Switch>
           <Route exact path="/register">
             {/*<TODO />*/}
