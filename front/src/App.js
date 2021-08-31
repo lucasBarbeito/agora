@@ -1,38 +1,42 @@
-// import {Box, Button, Container, Grid} from '@material-ui/core';
 import './App.css';
-import LandingPage from './screens/LandingPage/LandingPage';
 import {Component} from 'react';
+import LandingPage from './screens/LandingPage/LandingPage';
+import RegisterPage from './screen/Register/RegisterPage';
+import Group from './screen/Group/Group';
+import CreateGroup from './screen/CreateGroup/CreateGroup';
+import Navbar from './common/Navbar/Navbar';
+import ErrorNotFound from './screens/Error/ErrorNotFound';
+import history from './history';
+
 import {
   Router,
   Switch,
   Route,
 } from "react-router-dom";
-import history from './history';
-
-import Navbar from './common/Navbar/Navbar';
-import ErrorNotFound from './screens/Error/ErrorNotFound';
-
 
 class App extends Component {
   render() {
     return (
       <Router history={history}>
         <div>
-        <Navbar name="User name" loggedIn={false} />
-        <Switch>
-          <Route exact path="/register">
-            {/*<TODO />*/}
-          </Route>
-          <Route exact path="/login">
-            {/*<TODO />*/}
-          </Route>
-          <Route exact path="/">
-            <LandingPage onRegisterClick={() => history.push('/register')} onLoginClick={() => history.push('/login')} />
-          </Route>
-          <Route>
-            <ErrorNotFound history = {history}></ErrorNotFound>
-          </Route>
-        </Switch>
+          <Navbar name="User name" loggedIn={false} />
+          <Switch>
+            <Route path="/register">
+              <RegisterPage history={history}/>
+            </Route>
+            <Route path="/create-group">
+              <CreateGroup history={history}/>
+            </Route>
+            <Route path="/group/:id">
+              <Group history={history}/>
+            </Route>
+            <Route exact path="/">
+              <LandingPage onRegisterClick={() => history.push('/register')} onLoginClick={() => history.push('/login')} />
+            </Route>
+            <Route>
+              <ErrorNotFound history = {history}></ErrorNotFound>
+            </Route>
+          </Switch>
         </div>
       </Router>
     );

@@ -26,6 +26,9 @@ https://www.postman.com/downloads/
 - Run spring
 - Go to: http://localhost:8080/swagger-ui.html
 
+# StartUpDatabase
+Edit Configurations > Enviroment > Enviroment Variables: -initdb=true > Apply
+
 # Docs
 
 #### Spring: https://www.baeldung.com/spring-boot
