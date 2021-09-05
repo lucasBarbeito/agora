@@ -1,4 +1,5 @@
 import './App.css';
+import LandingPage from './screens/LandingPage/LandingPage';
 import {Component} from 'react';
 import history from './history';
 import Navbar from './common/Navbar/Navbar';
