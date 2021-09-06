@@ -2,7 +2,6 @@ package com.agora.agora;
 
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
-import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.UserRepository;
@@ -15,7 +14,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
@@ -123,5 +121,33 @@ public class StudyGroupControllerTest extends AbstractTest{
         int statusCode = mvcResult.getResponse().getStatus();
         assertEquals(404, statusCode);
 
+    }
+
+    @Test
+    public void getAllStudentsShouldReturnOk() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+    }
+
+    @Test
+    public void findAllStudyGroupsReturnsReturnsAmountExpected() {
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups();
+        assertEquals(2,allStudyGroups.size());
+    }
+
+    @Test
+    public void findAllStudyGroupsHasExpectedValues() {
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups();
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        expectedStudyGroupsNames.add(data.group2.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
     }
 }

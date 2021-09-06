@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -42,5 +43,9 @@ public class StudyGroupService {
 
     public Optional<StudyGroup> findStudyGroupById(int id){
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
+    }
+
+    public List<StudyGroup> findAll() {
+        return groupRepository.findAll();
     }
 }

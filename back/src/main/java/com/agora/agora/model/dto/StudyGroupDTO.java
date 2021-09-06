@@ -3,6 +3,7 @@ package com.agora.agora.model.dto;
 import java.time.LocalDate;
 
 public class StudyGroupDTO {
+
     private int id;
 
     private String name;
@@ -11,6 +12,7 @@ public class StudyGroupDTO {
 
 /* TODO
     private List<Label> labels = new ArrayList<>();
+
  */
 
     private int creatorId;
