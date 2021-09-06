@@ -2,6 +2,7 @@ package com.agora.agora;
 
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
@@ -87,5 +89,39 @@ public class StudyGroupControllerTest extends AbstractTest{
         ).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(409, status);
+    }
+
+    @Test
+    public void findStudyGroupAndReturnItsInfo() throws Exception {
+        String uri = "/studyGroup";
+
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+
+        StudyGroup studyGroup = studyGroupOptional.get();
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroup.getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String status = mvcResult.getResponse().getContentAsString();
+        StudyGroupDTO gottenStudyGroup = super.mapFromJson(status, StudyGroupDTO.class);
+
+        assertEquals(gottenStudyGroup.getId(), studyGroup.getId());
+        assertEquals(gottenStudyGroup.getCreationDate(), studyGroup.getCreationDate());
+        assertEquals(gottenStudyGroup.getDescription(), studyGroup.getDescription());
+        assertEquals(gottenStudyGroup.getCreatorId(), studyGroup.getCreator().getId());
+    }
+
+    @Test
+    public void findStudyGroupWithWrongIdShouldThrowError() throws Exception {
+        String uri = "/studyGroup";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + -1)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
+
     }
 }

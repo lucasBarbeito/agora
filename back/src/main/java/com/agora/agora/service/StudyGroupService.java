@@ -40,6 +40,7 @@ public class StudyGroupService {
         return group.getId();
     }
 
-
-
+    public Optional<StudyGroup> findStudyGroupById(int id){
+         return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
+    }
 }
