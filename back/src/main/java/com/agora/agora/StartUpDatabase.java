@@ -2,6 +2,7 @@ package com.agora.agora;
 
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
+import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,12 @@ public class StartUpDatabase {
         if(init){
             try{
                 //Users
-                User user1 = new User("Pepe", "Perez", "perez@gmail.com", BCrypt.hashpw("Perez2020", BCrypt.gensalt()), true);
-                User user2 = new User("Tomas", "Gomez", "gomez@gmail.com", BCrypt.hashpw("Gomez2019", BCrypt.gensalt()), false);
-                User user3 = new User("Agustin", "Rodriguez", "rodriguez@gmail.com", BCrypt.hashpw("Rodriguez2018", BCrypt.gensalt()), true);
-                User user4 = new User("Delfina", "Alonso", "alonso@gmail.com", BCrypt.hashpw("Alonso2017", BCrypt.gensalt()), true);
-                User user5 = new User("Agustina", "Lopez", "lopez@gmail.com", BCrypt.hashpw("Lopez2016", BCrypt.gensalt()), false);
-                User user6 = new User("Romina", "Diaz", "diaz@gmail.com", BCrypt.hashpw("Diaz2015", BCrypt.gensalt()), false);
+                User user1 = new User("Pepe", "Perez", "perez@gmail.com", BCrypt.hashpw("Perez2020", BCrypt.gensalt()), true, UserType.USER);
+                User user2 = new User("Tomas", "Gomez", "gomez@gmail.com", BCrypt.hashpw("Gomez2019", BCrypt.gensalt()), false, UserType.USER);
+                User user3 = new User("Agustin", "Rodriguez", "rodriguez@gmail.com", BCrypt.hashpw("Rodriguez2018", BCrypt.gensalt()), true, UserType.USER);
+                User user4 = new User("Delfina", "Alonso", "alonso@gmail.com", BCrypt.hashpw("Alonso2017", BCrypt.gensalt()), true, UserType.USER);
+                User user5 = new User("Agustina", "Lopez", "lopez@gmail.com", BCrypt.hashpw("Lopez2016", BCrypt.gensalt()), false, UserType.USER);
+                User user6 = new User("Romina", "Diaz", "diaz@gmail.com", BCrypt.hashpw("Diaz2015", BCrypt.gensalt()), false, UserType.USER);
 
                 userRepository.save(user1);
                 userRepository.save(user2);

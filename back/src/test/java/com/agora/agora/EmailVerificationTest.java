@@ -3,6 +3,7 @@ package com.agora.agora;
 import com.agora.agora.controller.UserController;
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.UserForm;
+import com.agora.agora.model.type.UserType;
 import com.agora.agora.service.EmailService;
 import com.agora.agora.service.UserService;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class EmailVerificationTest{
     public void checkEmailServiceCorrectParameters() throws Exception {
         String uri = "/user";
         UserForm form= new UserForm("Manuel","Gimenez","david@mail.com","Manuel123");
-        User user = new User(form.getName(), form.getSurname(), form.getEmail(), form.getPassword(), false);
+        User user = new User(form.getName(), form.getSurname(), form.getEmail(), form.getPassword(), false, UserType.USER);
         Optional<User> optional = Optional.of(user);
         Mockito.when(userService.save(form)).thenReturn(1);
         user.setUserVerificationToken("1");

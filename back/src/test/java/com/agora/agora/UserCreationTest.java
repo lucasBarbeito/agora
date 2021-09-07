@@ -3,6 +3,7 @@ package com.agora.agora;
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
+import com.agora.agora.model.type.UserType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ public class UserCreationTest{
     @Test
     public void testFormSerialization() throws Exception {
         UserForm form = new UserForm("Agustin","Von","a@gmail.com","Agustin123");
-
         String expectedJson = "{\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\"}";
 
         assertEquals(expectedJson,json.write(form).getJson());
@@ -64,17 +64,16 @@ public class UserCreationTest{
 
     @Test
     public void testUserSerialization() throws Exception {
-        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true);
-
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"verified\":true}";
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true}";
 
         assertEquals(expectedJson,jsonU.write(user).getJson());
     }
 
     @Test
     public void testUserDeserialization() throws Exception{
-        String userJ = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"verified\":true}";
-        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true);
+        String userJ = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true}";
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
 
         User userObtained = jsonU.parse(userJ).getObject();
 
@@ -87,14 +86,14 @@ public class UserCreationTest{
 
     @Test
     public void testUserSetInSerialization() throws Exception{
-        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true);
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
         user.setName("Carlos");
         user.setPassword("Carlos123");
         user.setSurname("Mendez");
         user.setEmail("Carlos@gmail.com");
         user.setVerified(false);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"password\":\"Carlos123\",\"userVerificationToken\":null,\"verified\":false}";
+        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"password\":\"Carlos123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":false}";
 
         assertEquals(expectedJson,jsonU.write(user).getJson());
     }

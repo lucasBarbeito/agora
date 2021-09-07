@@ -2,6 +2,7 @@ package com.agora.agora;
 
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.UserForm;
+import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.UserRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -27,8 +28,12 @@ public class UserControlerTest extends AbstractTest{
         User user;
 
         void setup() {
-            user = new User("Carlos","Gimenez","carlos@mail.com","Carlos123",false);
-
+            user = new User("Carlos",
+                    "Gimenez",
+                    "carlos@mail.com",
+                    "Carlos123",
+                    false,
+                    UserType.USER);
             userRepository.save(user);
         }
 

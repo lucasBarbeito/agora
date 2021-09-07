@@ -1,9 +1,13 @@
 package com.agora.agora.security;
 
+import com.agora.agora.security.jwt.JWTConfigurer;
+import com.agora.agora.security.jwt.TokenProvider;
+import com.agora.agora.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -24,8 +28,14 @@ import java.util.Arrays;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    private final TokenProvider tokenProvider;
+    private AuthService authService;
+
     @Autowired
-    public SecurityConfiguration() {  }
+    public SecurityConfiguration(AuthService authService, TokenProvider tokenProvider) {
+        this.tokenProvider = tokenProvider;
+        this.authService = authService;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,10 +58,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").permitAll() //TODO remove this once authentication is implemented
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/user").permitAll()
+                .and()
+                .apply(securityConfigurerAdapter())
                 .and()
                 .cors();
+    }
+
+    private JWTConfigurer securityConfigurerAdapter() {
+        return new JWTConfigurer(tokenProvider);
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authService);
     }
 
     @Override

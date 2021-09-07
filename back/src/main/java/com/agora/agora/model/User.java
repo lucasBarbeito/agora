@@ -1,7 +1,10 @@
 package com.agora.agora.model;
 
+import com.agora.agora.model.type.UserType;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Entity
@@ -26,17 +29,22 @@ public class User implements Identifiable {
     private String password;
 
     @Column
-    private String userVerificationToken;
-
-    @Column
     private boolean isVerified;
 
-    public User(String name, String surname, String email, String password, boolean isVerified) {
+    @Column
+    private String userVerificationToken;
+
+    @NotNull
+    @Column
+    private UserType type;
+
+    public User(String name, String surname, String email, String password, boolean isVerified, UserType userType) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.password = password;
         this.isVerified = isVerified;
+        this.type=userType;
     }
 
     public User() {
@@ -63,6 +71,10 @@ public class User implements Identifiable {
         return password;
     }
 
+    public UserType getType() {
+        return type;
+    }
+
     public boolean isVerified() {
         return isVerified;
     }
@@ -85,6 +97,10 @@ public class User implements Identifiable {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
 
     public String getUserVerificationToken() {

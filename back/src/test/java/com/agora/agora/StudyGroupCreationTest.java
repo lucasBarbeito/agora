@@ -3,6 +3,7 @@ package com.agora.agora;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.StudyGroupForm;
+import com.agora.agora.model.type.UserType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +65,9 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testStudyGroupSerialization() throws Exception {
-        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true);
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
 
 
         assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
@@ -74,9 +75,9 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testStudyGroupDeserialization() throws Exception{
-        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true);
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
 
 
         StudyGroup studyGroupObtained = jsonU.parse(expectedJson).getObject();
@@ -95,14 +96,14 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testUserSetInSerialization() throws Exception{
-        User user = new User("Carlos","Mendez","Carlos@gmail.com","Carlos123",false);
+        User user = new User("Carlos","Mendez","Carlos@gmail.com","Carlos123",false, UserType.USER);
         user.setName("Agustin");
         user.setSurname("Von");
         user.setPassword("Agustin123");
         user.setEmail("a@gmail.com");
         user.setVerified(true);
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
 
        assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
     }

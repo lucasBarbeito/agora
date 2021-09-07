@@ -1,8 +1,11 @@
 package com.agora.agora;
 
+import com.agora.agora.controller.StudyGroupController;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.StudyGroupForm;
+import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.UserRepository;
 import org.junit.After;
@@ -14,8 +17,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class StudyGroupControllerTest extends AbstractTest{
 
@@ -23,6 +31,9 @@ public class StudyGroupControllerTest extends AbstractTest{
     private StudyGroupRepository groupRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StudyGroupController studyGroupController;
 
     private Data data = new Data();
 
@@ -34,8 +45,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         StudyGroup group2;
 
         void setup() {
-            user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false);
-            user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false);
+            user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
+            user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false, UserType.USER);
             userRepository.save(user1);
             userRepository.save(user2);
 

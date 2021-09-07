@@ -1,4 +1,16 @@
 
+.background{
+
+    background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.45), 
+      rgba(0, 0, 0, 0.45)
+    ),url('../../background.png');
+    
+    background-size: cover;
+    height: calc(100vh - 64px);
+}
+
 .Container{
     top: 144px;
     left: 231px;
