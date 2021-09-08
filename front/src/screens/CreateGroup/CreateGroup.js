@@ -21,12 +21,6 @@ class CreateGroup extends Component {
         }
     }
 
-    waitABit() {
-        return new Promise((resolve) => {
-            setTimeout(() => resolve(), 1000);
-        });
-    }
-
     render() {
 
         const labels = ['Etiqueta1', 'Etiqueta2', 'Etiqueta3']
@@ -75,7 +69,7 @@ class CreateGroup extends Component {
         return (
             <div id='container'>
                 <Box m={10} display="flex" flexDirection="row" p={1}>
-                    <Box className='menu-box'>
+                    <Box id='menu-box'>
                         <MenuList>
                             <MenuItem className='menu-text'>Todos los grupos</MenuItem>
                             <MenuItem className='menu-text'>Mis grupos</MenuItem>
@@ -83,7 +77,7 @@ class CreateGroup extends Component {
                             <MenuItem className='menu-text'>Mi perfil</MenuItem>
                         </MenuList>
                     </Box>
-                    <Box className='form-box' boxShadow={2}>
+                    <Box id='form-box' boxShadow={2}>
                         <h6 className='title'>
                             Crear nuevo grupo de AGORA
                         </h6>
@@ -129,7 +123,7 @@ class CreateGroup extends Component {
                             />
                         </div>
                         {this.state.createdUnsuccessfully ?
-                            <Box className='warning-box'>
+                            <Box id='warning-box'>
                                 <div id='warning-message'>Los datos ingresados son incorrectos o inválidos</div>
                             </Box>
                             : null}

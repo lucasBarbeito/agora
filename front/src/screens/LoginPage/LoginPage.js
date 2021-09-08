@@ -8,6 +8,7 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import {Visibility, VisibilityOff} from "@material-ui/icons";
+import {UserContext} from "../../user-context";
 
 class LoginPage extends Component {
 
@@ -18,33 +19,61 @@ class LoginPage extends Component {
             password: '',
             email: '',
             unsuccessfulLogin: false,
-            validateEmail: null,
-            validatePassword: null
+            invalidInformation: false,
+            errorMsg: ''
         }
     }
 
-    handleLogin = () => {
-        this.validateEmail();
+    handleLogin = async () => {
+        const verificationEmail = this.validateEmail();
+        console.log("Verification " + verificationEmail)
+        if (verificationEmail) {
+            try {
+                const response = await fetch('http://localhost:8080/auth', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: this.state.email,
+                        password: this.state.password
+                    }),
+                    headers: {
+                        'Content-type': 'application/json;',
+                    },
+                });
+
+                if (response.status === 401) {
+                    this.setState({errorMsg: 'Email o contraseña incorrectos', invalidInformation: true});
+                } else if (response.status === 403) {
+                    this.setState({errorMsg: 'Confirme su email para iniciar sesión', invalidInformation: true})
+                } else if (!response.ok) {
+                    this.setState({errorMsg: 'Ha ocurrido un error', invalidInformation: true})
+                } else {
+                    const res = await response.json()
+                    const {setToken} = this.context
+                    setToken(res.token)
+                    this.props.history.push("/home")
+                }
+
+            } catch (e) {
+                alert('Error, no es posible conectarse al back-end');
+            }
+        }
     }
 
     validateEmail = () => {
         if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(this.state.email)) {
             this.setState({
-                validateEmail: false,
                 unsuccessfulLogin: true
             });
+            return false;
         } else {
-            this.setState({
-                validateEmail: true,
-            }, () => this.props.history.push("/createGroup"))
-            alert('entro')
+            return true;
         }
     }
 
     render() {
 
         return (
-            <div className='container'>
+            <div className='background'>
                 <div>
                     <Box className='form-box' boxShadow={2}>
                         <h6 className='title'>Iniciar Sesión</h6>
@@ -60,7 +89,7 @@ class LoginPage extends Component {
                                 onChange={(e) => this.setState({email: e.target.value})}
                             />
                         </div>
-                        <div className="form-description">
+                        <div className="form-description-pass">
                             <FormControl variant="outlined" id='password-field'>
                                 <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
                                 <OutlinedInput
@@ -88,6 +117,11 @@ class LoginPage extends Component {
                                 <div id='warning-message'>El correo electrónico no es válido</div>
                             </Box>
                             : null}
+                        {this.state.invalidInformation ?
+                            <Box id='warning-box'>
+                                <div id='warning-message'>{this.state.errorMsg}</div>
+                            </Box>
+                            : null}
                         <Button id="create-button" onClick={this.handleLogin}>Ingresar</Button>
                     </Box>
                 </div>
@@ -96,5 +130,7 @@ class LoginPage extends Component {
         );
     }
 }
+
+LoginPage.contextType = UserContext;
 
 export default LoginPage;

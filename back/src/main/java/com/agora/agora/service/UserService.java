@@ -25,7 +25,8 @@ public class UserService {
                 user.getSurname(),
                 user.getEmail(),
                 BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()),
-                false, UserType.USER);
+                false,
+                UserType.USER);
         userRepository.save(u);
         return u.getId();
     }

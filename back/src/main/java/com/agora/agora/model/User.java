@@ -23,6 +23,7 @@ public class User implements Identifiable {
     private String surname;
 
     @Column
+    @Email
     private String email;
 
     @Column
