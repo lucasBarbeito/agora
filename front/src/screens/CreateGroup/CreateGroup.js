@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Box, Button } from "@material-ui/core";
+import {Box, Button} from "@material-ui/core";
 import './CreateGroup.css';
 import MenuList from "@material-ui/core/MenuList";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -18,6 +18,7 @@ class CreateGroup extends Component {
             label: [],
             description: '',
             createdUnsuccessfully: false,
+            errorMsg: ''
         }
     }
 
@@ -27,7 +28,22 @@ class CreateGroup extends Component {
 
         const createGroup = async () => {
 
-            if (this.state.groupName && this.state.description && this.state.label) {
+            if (!this.state.groupName) {
+                this.setState({
+                    createdUnsuccessfully: true,
+                    errorMsg: 'Por favor ingrese un nombre de grupo'
+                })
+            } else if (this.state.label.length === 0) {
+                this.setState({
+                    createdUnsuccessfully: true,
+                    errorMsg: 'Por favor seleccione al menos una etiqueta'
+                })
+            } else if (!this.state.description) {
+                this.setState({
+                    createdUnsuccessfully: true,
+                    errorMsg: 'Por favor ingrese una descripción'
+                })
+            } else {
                 this.setState({createdUnsuccessfully: false})
                 let date = new Date();
 
@@ -45,25 +61,28 @@ class CreateGroup extends Component {
                             'Content-type': 'application/json; charset=UTF-8',
                         },
                     });
-                    if(!response.ok && response.status !== 404) {
-                      throw new Error('Server Error');
+                    if (response.status === 409) {
+                        this.setState({
+                            errorMsg: 'Grupo creado con nombre ya existente',
+                            createdUnsuccessfully: true
+                        })
+                    } else if (!response.ok && response.status !== 404) {
+                        throw new Error('Server Error');
                     } else {
-                      this.props.history.push({
-                        pathname: `/group/${0}`,
-                        state: {
-                          name: this.state.groupName,
-                          description: this.state.description,
-                          creationDate: ('0' + date.getDate()).slice(-2) + '/' +
-                                        ('0' + (date.getMonth()+1)).slice(-2) + '/' +
-                                        date.getFullYear(),
-                        }
-                      })
+                        this.props.history.push({
+                            pathname: `/group/${0}`,
+                            state: {
+                                name: this.state.groupName,
+                                description: this.state.description,
+                                creationDate: ('0' + date.getDate()).slice(-2) + '/' +
+                                    ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+                                    date.getFullYear(),
+                            }
+                        })
                     }
                 } catch (e) {
-                  alert('Error, no es posible conectarse al back-end');
+                    alert('Error, no es posible conectarse al back-end');
                 }
-            } else {
-                this.setState({createdUnsuccessfully: true})
             }
         }
         return (
@@ -124,7 +143,7 @@ class CreateGroup extends Component {
                         </div>
                         {this.state.createdUnsuccessfully ?
                             <Box id='warning-box'>
-                                <div id='warning-message'>Los datos ingresados son incorrectos o inválidos</div>
+                                <div id='warning-message'>{this.state.errorMsg}</div>
                             </Box>
                             : null}
                         <Button id='button-color' onClick={createGroup}>CREAR GRUPO</Button>
