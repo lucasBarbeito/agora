@@ -33,7 +33,7 @@ public class AuthTest extends AbstractTest{
                     "Gimenez",
                     "carlos@gmail.com",
                     BCrypt.hashpw("Carlos123",BCrypt.gensalt()),
-                    false,
+                    true,
                     UserType.USER);
             userRepository.save(user);
         }
@@ -99,5 +99,27 @@ public class AuthTest extends AbstractTest{
 
         int status = loginResult.getResponse().getStatus();
         assertEquals(401, status);
+    }
+
+    @Test
+    public void LogInWithCorrectDataButNotVerifiedShouldReturnForbidden() throws Exception{
+        User user = new User("Carla",
+                "Gimenez",
+                "carla@gmail.com",
+                BCrypt.hashpw("Carla123",BCrypt.gensalt()),
+                false,
+                UserType.USER);
+        userRepository.save(user);
+
+        String uri = "/auth";
+        LoginForm loginForm = new LoginForm("carla@gmail.com", "Carla123");
+
+        MvcResult loginResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(loginForm))).andReturn();
+
+        int status = loginResult.getResponse().getStatus();
+        assertEquals(403, status);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Optional;
+import com.agora.agora.exceptions.ForbiddenElementException;
 
 @Service
 public class AuthService implements AuthenticationProvider {
@@ -33,10 +34,14 @@ public class AuthService implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         return userRepository.findUserByEmail(email).map(user -> {
-            if(BCrypt.checkpw(password, user.getPassword())){
-                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority(user.getType().toString()));
-                return new UsernamePasswordAuthenticationToken(email, password, authorities);
+            if(BCrypt.checkpw(password, user.getPassword())) {
+                if (user.isVerified()) {
+                    ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+                    authorities.add(new SimpleGrantedAuthority(user.getType().toString()));
+                    return new UsernamePasswordAuthenticationToken(email, password, authorities);
+                }else {
+                    throw new ForbiddenElementException("Email confirmation needed");
+                }
             } else {
                 throw new BadCredentialsException("Invalid credentials");
             }
