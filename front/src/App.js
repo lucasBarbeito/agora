@@ -48,7 +48,7 @@ class App extends Component {
             <UserContext.Provider value={this.state}>
                 <Router history={history}>
                     <div>
-                        <Navbar name="User name" loggedIn={!!this.state.token}/>
+                        <Navbar name="User name" loggedIn={!!this.state.token} history={history}/>
                         <Switch>
                             <Route exact path="/">
                                 <LandingPage onRegisterClick={() => history.push('/register')}
