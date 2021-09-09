@@ -26,7 +26,6 @@ class LoginPage extends Component {
 
     handleLogin = async () => {
         const verificationEmail = this.validateEmail();
-        console.log("Verification " + verificationEmail)
         if (verificationEmail) {
             try {
                 const response = await fetch('http://localhost:8080/auth', {

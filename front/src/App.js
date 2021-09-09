@@ -35,13 +35,15 @@ class App extends Component {
 
         this.setToken = (newToken) => {
             this.setState({token: newToken})
+            localStorage.setItem('token', newToken);
         }
 
         this.state = {
-            token: null,
+            token: localStorage.getItem('token'),
             setToken: this.setToken
         }
     }
+
 
     render() {
         return (

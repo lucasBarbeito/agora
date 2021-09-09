@@ -8,6 +8,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
+import {UserContext} from "../../user-context";
 
 class CreateGroup extends Component {
 
@@ -46,7 +47,7 @@ class CreateGroup extends Component {
             } else {
                 this.setState({createdUnsuccessfully: false})
                 let date = new Date();
-
+                const {token} = this.context;
                 try {
                     const response = await fetch('http://localhost:8080/studyGroup', {
                         method: 'POST',
@@ -59,6 +60,7 @@ class CreateGroup extends Component {
                         }),
                         headers: {
                             'Content-type': 'application/json; charset=UTF-8',
+                            'Authorization': `Bearer ${token}`
                         },
                     });
                     if (response.status === 409) {
@@ -153,5 +155,6 @@ class CreateGroup extends Component {
         );
     }
 }
+CreateGroup.contextType = UserContext;
 
 export default CreateGroup;
