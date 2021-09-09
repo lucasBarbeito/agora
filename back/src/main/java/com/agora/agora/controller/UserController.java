@@ -41,7 +41,7 @@ public class UserController {
             createdUser.setUserVerificationToken(UUID.randomUUID().toString());
             userService.justSave(createdUser);
             // TODO: get client host dynamically
-            String url = "http://localhost:3000/user/verify_user/" + createdUser.getUserVerificationToken();
+            String url = "http://localhost:3000/user/verify-user/" + createdUser.getUserVerificationToken();
             String body = "Verifica tu usuario: \n" + url;
             emailService.sendSimpleMessage(user.getEmail(), "Verificar usuario", body);
             return ResponseEntity.created(components.toUri()).build();
