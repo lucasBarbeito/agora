@@ -8,13 +8,18 @@ import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -75,6 +80,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
     public void createNewStudyGroupShouldReturnCreated() throws Exception {
         String uri = "/studyGroup";
         StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
@@ -88,6 +94,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
     public void createStudyGroupAlreadyExistingShouldReturnError() throws Exception {
         String uri = "/studyGroup";
         StudyGroupForm groupForm = new StudyGroupForm("Dune", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
@@ -101,6 +108,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
     public void findStudyGroupAndReturnItsInfo() throws Exception {
         String uri = "/studyGroup";
 
@@ -123,6 +131,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
     public void findStudyGroupWithWrongIdShouldThrowError() throws Exception {
         String uri = "/studyGroup";
 
@@ -135,6 +144,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
     public void getAllStudentsShouldReturnOk() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -146,12 +156,14 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
     public void findAllStudyGroupsReturnsReturnsAmountExpected() {
         List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups();
         assertEquals(2,allStudyGroups.size());
     }
 
     @Test
+    @WithMockUser("USER")
     public void findAllStudyGroupsHasExpectedValues() {
         List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups();
         List<String> expectedStudyGroupsNames = new ArrayList<>();
@@ -160,5 +172,32 @@ public class StudyGroupControllerTest extends AbstractTest{
         for (StudyGroupDTO studyGroup : allStudyGroups) {
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
+    }
+
+    @Test
+    public void createNewStudyGroupWithoutTokenShouldReturnUnauthorized() throws Exception {
+        String uri = "/studyGroup";
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(401, status);
+    }
+
+    @Test
+    public void findStudyGroupWithoutTokenShouldReturnUnauthorized() throws Exception {
+        String uri = "/studyGroup";
+
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+
+        StudyGroup studyGroup = studyGroupOptional.get();
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroup.getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(401, statusCode);
     }
 }

@@ -100,5 +100,4 @@ public class AuthTest extends AbstractTest{
         int status = loginResult.getResponse().getStatus();
         assertEquals(401, status);
     }
-
 }
