@@ -7,8 +7,9 @@ class Group extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        name: '',
-        description: '',
+      name: props.history.location.state ? props.history.location.state.name : props.name,
+      creationDate: props.history.location.state ? props.history.location.state.creationDate : props.creationDate,
+      description: props.history.location.state ? props.history.location.state.description : props.description,
     }
   }
 
@@ -16,10 +17,10 @@ class Group extends Component {
     return (
       <div className='container'>
         <Paper id="group-info">
-          <Typography id="group-name" variant="h5">{this.props.history.location.state.name}</Typography>
-          <Typography id="group-creation">Creado el {this.props.history.location.state.creationDate} por {'User name'}</Typography>
+          <Typography id="group-name" variant="h5">{"Nombre del grupo"}</Typography>
+          <Typography id="group-creation">Creado el {"10/08/2021"} por {'User name'}</Typography>
           <Divider />
-          <Typography id="group-description">{this.props.history.location.state.description}</Typography>
+          <Typography id="group-description">{"Descripción del grupo"}</Typography>
           <Grid container justifyContent="flex-end">
             <Button id="abandon-group-button">Abandonar grupo</Button>
           </Grid>
