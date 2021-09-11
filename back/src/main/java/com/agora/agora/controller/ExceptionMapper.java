@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import com.agora.agora.exceptions.ForbiddenElementException;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -42,6 +43,15 @@ public class ExceptionMapper extends ResponseEntityExceptionHandler {
         errorAttributes.put("message", ex.getMessage());
         errorAttributes.put("error", HttpStatus.NOT_FOUND.getReasonPhrase());
         return handleExceptionInternal(ex, errorAttributes, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = ForbiddenElementException.class)
+    protected ResponseEntity<Object> handleException(ForbiddenElementException ex, WebRequest request) {
+        final Map<String, Object> errorAttributes = new DefaultErrorAttributes().getErrorAttributes(request, false);
+        errorAttributes.put("status", HttpStatus.FORBIDDEN.value());
+        errorAttributes.put("message", ex.getMessage());
+        errorAttributes.put("error", HttpStatus.FORBIDDEN.getReasonPhrase());
+        return handleExceptionInternal(ex, errorAttributes, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
     }
 
 }

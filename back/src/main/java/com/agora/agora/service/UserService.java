@@ -2,6 +2,7 @@ package com.agora.agora.service;
 
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.UserForm;
+import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -24,7 +25,8 @@ public class UserService {
                 user.getSurname(),
                 user.getEmail(),
                 BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()),
-                false);
+                false,
+                UserType.USER);
         userRepository.save(u);
         return u.getId();
     }

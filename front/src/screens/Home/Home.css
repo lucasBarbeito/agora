@@ -1,0 +1,21 @@
+#root {
+  background-color: #F5F5F5;
+}
+
+.Home {
+  margin-top: 221px;
+  margin-left: 139px;
+  margin-right: 139px;
+}
+
+.search-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 628px;
+  margin-bottom: 20px;
+}
+
+#search-button  {
+  background-color: #C5B2A5;
+}

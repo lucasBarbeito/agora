@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Box, Button } from "@material-ui/core";
+import {Box, Button} from "@material-ui/core";
 import './CreateGroup.css';
 import MenuList from "@material-ui/core/MenuList";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -8,6 +8,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
+import {UserContext} from "../../user-context";
 
 class CreateGroup extends Component {
 
@@ -18,13 +19,8 @@ class CreateGroup extends Component {
             label: [],
             description: '',
             createdUnsuccessfully: false,
+            errorMsg: ''
         }
-    }
-
-    waitABit() {
-        return new Promise((resolve) => {
-            setTimeout(() => resolve(), 1000);
-        });
     }
 
     render() {
@@ -33,10 +29,25 @@ class CreateGroup extends Component {
 
         const createGroup = async () => {
 
-            if (this.state.groupName && this.state.description && this.state.label) {
+            if (!this.state.groupName) {
+                this.setState({
+                    createdUnsuccessfully: true,
+                    errorMsg: 'Por favor ingrese un nombre de grupo'
+                })
+            } else if (this.state.label.length === 0) {
+                this.setState({
+                    createdUnsuccessfully: true,
+                    errorMsg: 'Por favor seleccione al menos una etiqueta'
+                })
+            } else if (!this.state.description) {
+                this.setState({
+                    createdUnsuccessfully: true,
+                    errorMsg: 'Por favor ingrese una descripción'
+                })
+            } else {
                 this.setState({createdUnsuccessfully: false})
                 let date = new Date();
-
+                const {token} = this.context;
                 try {
                     const response = await fetch('http://localhost:8080/studyGroup', {
                         method: 'POST',
@@ -49,33 +60,37 @@ class CreateGroup extends Component {
                         }),
                         headers: {
                             'Content-type': 'application/json; charset=UTF-8',
+                            'Authorization': `Bearer ${token}`
                         },
                     });
-                    if(!response.ok && response.status !== 404) {
-                      throw new Error('Server Error');
+                    if (response.status === 409) {
+                        this.setState({
+                            errorMsg: 'Grupo creado con nombre ya existente',
+                            createdUnsuccessfully: true
+                        })
+                    } else if (!response.ok && response.status !== 404) {
+                        throw new Error('Server Error');
                     } else {
-                      this.props.history.push({
-                        pathname: `/group/${0}`,
-                        state: {
-                          name: this.state.groupName,
-                          description: this.state.description,
-                          creationDate: ('0' + date.getDate()).slice(-2) + '/' +
-                                        ('0' + (date.getMonth()+1)).slice(-2) + '/' +
-                                        date.getFullYear(),
-                        }
-                      })
+                        this.props.history.push({
+                            pathname: `/group/${0}`,
+                            state: {
+                                name: this.state.groupName,
+                                description: this.state.description,
+                                creationDate: ('0' + date.getDate()).slice(-2) + '/' +
+                                    ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+                                    date.getFullYear(),
+                            }
+                        })
                     }
                 } catch (e) {
-                  alert('Error, no es posible conectarse al back-end');
+                    alert('Error, no es posible conectarse al back-end');
                 }
-            } else {
-                this.setState({createdUnsuccessfully: true})
             }
         }
         return (
             <div id='container'>
                 <Box m={10} display="flex" flexDirection="row" p={1}>
-                    <Box className='menu-box'>
+                    <Box id='menu-box'>
                         <MenuList>
                             <MenuItem className='menu-text'>Todos los grupos</MenuItem>
                             <MenuItem className='menu-text'>Mis grupos</MenuItem>
@@ -83,7 +98,7 @@ class CreateGroup extends Component {
                             <MenuItem className='menu-text'>Mi perfil</MenuItem>
                         </MenuList>
                     </Box>
-                    <Box className='form-box' boxShadow={2}>
+                    <Box id='form-box' boxShadow={2}>
                         <h6 className='title'>
                             Crear nuevo grupo de AGORA
                         </h6>
@@ -129,8 +144,8 @@ class CreateGroup extends Component {
                             />
                         </div>
                         {this.state.createdUnsuccessfully ?
-                            <Box className='warning-box'>
-                                <div id='warning-message'>Los datos ingresados son incorrectos o inválidos</div>
+                            <Box id='warning-box'>
+                                <div id='warning-message'>{this.state.errorMsg}</div>
                             </Box>
                             : null}
                         <Button id='button-color' onClick={createGroup}>CREAR GRUPO</Button>
@@ -140,5 +155,6 @@ class CreateGroup extends Component {
         );
     }
 }
+CreateGroup.contextType = UserContext;
 
 export default CreateGroup;
