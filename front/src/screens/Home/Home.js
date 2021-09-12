@@ -1,7 +1,10 @@
 import { Component } from 'react';
-import { Button, Grid, TextField } from '@material-ui/core';
-import GroupCard from '../../common/GroupCard/GroupCard';
+import { Container, Grid, IconButton, TextField } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import SearchIcon from '@material-ui/icons/Search';
 import './Home.css';
+import GroupCard from '../../common/GroupCard/GroupCard';
+import HomeMenu from '../../common/HomeMenu/HomeMenu';
 
 const groups = [
   {
@@ -36,42 +39,78 @@ const groups = [
   },
 ];
 
+const tags = ['Etiqueta 1', 'Etiqueta con mucho texto', 'Etiqueta 3'];
+
 class Home extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      groupName: '',
+      tags: [],
+    }
+  }
+
+  searchGroups() {
+    console.log(`searching group named ${this.state.groupName} with labels: ${this.state.tags}`);
+  }
+
+  joinGroup(id) {
+    this.props.history.push(`/group/${id}`)
+  }
 
   render() {
     return (
-      <div className="Home">
+      <Container id='Home'>
         <Grid container spacing={2}>
-          <Grid item xs={3}>
-            {/* Aquí va el tablero con "Todos los grupos", "Mis grupos", "Crear grupo", "Mi perfil" */}
+          <Grid item sm={12} md={3} container direction="column" alignItems="flex-end">
+            <HomeMenu history={this.props.history}/>
           </Grid>
-          <Grid item xs={9}>
+          <Grid item md={12} lg={9} id='groups-listing'>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <div className='search-content'>
                   <TextField
+                    id='group-name-field'
                     label='Buscar nombre de grupo'
                     variant="outlined"
+                    value={this.state.groupName}
+                    onChange={(value) => this.setState({groupName: value.target.value})}
                   />
-                  <TextField 
-                    variant="outlined"
-                  />
-                  <Button 
+                  <div id='group-label-field'>
+                    <Autocomplete
+                      multiple
+                      options={tags}
+                      filterSelectedOptions
+                      onChange={(event, newValue) => {
+                        this.setState({tags: newValue});
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          label="Etiquetas"
+                        />
+                      )}
+                    />
+                  </div>
+                  <IconButton 
                     id='search-button'
+                    onClick={() => this.searchGroups()}
                   >
-                    Lupa
-                  </Button>
+                    <SearchIcon/>
+                  </IconButton>
                 </div>
               </Grid>
               {
-                
                 groups.map((group, index) => (
-                  <Grid item xs={12} sm={12} md={6} lg={4} xl={3} key={index}>
+                  <Grid item xs={12} sm={6} md={4} lg={4} key={index} container direction="column" alignItems="center">
                     <GroupCard
                       name={group.groupTitle}
                       tags={group.groupTags}
                       description={group.groupDescription}
-                      onJoinGroup={() => this.props.history.push(`/group/${group.groupId}`)}
+                      buttonAction={() => this.joinGroup(group.groupId)}
+                      buttonLabel={'Sumarme al grupo'}
                     />
                   </Grid>
                 ))
@@ -79,7 +118,7 @@ class Home extends Component {
             </Grid>
           </Grid>
         </Grid>
-      </div>
+      </Container>
     )
   }
 }

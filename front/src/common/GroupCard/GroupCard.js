@@ -27,9 +27,9 @@ class GroupCard extends Component {
           <Grid container justifyContent="flex-end">
             <Button 
               id="join-group-button" 
-              onClick={this.props.onJoinGroup}
+              onClick={() => this.props.buttonAction()}
             >
-              Sumarme al grupo
+              { this.props.buttonLabel }
             </Button>
           </Grid>
         </CardActions>

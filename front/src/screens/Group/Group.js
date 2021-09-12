@@ -4,15 +4,6 @@ import './Group.css';
 
 class Group extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: props.history.location.state ? props.history.location.state.name : props.name,
-      creationDate: props.history.location.state ? props.history.location.state.creationDate : props.creationDate,
-      description: props.history.location.state ? props.history.location.state.description : props.description,
-    }
-  }
-
   render() {
     return (
       <div className='container'>

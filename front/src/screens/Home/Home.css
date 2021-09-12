@@ -1,21 +1,38 @@
-#root {
+body {
   background-color: #F5F5F5;
 }
 
-.Home {
-  margin-top: 221px;
-  margin-left: 139px;
-  margin-right: 139px;
+#Home {
+  margin-top: 90px;
+}
+
+#groups-listing {
+  max-width: 1125px;
 }
 
 .search-content {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 628px;
+  width: 800px;
   margin-bottom: 20px;
+}
+
+#group-name-field {
+  width: 352px;
+  border-radius: 4px;
+}
+
+#group-label-field {
+  width: 300px;
+  border-radius: 4px;
 }
 
 #search-button  {
   background-color: #C5B2A5;
+  box-shadow: 0px 4px 5px #00000024;
+  border-radius: 4px;
+  color: #FFFFFF;
+  width: 76px;
+  max-height: 56px;
 }
