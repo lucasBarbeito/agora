@@ -17,6 +17,7 @@ import CreateGroup from './screens/CreateGroup/CreateGroup';
 import EmailConfirmation from './screens/EmailConfirmation/EmailConfirmation';
 import LandingPage from './screens/LandingPage/LandingPage';
 import Home from './screens/Home/Home';
+import CheckYourEmailPage from './screens/CheckYourEmail/CheckYourEmailPage';
 
 const AuthRoute = ({children, ...rest}) => (
     <UserContext.Consumer>
@@ -66,6 +67,9 @@ class App extends Component {
                                 path="/user/verify-user/:id"
                                 render={(props) => <EmailConfirmation history={history} {...props}/>}
                             />
+                            <Route exact path="/check-email">
+                              <CheckYourEmailPage history={history} />
+                            </Route>
                             <AuthRoute path="/home">
                                 <Home history={history}/>
                             </AuthRoute>

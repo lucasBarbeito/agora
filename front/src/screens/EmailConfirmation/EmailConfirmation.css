@@ -1,39 +1,49 @@
-.EmailConfiguration {
-  background-image: 
-  linear-gradient(
-    rgba(0, 0, 0, 0.45), 
-    rgba(0, 0, 0, 0.45)
-  ), url('../../school-of-athens.jpg');
-  
-  background-size: cover;
-  height: calc(100vh - 64px);
+.email-verification-description-text {
+  text-align: left;
+  font-size: 2.5vw;
+  font-family: "Roboto";
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 2.083vw;
+  color: #E6E2D5;
 }
 
-.content {
-  position: absolute;
-  top: 300px; 
-  left: 300px;
+#email-verification-buttons-grid{
+  margin-top: 0.5vh;
 }
 
-.agora-logo{
-  width: 444px;
-  height: 444px;
+#email-verification-left-grid{
+  margin-top: 26vh;
+  margin-left: 10.1vw;
 }
 
-#message {
-  color: #E3E8E6;
-  text-align: justify;
-  text-align-last: center;
+#email-verification-main-grid{
+position: absolute;
+margin-top: 5vh;
 }
 
-#spinner-container {
+.email-verification-agora-Logo{
+width: 32.4vw;
+margin-top: 2.6vw;
+margin-left:10.41vw;
+}
+
+#email-verification-button{
+width: 100%;
+height: 3.33vw;
+font-size: 0.85vw;
+letter-spacing: 0.091vw;
+background-color: #C5B2A5;
+}
+
+#email-verification-spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
 
-#spinner {
+#email-verification-spinner {
   color: #E3E8E6;
   margin-top: 500px;
 }

@@ -40,7 +40,7 @@ class LandingPage extends Component {
                          </Grid>
                      </Grid>
                     <Grid item xs={6}>
-                        <img className="agoraLogo" src= 'agora-logo.png' >
+                        <img className= "landing-page-agora-Logo" alt="agora-logo" src='agora-logo.png' >
                         </img>
                     </Grid>
                 </Grid>
