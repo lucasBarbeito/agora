@@ -1,18 +1,70 @@
-.container {
+
+.main-div{
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  background-color: #F5F5F5;
   margin-top: 64px;
 }
 
-#group-info {
-  width: 260px;
-  margin-left: 139px;
+#mid-div{
+  overflow-y: scroll;
+  padding: 0;
+}
+
+#mid-grid::-webkit-scrollbar {
+  display: none;
+}
+
+#mid-grid {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+}
+
+.members-accordion-div{
+  padding: 0;
+}
+
+#back-button{
+  height: 6ch;
+  font-size: 2ch;
+  letter-spacing: 0.15ch;
+  font-weight: 400;
+  font-family: "Roboto";
+  background-color: #C5B2A5;
+  justify-content: flex-start;
+}
+
+#invite-button{
+  height: 6ch;
+  font-size: 2ch;
+  letter-spacing: 0.15ch;
+  font-weight: 400;
+  font-family: "Roboto";
+  background-color: #C5B2A5;
+  justify-content: flex-start;
+}
+
+#edit-group-grid{
+  margin-top: 3.8%;
+  margin-left: 3.8%;
+}
+
+#group-name-grid{
+  margin-top: 3.8%;
+  margin-left: 8%;
+}
+
+#edit-icon{
+  color: #C5B2A5;
 }
 
 #group-name {
-  padding: 16px 16px 0 16px;
+  padding: 0;
 }
 
 #group-creation {
-  padding: 0 16px 9px 16px;
+  padding: 0 16px 9px 0px;
   color: #00000099;
 }
 
@@ -25,3 +77,40 @@
   padding: 16px 9px 9px 0;
   color: #E8A5A5;
 }
+
+#invite-icon{
+  margin-right: 8%;
+  margin-left: 4%;
+}
+
+#back-icon{
+  margin-right: 10%;
+  margin-left: 4%;
+}
+
+#inner-mid-container {
+  margin-left: 0;
+  width: 100%;
+}
+
+#new-announcement-textfield {
+  height: 2.5ch;
+  top: 0.5vh;
+}
+
+#new-announcement-button{
+  height: 6ch;
+  font-size: 2ch;
+  letter-spacing: 0.15ch;
+  font-weight: 400;
+  font-family: "Roboto";
+  background-color: #C5B2A5;
+  color: #FFFFFF;
+  margin-left: 1.1%;
+}
+
+#posts-container{
+  width: 100%;
+}
+
+

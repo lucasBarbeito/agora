@@ -77,7 +77,7 @@ class App extends Component {
                                 <CreateGroup history={history}/>
                             </AuthRoute>
                             <AuthRoute path="/group/:id">
-                                <Group history={history}/>
+                                <Group history={history} admin={true}/>
                             </AuthRoute>
                             <Route>
                                 <ErrorNotFound history={history}/>
