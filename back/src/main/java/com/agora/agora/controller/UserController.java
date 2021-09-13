@@ -1,16 +1,15 @@
 package com.agora.agora.controller;
 
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.service.EmailService;
 import com.agora.agora.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -61,5 +60,12 @@ public class UserController {
             return ResponseEntity.ok(user.getName());
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/me")
+    public ResponseEntity getCurrentUser() {
+        final Optional<User> optional = userService.findCurrentUser();
+        final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
+        return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 }
