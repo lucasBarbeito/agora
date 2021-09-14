@@ -9,7 +9,11 @@
     background-size: cover;
     height: calc(100vh - 64px);
 }
-
+.landing-page-agora-Logo{
+  width: 32.4vw;
+  margin-top: 2.6vw;
+  margin-left:10.41vw;
+}
 .welcomeText {
     text-align: left;
     font-size: 6.97vw;
@@ -42,12 +46,6 @@
 #main-grid{
   position: absolute;
   margin-top: 5vh;
-}
-
-.agoraLogo{
-  width: 32.4vw;
-  margin-top: 2.6vw;
-  margin-left:10.41vw;
 }
 
 #button{

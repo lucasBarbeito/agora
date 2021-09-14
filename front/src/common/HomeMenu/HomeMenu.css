@@ -1,0 +1,32 @@
+.menu-box {
+  background: #C5B2A529;
+  border-radius: 4px;
+  font-family: Roboto, serif;
+  opacity: 1;
+  height: 322px;
+  width: 260px;
+}
+
+#menu-text {
+  text-align: left;
+  letter-spacing: 0.5px;
+  color: #000000DE;
+  opacity: 1;
+  font-family: Roboto, serif;
+  font-size: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+#selected-menu-text {
+  text-align: left;
+  letter-spacing: 0.5px;
+  color: #000000DE;
+  opacity: 1;
+  font-family: Roboto, serif;
+  font-size: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 500;
+  background-color: #E6E2D5;
+}

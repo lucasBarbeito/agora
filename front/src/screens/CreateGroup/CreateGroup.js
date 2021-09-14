@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {Box, Button} from "@material-ui/core";
 import './CreateGroup.css';
-import MenuList from "@material-ui/core/MenuList";
-import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
+import HomeMenu from '../../common/HomeMenu/HomeMenu';
 import {UserContext} from "../../user-context";
 
 class CreateGroup extends Component {
@@ -90,15 +89,8 @@ class CreateGroup extends Component {
         return (
             <div id='container'>
                 <Box m={10} display="flex" flexDirection="row" p={1}>
-                    <Box id='menu-box'>
-                        <MenuList>
-                            <MenuItem className='menu-text'>Todos los grupos</MenuItem>
-                            <MenuItem className='menu-text'>Mis grupos</MenuItem>
-                            <MenuItem className='menu-text' selected>Crear grupo</MenuItem>
-                            <MenuItem className='menu-text'>Mi perfil</MenuItem>
-                        </MenuList>
-                    </Box>
-                    <Box id='form-box' boxShadow={2}>
+                    <HomeMenu history={this.props.history} />
+                    <Box className='form-box' boxShadow={2}>
                         <h6 className='title'>
                             Crear nuevo grupo de AGORA
                         </h6>

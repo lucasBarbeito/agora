@@ -1,6 +1,7 @@
 package com.agora.agora;
 
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullUserDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.model.type.UserType;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -27,6 +30,8 @@ public class UserCreationTest{
     JacksonTester<User> jsonU;
     @Autowired
     JacksonTester<UserVerificationForm> jsonV;
+    @Autowired
+    JacksonTester<FullUserDTO> jsonFull;
 
     @Test
     public void testFormSerialization() throws Exception {
@@ -125,6 +130,40 @@ public class UserCreationTest{
         String expectedJson = "{\"userVerificationToken\":\"54321\"}";
 
         assertEquals(expectedJson,jsonV.write(form).getJson());
+    }
+
+    @Test
+    public void testFullUserDTOSerialization() throws IOException {
+        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com");
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\"}";
+
+        assertEquals(expectedJson,jsonFull.write(user).getJson());
+    }
+
+    @Test
+    public void testFullUserDTOSetSerialization() throws IOException {
+        FullUserDTO user = new FullUserDTO();
+        user.setName("Carlos");
+        user.setSurname("Mendez");
+        user.setEmail("Carlos@gmail.com");
+        user.setId(0);
+
+        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\"}";
+
+        assertEquals(expectedJson,jsonFull.write(user).getJson());
+    }
+
+    @Test
+    public void FullUserDTODeserialization() throws IOException {
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\"}";
+        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com");
+
+        FullUserDTO userObtained = jsonFull.parse(expectedJson).getObject();
+
+        assertEquals(user.getName(),userObtained.getName());
+        assertEquals(user.getSurname(),userObtained.getSurname());
+        assertEquals(user.getEmail(),userObtained.getEmail());
+        assertEquals(user.getId(),userObtained.getId());
     }
 }
 

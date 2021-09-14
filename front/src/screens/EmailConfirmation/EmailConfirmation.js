@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import {CircularProgress, Grid, Typography} from '@material-ui/core';
-import Navbar from '../../common/Navbar/Navbar';
+import {CircularProgress, Grid,Button} from '@material-ui/core';
 import "./EmailConfirmation.css";
 
 
@@ -39,29 +38,30 @@ export default class EmailConfirmation extends Component {
     
   render() {
     return (
-      <div className="EmailConfiguration">
-        <Navbar />
+      <div className="Agorabackground">
           { this.state.requestSuccess ?
-            <div className="content">
-              <Grid 
-                id="grid"
-                container 
-                spacing={0}
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Grid id="grid-item" item xs={6}>
-                  <Typography id="message" variant="h2"> Tu correo ha sido confirmado exitosamente!</Typography>
-                </Grid> 
-                <Grid id="grid-item" item xs={6}>
-                  <img src = "/agora-logo.png" alt = "AGORA" className = "agora-logo"></img>
-                </Grid>
-              </Grid> 
-            </div>
+            <Grid container id='email-verification-main-grid'>
+            <Grid item xs={6}>
+                <Grid container id="email-verification-left-grid">
+                    <Grid item xs={12}>
+                        <h1 className='email-verification-description-text'>Tu correo ha sido confirmado exitosamente</h1>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Grid container spacing={3} id="email-verification-buttons-grid">
+                            <Grid item xs={3}>
+                                <Button id="email-verification-button" variant="contained" color="primary" onClick = {() => this.props.history.push("/")}> Volver al inicio</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                 </Grid>
+             </Grid>
+            <Grid item xs={6}>
+                <img className="email-verification-agora-Logo" alt ="AgoraLogo" src='/agora-logo.png' />
+            </Grid>
+           </Grid>
             :
-            <div id="spinner-container">
-              <CircularProgress id="spinner" size={40} />
+            <div id="email-verification-spinner-container">
+              <CircularProgress id="email-verification-spinner" size={40} />
             </div>
           }
       </div>

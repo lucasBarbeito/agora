@@ -81,7 +81,7 @@ export default class RegisterPage extends Component {
                     errorMsg: 'Correo electrónico ya existente.'
                 });
             } else if (response.ok) {
-                this.props.history.push("/allGroups");
+                this.props.history.push("/check-email");
             } else {
                 this.setState({
                     showErrorMsg: true,

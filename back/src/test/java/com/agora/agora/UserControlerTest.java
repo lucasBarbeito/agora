@@ -1,6 +1,8 @@
 package com.agora.agora;
 
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.UserRepository;
@@ -9,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -102,5 +105,39 @@ public class UserControlerTest extends AbstractTest{
         ).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(400, status);
+    }
+
+    @Test
+    @WithMockUser(username = "carlos@mail.com")
+    public void getCurrentUserShouldReturnCurrentFullUserDTO() throws Exception {
+        data.user.setUserVerificationToken("1234");
+        userRepository.save(data.user);
+
+        String uri = "/user/me";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO userDTO = super.mapFromJson(status, FullUserDTO.class);
+
+        assertEquals(userDTO.getId(), data.user.getId());
+        assertEquals(userDTO.getEmail(), data.user.getEmail());
+        assertEquals(userDTO.getName(), data.user.getName());
+        assertEquals(userDTO.getSurname(), data.user.getSurname());
+    }
+
+    @Test
+    @WithMockUser(username = "carlitos@mail.com")
+    public void getCurrentUserThatIsNotRegisteredShouldReturnNotFound() throws Exception {
+
+        String uri = "/user/me";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
     }
 }
