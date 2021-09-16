@@ -1,8 +1,12 @@
 package com.agora.agora.controller;
 
 import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.StudyGroupUser;
+import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.service.StudyGroupService;
@@ -14,6 +18,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/studyGroup")
@@ -43,11 +48,19 @@ public class StudyGroupController {
         }
         return studyGroupRespons;
     }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity getStudyGroupInfoById(@PathVariable("id") int id){
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
-        final Optional<StudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate()));
+        final List<StudyGroupUser> studyGroupUsers = groupService.findUsersInStudyGroup(id);
+        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
+        final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs));
         return studyGroupDTOOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping(value = "/{id}/{userId}")
+    public ResponseEntity addUserToStudyGroup(@PathVariable("id") int studyGroupId, @PathVariable("userId") int userId){
+        groupService.addUserToStudyGroup(studyGroupId, userId);
+        return ResponseEntity.ok().build();
+    }
 }

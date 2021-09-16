@@ -1,6 +1,8 @@
 package com.agora.agora;
 
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullStudyGroupDTO;
+import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.dto.FullUserDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
@@ -13,6 +15,8 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.io.IOException;
 
 import java.io.IOException;
 
@@ -32,6 +36,9 @@ public class UserCreationTest{
     JacksonTester<UserVerificationForm> jsonV;
     @Autowired
     JacksonTester<FullUserDTO> jsonFull;
+    @Autowired
+    JacksonTester<UserContactDTO> jsonContact;
+
 
     @Test
     public void testFormSerialization() throws Exception {
@@ -130,6 +137,41 @@ public class UserCreationTest{
         String expectedJson = "{\"userVerificationToken\":\"54321\"}";
 
         assertEquals(expectedJson,jsonV.write(form).getJson());
+    }
+
+    @Test
+    public void testUserContactDTOSerialization() throws IOException {
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getEmail());
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\"}";
+
+        assertEquals(expectedJson,jsonContact.write(userDTO).getJson());
+    }
+
+    @Test
+    public void testUserContactDTOSetSerialization() throws IOException {
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        UserContactDTO userDTO = new UserContactDTO();
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setEmail(user.getEmail());
+
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\"}";
+
+        assertEquals(expectedJson,jsonContact.write(userDTO).getJson());
+    }
+
+    @Test
+    public void testUserContactDTODeserialization() throws IOException {
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getEmail());
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\"}";
+
+        UserContactDTO obtained = jsonContact.parse(expectedJson).getObject();
+
+        assertEquals(userDTO.getId(), obtained.getId());
+        assertEquals(userDTO.getEmail(), obtained.getEmail());
+        assertEquals(userDTO.getName(), obtained.getName());
     }
 
     @Test

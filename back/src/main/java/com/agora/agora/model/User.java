@@ -1,11 +1,13 @@
 package com.agora.agora.model;
 
 import com.agora.agora.model.type.UserType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users",
@@ -35,6 +37,12 @@ public class User implements Identifiable {
     @Column
     private String userVerificationToken;
 
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "user",
+            targetEntity = StudyGroupUser.class)
+    @JsonIgnore
+    private List<StudyGroupUser> studyGroups;
+
     @NotNull
     @Column
     private UserType type;
@@ -46,9 +54,11 @@ public class User implements Identifiable {
         this.password = password;
         this.isVerified = isVerified;
         this.type=userType;
+        this.studyGroups = new ArrayList<>();
     }
 
     public User() {
+        studyGroups = new ArrayList<>();
     }
 
     @Override
@@ -110,5 +120,9 @@ public class User implements Identifiable {
 
     public void setUserVerificationToken(String useVerificationToken) {
         this.userVerificationToken = useVerificationToken;
+    }
+
+    public List<StudyGroupUser> getStudyGroups() {
+        return studyGroups;
     }
 }
