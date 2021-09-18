@@ -2,13 +2,19 @@ package com.agora.agora;
 
 import com.agora.agora.controller.StudyGroupController;
 import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
+import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.StudyGroupRepository;
+import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class StudyGroupControllerTest extends AbstractTest{
 
@@ -36,6 +41,9 @@ public class StudyGroupControllerTest extends AbstractTest{
     private StudyGroupRepository groupRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StudyGroupUsersRepository studyGroupUsersRepository;
 
     @Autowired
     private StudyGroupController studyGroupController;
@@ -62,6 +70,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         }
 
         void rollback() {
+            studyGroupUsersRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
         }
@@ -115,6 +124,9 @@ public class StudyGroupControllerTest extends AbstractTest{
         Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
 
         StudyGroup studyGroup = studyGroupOptional.get();
+        StudyGroupUser studyGroupUser = new StudyGroupUser(data.user1, studyGroup);
+        studyGroupUsersRepository.save(studyGroupUser);
+
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroup.getId())
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
@@ -122,12 +134,17 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(200, statusCode);
 
         String status = mvcResult.getResponse().getContentAsString();
-        StudyGroupDTO gottenStudyGroup = super.mapFromJson(status, StudyGroupDTO.class);
+        FullStudyGroupDTO gottenStudyGroup = super.mapFromJson(status, FullStudyGroupDTO.class);
 
         assertEquals(gottenStudyGroup.getId(), studyGroup.getId());
         assertEquals(gottenStudyGroup.getCreationDate(), studyGroup.getCreationDate());
         assertEquals(gottenStudyGroup.getDescription(), studyGroup.getDescription());
         assertEquals(gottenStudyGroup.getCreatorId(), studyGroup.getCreator().getId());
+
+        //Contact of members in group check.
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getId(), data.user1.getId());
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getEmail(), data.user1.getEmail());
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getName(), data.user1.getName());
     }
 
     @Test
@@ -175,6 +192,110 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
+    @WithMockUser("USER")
+    public void addExistingUserToStudyGroupShouldReturnOk() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+        Optional<User> userOptional = userRepository.findUserByEmail("tolkien@gmail.com");
+
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + studyGroupOptional.get().getId() + "/" + userOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void addNonExistentUserToStudyGroupShouldReturnNotFound() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + studyGroupOptional.get().getId() + "/" + -1)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void addExistingUserToNonExistingGroupShouldReturnNotFound() throws Exception {
+        Optional<User> userOptional = userRepository.findUserByEmail("tolkien@gmail.com");
+
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + -1 + "/" + userOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void addedUserShouldAppearInStudyGroupListOfUsers() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+        Optional<User> userOptional = userRepository.findUserByEmail("tolkien@gmail.com");
+
+        String uri = "/studyGroup";
+
+        StudyGroup studyGroup = studyGroupOptional.get();
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + studyGroup.getId() + "/" + userOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int statusPostCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusPostCode);
+
+
+        MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroup.getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int statusGetCode = mvcGETResult.getResponse().getStatus();
+        assertEquals(200, statusGetCode);
+
+        User user = userOptional.get();
+
+        String status = mvcGETResult.getResponse().getContentAsString();
+        FullStudyGroupDTO gottenStudyGroup = super.mapFromJson(status, FullStudyGroupDTO.class);
+
+        //StudyGroup Check
+        assertEquals(gottenStudyGroup.getId(), studyGroup.getId());
+        assertEquals(gottenStudyGroup.getCreationDate(), studyGroup.getCreationDate());
+        assertEquals(gottenStudyGroup.getDescription(), studyGroup.getDescription());
+
+        //User in StudyGroup Check
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getId(), user.getId());
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getEmail(), user.getEmail());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void addExistentUserToStudyGroupShouldConflict() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+        Optional<User> userOptional = userRepository.findUserByEmail("tolkien@gmail.com");
+
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + studyGroupOptional.get().getId() + "/" + userOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+
+        MvcResult mvcDuplicateResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + studyGroupOptional.get().getId() + "/" + userOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int statusDuplicate = mvcDuplicateResult.getResponse().getStatus();
+        assertEquals(409, statusDuplicate);
+    }
+
+    @Test
     public void createNewStudyGroupWithoutTokenShouldReturnUnauthorized() throws Exception {
         String uri = "/studyGroup";
         StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
@@ -200,4 +321,5 @@ public class StudyGroupControllerTest extends AbstractTest{
         int statusCode = mvcResult.getResponse().getStatus();
         assertEquals(401, statusCode);
     }
+
 }

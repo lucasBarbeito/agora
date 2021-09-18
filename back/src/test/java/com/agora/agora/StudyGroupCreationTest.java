@@ -1,7 +1,10 @@
 package com.agora.agora;
 
 import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.FullStudyGroupDTO;
+import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
 import org.junit.Test;
@@ -13,7 +16,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,6 +33,8 @@ public class StudyGroupCreationTest {
     JacksonTester<StudyGroupForm> json;
     @Autowired
     JacksonTester<StudyGroup> jsonU;
+    @Autowired
+    JacksonTester<FullStudyGroupDTO> jsonFullDTO;
 
     @Test
     public void testFormSerialization() throws Exception {
@@ -106,5 +115,71 @@ public class StudyGroupCreationTest {
         String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creator\":{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true},\"creationDate\":\"2021-08-17\"}";
 
        assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
+    }
+
+    @Test
+    public void testFullStudyGroupSerialization() throws IOException {
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
+        User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
+        studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
+
+        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getEmail());
+        List<UserContactDTO> users = new ArrayList<>();
+        users.add(userDTO);
+
+        FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users);
+
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+
+        assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
+    }
+
+    @Test
+    public void testFullStudyGroupDeserialization() throws IOException {
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
+        User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
+        studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
+
+        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getEmail());
+        List<UserContactDTO> users = new ArrayList<>();
+        users.add(userDTO);
+
+        FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users);
+
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+
+        FullStudyGroupDTO obtained = jsonFullDTO.parse(expectedJson).getObject();
+
+        assertEquals(dto.getId(), obtained.getId());
+        assertEquals(dto.getName(), obtained.getName());
+
+        assertEquals(dto.getUserContacts().get(0).getId(), obtained.getUserContacts().get(0).getId());
+    }
+
+    @Test
+    public void testFullStudyGroupDTOSetSerialization() throws IOException {
+        User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
+        User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
+        studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
+
+        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getEmail());
+        List<UserContactDTO> users = new ArrayList<>();
+        users.add(userDTO);
+
+        FullStudyGroupDTO dto = new FullStudyGroupDTO();
+        dto.setCreationDate(studyGroup.getCreationDate());
+        dto.setCreatorId(user.getId());
+        dto.setCreatorId(studyGroup.getCreator().getId());
+        dto.setDescription(studyGroup.getDescription());
+        dto.setId(0);
+        dto.setUserContacts(users);
+        dto.setName(studyGroup.getName());
+
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+
+        assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }
 }

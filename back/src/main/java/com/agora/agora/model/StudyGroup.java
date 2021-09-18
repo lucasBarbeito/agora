@@ -1,7 +1,11 @@
 package com.agora.agora.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "study_group", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
@@ -27,11 +31,17 @@ public class StudyGroup implements Identifiable{
     @ManyToOne
     private User creator;
 
-
     @Column
     private LocalDate creationDate;
 
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "studyGroup",
+            targetEntity = StudyGroupUser.class)
+    @JsonIgnore
+    private List<StudyGroupUser> users;
+
     public StudyGroup(){
+        users = new ArrayList<>();
     }
 
     public StudyGroup(String name, String description, User creator, LocalDate creationDate) {
@@ -39,6 +49,7 @@ public class StudyGroup implements Identifiable{
         this.description = description;
         this.creator = creator;
         this.creationDate = creationDate;
+        users = new ArrayList<>();
     }
 
     public void setId(int id) {
@@ -83,6 +94,10 @@ public class StudyGroup implements Identifiable{
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public List<StudyGroupUser> getUsers() {
+        return users;
     }
 
 }
