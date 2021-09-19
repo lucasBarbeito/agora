@@ -2,8 +2,8 @@ package com.agora.agora;
 
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullUserDTO;
-import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
+import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.UserRepository;
 import org.junit.After;
@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class UserControlerTest extends AbstractTest{
 
@@ -105,6 +106,40 @@ public class UserControlerTest extends AbstractTest{
         ).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(400, status);
+    }
+
+    @Test
+    public void verifyUserShouldReturnOk() throws Exception {
+        String uri = "/user/verify_user";
+        User user = new User("Manuel","Gimenez","manuel@mail.com","Manuel", false, UserType.USER);
+        user.setUserVerificationToken("1");
+        userRepository.save(user);
+        UserVerificationForm form = new UserVerificationForm("1");
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+        user = userRepository.findUserByEmail("manuel@mail.com").get();
+        assertTrue(user.isVerified());
+    }
+
+    @Test
+    public void verifyUserShouldReturnNotFound() throws Exception {
+        String uri = "/user/verify_user";
+        User user = new User("Manuel","Gimenez","manuel@mail.com","Manuel", false, UserType.USER);
+        user.setUserVerificationToken("2");
+        userRepository.save(user);
+        UserVerificationForm form = new UserVerificationForm("1");
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
     }
 
     @Test

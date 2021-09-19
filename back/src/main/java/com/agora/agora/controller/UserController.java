@@ -49,17 +49,11 @@ public class UserController {
         }
 
     }
+
     @PostMapping(value = "/verify_user")
-    public ResponseEntity resetPassword(@Valid @RequestBody UserVerificationForm userVerificationToken) {
-        Optional<User> userOptional = userService.findByUserVerificationToken(userVerificationToken.getUserVerificationToken());
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setVerified(true);
-            user.setUserVerificationToken(null);
-            userService.justSave(user);
-            return ResponseEntity.ok(user.getName());
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity verifyUser(@Valid @RequestBody UserVerificationForm userVerificationToken) {
+        String name = userService.verifyUser(userVerificationToken.getUserVerificationToken());
+        return ResponseEntity.ok(name);
     }
 
     @GetMapping(value = "/me")
