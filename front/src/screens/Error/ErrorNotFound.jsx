@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Grid} from '@material-ui/core';
 import './ErrorNotFound.css'
-import GoBackButton from '../../Components/GoBackButton';
+import GoBackButton from '../../common/GoBackButton/GoBackButton.jsx';
 
 
 

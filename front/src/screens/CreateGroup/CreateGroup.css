@@ -1,35 +1,23 @@
-#container {
-    margin-top: 75px;
-    background: #F5F5F5;
-    opacity: 1;
-    display: flex;
-    height: 768px;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
+#creategroup-box-grid{
+    padding: 16px 10px 10px 16px;
 }
 
-.form-box {
+.creategroup-form-box{
     background: #FFFFFF;
-    position: absolute;
-    top: 90px;
-    left: 370px;
     width: 444px;
-    height: 590px;
+    height: 550px;
 }
 
-.title {
+.creategroup-title{
     text-align: left;
     color: #000000DE;
     opacity: 1;
     letter-spacing: 0.15px;
     font-family: Roboto, serif;
     font-size: 20px;
-    margin: 15px;
 }
 
-.subtitle {
+.creategroup-subtitle {
     color: #00000099;
     opacity: 1;
     font-size: 13px;
@@ -38,65 +26,27 @@
     font-style: normal;
     font-variant: normal;
     letter-spacing: 0.15px;
-    margin-left: 15px;
-    margin-top: 15px;
-    width: 356px;
+    margin-bottom: 15px;
 }
 
-
-#form-control {
-    width: 412px;
-    height: 56px;
-    margin-top: 41px;
-    margin-bottom: 10px;
-    margin-left: 15px;
-    border-radius: 4px;
-}
-
-#text-color {
+#creategroup-text-color {
     color: #C5B2A5;
 }
 
-#outlined-multiline-static {
-    width: 380px;
-}
-
-
-.form-description {
-    width: 412px;
-    height: 142px;
-    margin-left: 15px;
-    border-radius: 4px;
-}
-
-.selection-form {
-    margin-top: 11px;
-    margin-left: 15px;
-    width: 412px;
-    height: 56px;
-}
-
-#button-color {
+#creategroup-button-color {
     color: #C5B2A5;
-    position: absolute;
-    right: 20px;
-    bottom: 10px;
-
 }
 
-#warning-box {
+#creategroup-warning-box {
     background: #E8A5A5;
-    width: 410px;
     height: 54px;
-    position: absolute;
-    bottom: 60px;
-    left: 15px;
 }
 
-#warning-message {
+#creategroup-warning-message {
     padding-top: 15px;
     letter-spacing: 0.25px;
     color: #00000099;
     opacity: 1;
     font-size: 14px;
+    margin-left: 5px;
 }

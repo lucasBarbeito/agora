@@ -5,7 +5,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import EditIcon from '@material-ui/icons/Edit';
 import './Group.css';
 import Post from '../../Post';
-import GroupMembersAccordion from '../../Components/GroupMembersAccordion'
+import GroupMembersAccordion from '../../common/GroupMembersAccordion/GroupMembersAccordion.js'
 
 class Group extends Component {
 
