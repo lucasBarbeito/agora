@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"email","isVerified"}))
+    uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
 public class User implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
