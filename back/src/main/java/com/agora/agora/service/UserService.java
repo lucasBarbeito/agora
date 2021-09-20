@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -43,7 +44,6 @@ public class UserService {
     }
 
     public Optional<User> findByUserVerificationToken(String userVerificationToken) {
-        System.out.println(userVerificationToken);
         return userRepository.findByUserVerificationToken(userVerificationToken);
     }
 
@@ -51,5 +51,17 @@ public class UserService {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         return userRepository.findUserByEmail(email);
+    }
+
+    public String verifyUser(String userVerificationToken) {
+        Optional<User> userOptional = findByUserVerificationToken(userVerificationToken);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setVerified(true);
+            user.setUserVerificationToken(null);
+            userRepository.save(user);
+            return user.getName();
+        }
+        throw new NoSuchElementException();
     }
 }

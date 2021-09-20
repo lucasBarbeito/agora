@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Box, Button} from "@material-ui/core";
+import React, { Component } from 'react';
+import { Box, Button, Grid } from "@material-ui/core";
 import './CreateGroup.css';
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -7,7 +7,8 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
 import HomeMenu from '../../common/HomeMenu/HomeMenu';
-import {UserContext} from "../../user-context";
+import { UserContext } from "../../user-context";
+import HomeStructure from '../../common/HomeStructure/HomeStructure.js';
 
 class CreateGroup extends Component {
 
@@ -44,15 +45,15 @@ class CreateGroup extends Component {
                     errorMsg: 'Por favor ingrese una descripción'
                 })
             } else {
-                this.setState({createdUnsuccessfully: false})
+                this.setState({ createdUnsuccessfully: false })
                 let date = new Date();
-                const {token} = this.context;
+                const { token } = this.context;
                 try {
                     const response = await fetch('http://localhost:8080/studyGroup', {
                         method: 'POST',
                         body: JSON.stringify({
                             creationDate: date.toISOString(), //"2011-12-19T15:28:46.493Z"
-                            creatorId: 0, //
+                            creatorId: this.context.userInfo.id, //
                             description: this.state.description,
                             name: this.state.groupName,
                             //labels
@@ -67,8 +68,17 @@ class CreateGroup extends Component {
                             errorMsg: 'Grupo creado con nombre ya existente',
                             createdUnsuccessfully: true
                         })
-                    } else if (!response.ok && response.status !== 404) {
-                        throw new Error('Server Error');
+
+                    } else if (response.status === 404) {
+                        this.setState({
+                            errorMsg: 'Tu usuario no existe.',
+                            createdUnsuccessfully: true
+                        })
+                    } else if (!response.ok) {
+                        this.setState({
+                            errorMsg: 'Ha ocurrido un error.',
+                            createdUnsuccessfully: true
+                        })
                     } else {
                         this.props.history.push({
                             pathname: `/group/${0}`,
@@ -87,63 +97,82 @@ class CreateGroup extends Component {
             }
         }
         return (
-            <div id='container'>
-                <Box m={10} display="flex" flexDirection="row" p={1}>
-                    <HomeMenu history={this.props.history} />
-                    <Box className='form-box' boxShadow={2}>
-                        <h6 className='title'>
-                            Crear nuevo grupo de AGORA
-                        </h6>
-                        <div className='subtitle'>
-                            Crear un nuevo grupo dentro de AGORA para poder aprender con nuevos amigos!
-                        </div>
-                        <FormControl fullWidth variant="outlined" id='form-control'>
-                            <InputLabel htmlFor="outlined-adornment-amount">Nombre</InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment-amount"
-                                value={this.state.groupName}
-                                label='Nombre'
-                                labelWidth={60}
-                                onChange={(value) => this.setState({groupName: value.target.value})}
-                            />
-                        </FormControl>
-                        <div className='selection-form'>
-                            <Autocomplete
-                                multiple
-                                id="tags-outlined"
-                                options={labels}
-                                filterSelectedOptions
-                                onChange={(event, newValue) => {
-                                    this.setState({label: newValue});
-                                }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        variant="outlined"
-                                        label="Etiquetas"
-                                    />
-                                )}
-                            />
-                        </div>
-                        <div className='form-description'>
-                            <TextField
-                                id="outlined-multiline-static"
-                                label="Descripción"
-                                variant="outlined"
-                                multiline
-                                rows={6}
-                                onChange={(text) => this.setState({description: text.target.value})}
-                            />
-                        </div>
-                        {this.state.createdUnsuccessfully ?
-                            <Box id='warning-box'>
-                                <div id='warning-message'>{this.state.errorMsg}</div>
-                            </Box>
-                            : null}
-                        <Button id='button-color' onClick={createGroup}>CREAR GRUPO</Button>
-                    </Box>
+            <HomeStructure history={this.props.history}>
+                <Box className='creategroup-form-box' boxShadow={2}>
+                    <Grid container direction="column" id="creategroup-box-grid" spacing={1}>
+                        <Grid item >
+                            <h1 className='creategroup-title'>
+                                Crear nuevo grupo de AGORA
+                            </h1>
+                        </Grid>
+                        <Grid item >
+                            <div className='creategroup-subtitle'>
+                                Crear un nuevo grupo dentro de AGORA para poder aprender con nuevos amigos!
+                            </div>
+                        </Grid>
+                        <Grid item >
+                            <FormControl fullWidth variant="outlined" id='creategroup-form-control'>
+                                <InputLabel htmlFor="outlined-adornment-amount">Nombre</InputLabel>
+                                <OutlinedInput
+                                    id="creategroup-outlined-adornment-amount"
+                                    value={this.state.groupName}
+                                    label='Nombre'
+                                    labelWidth={60}
+                                    onChange={(value) => this.setState({ groupName: value.target.value })}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item >
+                            <div className='creategroup-selection-form'>
+                                <Autocomplete
+                                    multiple
+                                    id="creategroup-tags-outlined"
+                                    options={labels}
+                                    filterSelectedOptions
+                                    fullWidth
+                                    onChange={(event, newValue) => {
+                                        this.setState({ label: newValue });
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            fullWidth
+                                            variant="outlined"
+                                            label="Etiquetas"
+                                        />
+                                    )}
+                                />
+                            </div>
+                        </Grid>
+                        <Grid item >
+                            <div className='creategroup-form-description'>
+                                <TextField
+                                    id="creategroup-outlined-multiline-static"
+                                    label="Descripción"
+                                    variant="outlined"
+                                    multiline
+                                    fullWidth
+                                    rows={6}
+                                    onChange={(text) => this.setState({ description: text.target.value })}
+                                />
+                            </div>
+                        </Grid>
+                        <Grid item >
+                            {this.state.createdUnsuccessfully ?
+                                <Box id='creategroup-warning-box'>
+                                    <div id='creategroup-warning-message'>{this.state.errorMsg}</div>
+                                </Box>
+                                : null}
+                        </Grid>
+                        <Grid item container direction="row" justifyContent="flex-end">
+                            <Grid item >
+                                <Button id='creategroup-button-color' onClick={createGroup}>CREAR GRUPO</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
                 </Box>
-            </div>
+            </HomeStructure>
         );
     }
 }

@@ -72,25 +72,28 @@ class LoginPage extends Component {
     render() {
 
         return (
-            <div className='background'>
+            <div className='Agorabackground'>
                 <div>
-                    <Box className='form-box' boxShadow={2}>
-                        <h6 className='title'>Iniciar Sesión</h6>
-                        <div className='subtitle'>Ingresa los datos de tu cuenta. Si no tienes una, puedes
-                            crearla {' '}
-                            <span className="link" onClick={() => this.props.history.push("/register")}>aquí!</span>
+                    <Box className='login-page-form-box' boxShadow={2}>
+                        <div className= "login-page-header">
+                            <h2 className='login-page-title'>Iniciar Sesión</h2>
+                            <p className='login-page-subtitle'>
+                                <div>Ingresa los datos de tu cuenta. Si no tienes una, puedes</div>
+                                <div>crearla {' '} <span className="login-page-link" onClick={() => this.props.history.push("/register")}>aquí!</span></div>
+                            </p>
                         </div>
-                        <div className="form-description">
+                        <div className="login-page-form-description">
                             <TextField
-                                id='text-field'
+                                id='login-page-text-field'
                                 label="Correo electrónico"
                                 variant="outlined"
                                 onChange={(e) => this.setState({email: e.target.value})}
-                            />
+                                style = {{width: "96%" }}                      
+                                />
                         </div>
-                        <div className="form-description-pass">
-                            <FormControl variant="outlined" id='password-field'>
-                                <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
+                        <div className="login-page-form-description-pass">
+                            <FormControl style = {{width: "96%" }} variant="outlined" id='login-page-password-field'>
+                                <InputLabel htmlFor="outlined-adornment-password" >Contraseña</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-password-1"
                                     type={this.state.showPassword ? 'text' : 'password'}
@@ -112,19 +115,19 @@ class LoginPage extends Component {
                             </FormControl>
                         </div>
                         {this.state.unsuccessfulLogin ?
-                            <Box id='warning-box'>
-                                <div id='warning-message'>El correo electrónico no es válido</div>
+                            <Box id='login-page-warning-box'>
+                                <div id='login-page-warning-message'>El correo electrónico no es válido</div>
                             </Box>
                             : null}
                         {this.state.invalidInformation ?
-                            <Box id='warning-box'>
-                                <div id='warning-message'>{this.state.errorMsg}</div>
+                            <Box id='login-page-warning-box'>
+                                <div id='login-page-warning-message'>{this.state.errorMsg}</div>
                             </Box>
                             : null}
-                        <Button id="create-button" onClick={this.handleLogin}>Ingresar</Button>
+                        <Button id="login-page-create-button" onClick={this.handleLogin}>Ingresar</Button>
                     </Box>
                 </div>
-                <img src="agora-logo.png" className="agoraLogo" alt='Agora'/>
+                <img className="login-page-agoraLogo" alt='Agora' src="agora-logo.png"/>
             </div>
         );
     }

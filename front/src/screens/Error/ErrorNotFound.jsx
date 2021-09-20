@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {Button, Grid} from '@material-ui/core';
+import {Grid} from '@material-ui/core';
 import './ErrorNotFound.css'
-import GoBackButton from '../../Components/GoBackButton';
+import GoBackButton from '../../common/GoBackButton/GoBackButton.jsx';
 
 
 
@@ -15,22 +15,22 @@ export default class ErrorNotFound extends Component {
    
     render() {
         return (
-            <div className='background'>
-                <Grid container id='main-grid'>
+            <div className='Agorabackground'>
+                <Grid container id='error-not-found-main-grid'>
                     <Grid item xs={6}>
-                        <Grid container id="left-grid">
+                        <Grid container id="error-not-found-left-grid">
                             <Grid item xs={12}>
-                                <h1 className='welcomeText'>
+                                <h1 className='error-not-found-welcomeText'>
                                     <div>404</div>
                                     <div>NOT FOUND</div>
                                     </h1>
                             </Grid>
                             <Grid item xs={12}>
-                                <h1 className='descriptionText'>Lo lamentamos, pero no encontramos la </h1>
-                                <h1 className='descriptionText'>página que buscas.</h1>
+                                <h1 className='error-not-found-descriptionText'>Lo lamentamos, pero no encontramos la </h1>
+                                <h1 className='error-not-found-descriptionText'>página que buscas.</h1>
                             </Grid>
                             <Grid item xs={12}>
-                                <Grid container spacing={3} id="buttons-grid">
+                                <Grid container spacing={3} id="error-not-found-buttons-grid">
                                     <Grid item xs={3}>
                                         <GoBackButton history = {this.props.history}></GoBackButton>
                                     </Grid>
@@ -39,7 +39,7 @@ export default class ErrorNotFound extends Component {
                          </Grid>
                      </Grid>
                     <Grid item xs={6}>
-                        <img className="agoraLogo" alt ="AgoraLogo" src= 'agora-logo.png' >
+                        <img className="error-not-found-agoraLogo" alt ="AgoraLogo" src= '/agora-logo.png' >
                         </img>
                     </Grid>
                 </Grid>

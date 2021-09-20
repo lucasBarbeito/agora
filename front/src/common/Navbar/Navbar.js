@@ -3,14 +3,19 @@ import {AppBar, Chip, Container, Grid, IconButton, Toolbar, Typography} from '@m
 import './Navbar.css';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import { UserContext } from '../../user-context';
 
 class Navbar extends Component {
     constructor(props) {
         super(props);
     }
 
+    isLoggedIn(){
+        return !!this.context.token &&this.context.userInfo;
+    }
+
     goHome = () => {
-        this.props.history.push(this.props.loggedIn ? '/home' : '/')
+        this.props.history.push(this.isLoggedIn() ? '/home' : '/')
     }
 
     render() {
@@ -24,8 +29,7 @@ class Navbar extends Component {
                                 <img src={"/agora-logo.png"} alt="Logo" className="logo"
                                      onClick={this.goHome} />
                             </Grid>
-                            {
-                                this.props.loggedIn && <Grid item>
+                            {this.isLoggedIn() && <Grid item>
                                     <Grid container direction="row" alignItems="center">
                                         <Grid item xs={2}>
                                             <IconButton>
@@ -39,7 +43,7 @@ class Navbar extends Component {
                                                     avatar={<AccountCircleIcon/>}
                                                     label={
                                                         <Typography id="name">
-                                                            {this.props.name}
+                                                            {this.context.userInfo.name+' '+this.context.userInfo.surname}
                                                         </Typography>
                                                     }
                                                     clickable
@@ -57,5 +61,7 @@ class Navbar extends Component {
         )
     }
 }
+
+Navbar.contextType=UserContext;
 
 export default Navbar;

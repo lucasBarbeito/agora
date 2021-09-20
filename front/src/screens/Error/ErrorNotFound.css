@@ -1,14 +1,5 @@
-.welcomeText {
-    text-align: left;
-    font-size: 6.97vw;
-    font-family: "Roboto";
-    font-weight: 500;
-    letter-spacing: -0.105vw;
-    line-height: 8.125vw;
-    color: #E3E8E6;
-    margin-bottom: 0.52vw;
-  }
-  .welcomeText{
+
+  .error-not-found-welcomeText{
     text-align: left;
     font-size: 6.97vw;
     font-family: "Roboto";
@@ -19,7 +10,7 @@
     margin-bottom: 0.52vw;
   }
 
-  .descriptionText {
+  .error-not-found-descriptionText {
     text-align: left;
     font-size: 2.5vw;
     font-family: "Roboto";
@@ -29,20 +20,20 @@
     color: #E6E2D5;
   }
 
-#buttons-grid{
+#error-not-found-buttons-grid{
     margin-top: 2vw;
 }
 
-#left-grid{
+#error-not-found-left-grid{
     margin-left: 10.1vw;
 }
 
-#main-grid{
+#error-not-found-main-grid{
   position: absolute;
   margin-top: 5vh;
 }
 
-.agoraLogo{
+.error-not-found-agoraLogo{
   width: 32.4vw;
   margin-top: 2.6vw;
   margin-left:10.41vw;

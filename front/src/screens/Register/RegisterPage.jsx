@@ -210,107 +210,108 @@ export default class RegisterPage extends Component {
 
     render() {
         return (
-            <div className="background">
-                <div className="Container">
-                    <div className="Header">
-                        <h2 className="Title">Crear mi cuenta de AGORA</h2>
-                        <p className="Description">Ingresa los datos para crear una cuenta nueva. Si ya tienes una,
-                            puedes ingresar a AGORA {' '}
-                            <span className="AgoraLogIn" onClick={() => this.props.history.push("/login")}>aquí!</span>
-                        </p>
+            <div className="Agorabackground">
+        
+            <div className = "Register-Container">
+              <div className = "Header">
+                  <h2 className = "Title">Crear mi cuenta de AGORA</h2>
+                  <p className = "Description">
+                      <div>Ingresa los datos para crear una cuenta nueva. Si ya tienes una,</div>
+                      <div>puedes ingresar a AGORA {' '}
+                      <span className = "AgoraLogIn" onClick={() => this.props.history.push("/login")}>aquí!</span>
+                      </div>
+                  </p>
+               </div>
+               <div className = "Form">
+                   <div className =  "Form-First-Row" >
+                       <TextField 
+                        id="NameForm" 
+                        label="Nombre" 
+                        variant="outlined"
+                        onChange={(e) => this.setState({nombre: e.target.value})}
+                        style = {{width: "46%" }} 
+                        />
+                       <TextField
+                        id="LastNameForm" 
+                        label="Apellido" 
+                        variant="outlined"
+                        onChange={(e) => this.setState({apellido: e.target.value})}
+                        style = {{width: "46.8%", left: "11px" }} 
+                         />
+                   </div>
+                   <div className = "Email-Row">
+                       <TextField
+                        id = "emailField"
+                        label = "Correo electrónico"
+                        variant = "outlined"
+                        onChange={(e) => this.setState({email: e.target.value})}
+                        style = {{width: "95%" }} 
+                        />
+                        <TextField
+                        id = "confirmedEmailField"
+                        label = "Confirmar correo electrónico"
+                        variant = "outlined"
+                        onChange={(e) => this.setState({confirmedEmail: e.target.value})}
+                        style = {{width: "95%", top: '21px' }} 
+                        />
+                   </div>
+                   <div className =  "Password-Row">
+                       <FormControl   variant="outlined"  style = {{width: "46%" }}  >
+                           <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
+                           <OutlinedInput
+                            id="outlined-adornment-password-1"
+                            type={this.state.showPassword ? 'text' : 'password'}
+                           value= {this.state.password}
+                           onChange={(e) => this.setState({password: e.target.value})}
+                           endAdornment={
+                               <InputAdornment position="end">
+                                   <IconButton
+                                     aria-label="toggle password visibility"
+                                     onClick={() => this.handleClickShowPassword()}
+                                     // onMouseDown={() => this.handleMouseDownPassword()}
+                                     edge="end"
+                                       >
+                                      {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                                   </IconButton>
+                                </InputAdornment>
+                               }
+                               labelWidth={80}
+                               />
+                       </FormControl>
+   
+                       <FormControl   variant="outlined" style = {{width: "46.8%", left: "11px" }} >
+                           <InputLabel htmlFor="outlined-adornment-password">Confirmar Contraseña</InputLabel>
+                           <OutlinedInput
+                            id="outlined-adornment-password-2"
+                            type={this.state.showPassword ? 'text' : 'password'}
+                            value= {this.state.confirmedPassword}
+                            onChange={(e) => this.setState({confirmedPassword: e.target.value})}
+                            endAdornment={
+                               <InputAdornment position="end">
+                                   <IconButton
+                                     aria-label="toggle password visibility"
+                                     onClick={() => this.handleClickShowPassword()}
+                                     edge="end"
+                                       >
+                                      {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                                   </IconButton>
+                                </InputAdornment>
+                               }
+                               labelWidth={160}
+                           />
+                       </FormControl>
                     </div>
-                    <div className="Form">
-                        <div className="Form-First-Row">
-                            <TextField
-                                id="NameForm"
-                                label="Nombre"
-                                variant="outlined"
-                                onChange={(e) => this.setState({nombre: e.target.value})}
-                                style={{width: "198px"}}
-                            />
-                            <TextField
-                                id="LastNameForm"
-                                label="Apellido"
-                                variant="outlined"
-                                onChange={(e) => this.setState({apellido: e.target.value})}
-                                style={{width: "210px", left: "11px"}}
-                            />
-                        </div>
-                        <div className="Email-Row">
-                            <TextField
-                                id="emailField"
-                                label="Correo electrónico"
-                                variant="outlined"
-                                onChange={(e) => this.setState({email: e.target.value})}
-                                style={{width: "420px"}}
-                            />
-                            <TextField
-                                id="confirmedEmailField"
-                                label="Confirmar correo electrónico"
-                                variant="outlined"
-                                onChange={(e) => this.setState({confirmedEmail: e.target.value})}
-                                style={{width: "420px", top: '21px'}}
-                            />
-                        </div>
-                        <div className="Password-Row">
-                            <FormControl variant="outlined" style={{width: "188px"}}>
-                                <InputLabel htmlFor="outlined-adornment-password">Contraseña</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password-1"
-                                    type={this.state.showPassword ? 'text' : 'password'}
-                                    value={this.state.password}
-                                    onChange={(e) => this.setState({password: e.target.value})}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={() => this.handleClickShowPassword()}
-                                                // onMouseDown={() => this.handleMouseDownPassword()}
-                                                edge="end"
-                                            >
-                                                {this.state.showPassword ? <Visibility/> : <VisibilityOff/>}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    }
-                                    labelWidth={80}
-                                />
-                            </FormControl>
-
-                            <FormControl variant="outlined" style={{width: "220px", left: "11px"}}>
-                                <InputLabel htmlFor="outlined-adornment-password">Confirmar Contraseña</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password-2"
-                                    type={this.state.showPassword ? 'text' : 'password'}
-                                    value={this.state.confirmedPassword}
-                                    onChange={(e) => this.setState({confirmedPassword: e.target.value})}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={() => this.handleClickShowPassword()}
-                                                edge="end"
-                                            >
-                                                {this.state.showPassword ? <Visibility/> : <VisibilityOff/>}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    }
-                                    labelWidth={160}
-                                />
-                            </FormControl>
-                        </div>
-                        {this.state.showErrorMsg ?
-                            <div className="Errormsg">
-                                <p className="ErrorMsg__MSG">{this.state.errorMsg}</p>
-                            </div> : null
-                        }
-
-                        <button className="CreateAccountButton" onClick={() => this.handleCreateAccountClick()}>Crear mi
-                            Cuenta
-                        </button>
-                    </div>
-                </div>
-                <img src="/agora-logo.png" alt="AGORA" className="AgoraLogo"></img>
+                    { this.state.showErrorMsg ? 
+                        <div className = "Errormsg">
+                        <p className = "ErrorMsg__MSG">{this.state.errorMsg}</p> 
+                       </div> : null 
+                    }
+                   
+                    <button className = "CreateAccountButton" onClick = {() => this.handleCreateAccountClick()}>Crear mi Cuenta</button>
+               </div> 
             </div>
+            <img src = "/agora-logo.png" alt = "AGORA" className = "AgoraLogo"></img>
+           </div>
         )
     }
 }
