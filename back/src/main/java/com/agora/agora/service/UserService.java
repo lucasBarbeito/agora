@@ -13,16 +13,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
 
     private UserRepository userRepository;
+    private EmailService emailService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
+
 
     public int save(UserForm user) {
         User u = new User(user.getName(),
@@ -31,7 +35,11 @@ public class UserService {
                 BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()),
                 false,
                 UserType.USER);
+        u.setUserVerificationToken(UUID.randomUUID().toString());
         userRepository.save(u);
+        String url = "http://localhost:3000/user/verify-user/" + u.getUserVerificationToken();
+        String body = "Verifica tu usuario: \n" + url;
+        emailService.sendSimpleMessage(user.getEmail(), "Verificar usuario", body);
         return u.getId();
     }
 

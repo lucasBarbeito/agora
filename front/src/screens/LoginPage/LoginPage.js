@@ -25,6 +25,7 @@ class LoginPage extends Component {
     }
 
     handleLogin = async () => {
+        this.setState({errorMsg: '', invalidInformation: false, unsuccessfulLogin: false});
         const verificationEmail = this.validateEmail();
         if (verificationEmail) {
             try {
@@ -43,6 +44,8 @@ class LoginPage extends Component {
                     this.setState({errorMsg: 'Email o contraseña incorrectos', invalidInformation: true});
                 } else if (response.status === 403) {
                     this.setState({errorMsg: 'Confirme su email para iniciar sesión', invalidInformation: true})
+                } else if (response.status === 404) {
+                  this.setState({errorMsg: 'No existe un usuario con la información ingresada', invalidInformation: true})
                 } else if (!response.ok) {
                     this.setState({errorMsg: 'Ha ocurrido un error', invalidInformation: true})
                 } else {
