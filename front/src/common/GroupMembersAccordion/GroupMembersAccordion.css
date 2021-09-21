@@ -18,6 +18,10 @@
     margin-top: 0.6ch;
 }
 
+#accordion-details {
+  margin-top: -25px;
+}
+
 #member-contact-info{
     color: #00000099;
     font-family: "Roboto";
@@ -39,7 +43,11 @@
     box-shadow: none;
 }
 
-#remove-groupmember-button{
-    padding: 16px 9px 9px 0;
-    color: #E8A5A5;
+#kick-member-button-container {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+#kick-member-button {
+  color: #E8A5A5;
 }
