@@ -11,10 +11,39 @@ class Group extends Component {
 
   render() {
     const members = [
-      { name: "Manuel Pedrozo", email: "manuelpedrozo@gmail.com", phone: "11123456", instagram: "@manupedrozo" },
-      { name: "Tomás Pérez", email: "t.perez@gmail.com", phone: "1112345678", instagram: "@tomipedrozo" },
-      { name: "Matías Boracchia", email: "matiboracchia@gmail.com", phone: "1112345678", instagram: "@matiboracchia" },
-      { name: "Franco Velárdez", email: "franco.velardez@gmail.com", phone: "11 3346 3332", instagram: "@fvelardez" }
+      { name: "Manuel Pedrozo",
+        contacts: [
+          { type: 'email', value: "manuelpedrozo@gmail.com" },
+          { type: 'phone', value: "11123456" },
+        ],
+        isAdmin: true
+      },
+      { name: "Tomás Pérez",
+        contacts: [
+          { type: 'email', value: "t.perez@gmail.com" },
+          { type: 'phone', value: "1112345678" },
+          { type: 'twitter', value: "tomipedrozo" }
+        ],
+        isAdmin: false
+      },
+      { name: "Matías Boracchia",
+        contacts: [
+          { type: 'email', value: "matiboracchia@gmail.com" },
+          { type: 'phone', value: "1112345678" },
+          { type: 'instagram', value: "matiboracchia" },
+        ],
+        isAdmin: false
+      },
+      { name: "Franco Velárdez", 
+        contacts: [
+          { type: 'email', value: "franco.velardeeeeeez@gmail.com" },
+          { type: 'phone', value: "11123456" },
+          { type: 'instagram', value: "fvelardez" },
+          { type: 'twitter', value: "fvelardez" },
+          { type: 'facebook', value: 'fvelardez'}
+        ],
+        isAdmin: false
+      }
     ]
     return (
       <div className="main-div">
@@ -97,7 +126,7 @@ class Group extends Component {
                   </Button>
                 </Grid>
                 <Grid item>
-                  <GroupMembersAccordion data={members} admin={true} />
+                  <GroupMembersAccordion members={members} isAdmin={true} />
                 </Grid>
               </Grid>
             </Grid>
