@@ -6,6 +6,7 @@ import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
 import org.junit.Test;
@@ -36,6 +37,8 @@ public class StudyGroupCreationTest {
     JacksonTester<StudyGroupDTO> jsonU;
     @Autowired
     JacksonTester<FullStudyGroupDTO> jsonFullDTO;
+    @Autowired
+    JacksonTester<EditStudyGroupForm> jsonEditForm;
 
     @Test
     public void testStudyGroupFormSerialization() throws Exception {
@@ -168,5 +171,37 @@ public class StudyGroupCreationTest {
         String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
+    }
+
+    @Test
+    public void testEditStudyGroupFormSerialization() throws IOException {
+        EditStudyGroupForm form = new EditStudyGroupForm("Lord of the rings", "...");
+
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\"}";
+
+        assertEquals(expectedJson, jsonEditForm.write(form).getJson());
+    }
+
+    @Test
+    public void testEditStudyGroupFormDeserialization() throws Exception {
+        EditStudyGroupForm form = new EditStudyGroupForm("Lord of the rings", "...");
+
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\"}";
+
+        EditStudyGroupForm userFormObtained = jsonEditForm.parse(expectedJson).getObject();
+
+        assertEquals(form.getName(),userFormObtained.getName());
+        assertEquals(form.getDescription(),userFormObtained.getDescription());
+    }
+
+    @Test
+    public void testEditStudyGroupFormSetSerialization() throws IOException {
+        EditStudyGroupForm form = new EditStudyGroupForm();
+        form.setName("Lord of the rings");
+        form.setDescription("...");
+
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\"}";
+
+        assertEquals(expectedJson, jsonEditForm.write(form).getJson());
     }
 }

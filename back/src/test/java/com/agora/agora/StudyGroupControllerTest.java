@@ -7,6 +7,7 @@ import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.StudyGroupRepository;
@@ -401,6 +402,60 @@ public class StudyGroupControllerTest extends AbstractTest{
         }
     }
 
+    @Test
+    @WithMockUser("USER")
+    public void modifyStudyGroupByIdShouldModifyIt() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
 
+        String uri = "/studyGroup";
 
+        EditStudyGroupForm groupForm = new EditStudyGroupForm();
+        String descriptionModify = "...2";
+        String nameModify = "Dune 2";
+        groupForm.setDescription(descriptionModify);
+        groupForm.setName(nameModify);
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.put(uri + "/" + studyGroupOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+
+        int statusPut = mvcResult.getResponse().getStatus();
+        assertEquals(204, statusPut);
+
+        MvcResult modifiedResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroupOptional.get().getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = modifiedResult.getResponse().getStatus();
+        assertEquals(200, status);
+
+        String modifiedStatus = modifiedResult.getResponse().getContentAsString();
+        FullStudyGroupDTO gottenStudyGroup = super.mapFromJson(modifiedStatus, FullStudyGroupDTO.class);
+
+        assertEquals(descriptionModify, gottenStudyGroup.getDescription());
+        assertEquals(nameModify, gottenStudyGroup.getName());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void modifyStudyGroupWithWrongIdShouldReturnNotFound() throws Exception {
+
+        String uri = "/studyGroup";
+
+        EditStudyGroupForm groupForm = new EditStudyGroupForm();
+        String descriptionModify = "...2";
+        String nameModify = "Dune 2";
+        groupForm.setDescription(descriptionModify);
+        groupForm.setName(nameModify);
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.put(uri + "/" + -1)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+
+        int statusPut = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusPut);
+    }
 }

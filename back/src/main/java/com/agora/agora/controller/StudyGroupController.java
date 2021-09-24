@@ -5,6 +5,7 @@ import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.service.StudyGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +64,10 @@ public class StudyGroupController {
     public ResponseEntity addUserToStudyGroup(@PathVariable("id") int studyGroupId, @PathVariable("userId") int userId){
         groupService.addUserToStudyGroup(studyGroupId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity modifyStudyGroupById(@PathVariable("id") int id, @Valid @RequestBody EditStudyGroupForm editGroupForm) {
+        return groupService.update(id, editGroupForm) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
