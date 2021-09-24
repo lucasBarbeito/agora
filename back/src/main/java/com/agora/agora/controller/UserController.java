@@ -44,4 +44,11 @@ public class UserController {
         final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
         return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity getUserById(@PathVariable("id") int id) {
+        final Optional<User> optional = userService.findById(id);
+        final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
+        return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }

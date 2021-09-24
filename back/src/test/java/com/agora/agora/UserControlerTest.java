@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -174,5 +176,35 @@ public class UserControlerTest extends AbstractTest{
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void getUserByIdShouldReturnUser() throws Exception {
+       int userId = data.user.getId();
+        String uri = "/user/"+userId;
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO userDTO = super.mapFromJson(status, FullUserDTO.class);
+
+        assertEquals(userDTO.getId(), data.user.getId());
+        assertEquals(userDTO.getEmail(), data.user.getEmail());
+        assertEquals(userDTO.getName(), data.user.getName());
+        assertEquals(userDTO.getSurname(), data.user.getSurname());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void getUserByIdShouldFailIfNotFound() throws Exception {
+        String uri = "/user/-1";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
     }
 }
