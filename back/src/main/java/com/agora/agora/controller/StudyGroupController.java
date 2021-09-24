@@ -70,4 +70,10 @@ public class StudyGroupController {
     public ResponseEntity modifyStudyGroupById(@PathVariable("id") int id, @Valid @RequestBody EditStudyGroupForm editGroupForm) {
         return groupService.update(id, editGroupForm) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping(value = "/{id}/me")
+    public ResponseEntity leaveGroup(@PathVariable("id") int groupId) {
+        groupService.removeCurrentUserFromStudyGroup(groupId);
+        return ResponseEntity.noContent().build();
+    }
 }

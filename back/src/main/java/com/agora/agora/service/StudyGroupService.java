@@ -1,5 +1,6 @@
 package com.agora.agora.service;
 
+import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
@@ -10,6 +11,7 @@ import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -95,5 +97,30 @@ public class StudyGroupService {
         return false;
     }
 
+    public void removeCurrentUserFromStudyGroup(int groupId) {
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> userOptional = userRepository.findUserByEmail(email);
+        Optional<StudyGroup> groupOptional = groupRepository.findById(groupId);
 
+        if (groupOptional.isPresent()) {
+            if (userOptional.isPresent()) {
+                Optional<StudyGroupUser> studyGroupUserOptional = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(groupOptional.get().getId(), userOptional.get().getId());
+
+                if (studyGroupUserOptional.isPresent()) {
+                    if (studyGroupUserOptional.get().getUser().getId() != groupOptional.get().getCreator().getId()) {
+                        studyGroupUsersRepository.delete(studyGroupUserOptional.get());
+                    } else {
+                        throw new ForbiddenElementException("Group creator cannot leave a group");
+                    }
+                } else {
+                    throw new NoSuchElementException("User does not belong to study group.");
+                }
+            }else{
+                throw new NoSuchElementException("User does not exist");
+            }
+        }else {
+            throw new NoSuchElementException("Group does not exist");
+        }
+    }
 }
