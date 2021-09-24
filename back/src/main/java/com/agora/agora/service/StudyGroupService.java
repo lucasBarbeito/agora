@@ -49,7 +49,10 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public List<StudyGroup> findAll() {
+    public List<StudyGroup> findStudyGroups(Optional<String> text) {
+        if (text.isPresent()) {
+            return studyGroupUsersRepository.findByNameOrDescription(text.get());
+        }
         return groupRepository.findAll();
     }
 

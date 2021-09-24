@@ -175,14 +175,14 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("USER")
     public void findAllStudyGroupsReturnsReturnsAmountExpected() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups();
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.empty());
         assertEquals(2,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("USER")
     public void findAllStudyGroupsHasExpectedValues() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups();
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.empty());
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group1.getName());
         expectedStudyGroupsNames.add(data.group2.getName());
@@ -321,5 +321,51 @@ public class StudyGroupControllerTest extends AbstractTest{
         int statusCode = mvcResult.getResponse().getStatus();
         assertEquals(401, statusCode);
     }
+
+    @Test
+    @WithMockUser("USER")
+    public void findStudyGroupByExistingNameShouldReturnValues(){
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of("Dune"));
+        assertEquals(1,allStudyGroups.size());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void findStudyGroupByExistingDescriptionShouldReturnValues(){
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of("."));
+        assertEquals(2,allStudyGroups.size());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void findStudyGroupByNonExistingDescriptionShouldReturnNothing(){
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of(("No hay un grupo con esto")));
+        assertEquals(0,allStudyGroups.size());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void findStudyGroupByDescriptionHasExpectedValues() {
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of((".")));
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        expectedStudyGroupsNames.add(data.group2.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void findStudyGroupByNameHasExpectedValue() {
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of(("Dune")));
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group2.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
+
 
 }

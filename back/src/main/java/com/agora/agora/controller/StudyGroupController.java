@@ -2,13 +2,10 @@ package com.agora.agora.controller;
 
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
-import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.StudyGroupForm;
-import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.service.StudyGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,15 +35,9 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public List<StudyGroupDTO> getAllStudyGroups() {
-        List<StudyGroup> studyGroups = groupService.findAll();
-        List<StudyGroupDTO> studyGroupRespons = new ArrayList<>();
-
-        for (StudyGroup studyGroup : studyGroups) {
-            StudyGroupDTO groupForm = new StudyGroupDTO(studyGroup.getId(),studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
-            studyGroupRespons.add(groupForm);
-        }
-        return studyGroupRespons;
+    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
+        List<StudyGroup> studyGroups = groupService.findStudyGroups(text);
+        return fromStudyGroupToStudyGroupDTO(studyGroups);
     }
 
     @GetMapping(value = "/{id}")
@@ -56,6 +47,16 @@ public class StudyGroupController {
         final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
         final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs));
         return studyGroupDTOOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    private List<StudyGroupDTO> fromStudyGroupToStudyGroupDTO(List<StudyGroup> studyGroups) {
+        List<StudyGroupDTO> studyGroupResponse = new ArrayList<>();
+
+        for (StudyGroup studyGroup : studyGroups) {
+            StudyGroupDTO groupForm = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+            studyGroupResponse.add(groupForm);
+        }
+        return studyGroupResponse;
     }
 
     @PostMapping(value = "/{id}/{userId}")
