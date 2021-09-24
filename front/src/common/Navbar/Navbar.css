@@ -1,23 +1,23 @@
 #appbar {
-  background-color: #E6E2D5;
+    background-color: #e6e2d5;
 }
 
 .logo {
-  margin: 12px 0px;
-  width: 56px;
-  height: 56px;
-  border: 4px solid var(#C5B2A5);
-  background: transparent 0% 0% no-repeat padding-box;
-  border: 4px solid #C5B2A5;
-  opacity: 1;
-  cursor: pointer
+    margin: 12px 0px;
+    width: 56px;
+    height: 56px;
+    border: 4px solid var(#c5b2a5);
+    background: transparent 0% 0% no-repeat padding-box;
+    border: 4px solid #c5b2a5;
+    opacity: 1;
+    cursor: pointer;
 }
 
 #chip {
-  background-color: #E6E2D5;
+    background-color: #e6e2d5;
 }
 
 #name {
-  color: #000000;
-  font-weight: 500;
+    color: #000000;
+    font-weight: 500;
 }

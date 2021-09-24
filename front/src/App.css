@@ -1,24 +1,10 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
-.Agorabackground{
+.Agorabackground {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        url("./background.png");
 
-  background-image: 
-  linear-gradient(
-    rgba(0, 0, 0, 0.45), 
-    rgba(0, 0, 0, 0.45)
-  ),url('./background.png');
-  
-  background-size: cover;
-  height: calc(100vh - 64px);
+    background-size: cover;
+    height: calc(100vh - 64px);
 }
-
-
-
-
-
-
-
-
-
-

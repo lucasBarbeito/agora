@@ -1,21 +1,21 @@
 .link {
-  display: flex;
-  flex-direction: row;
-  width: 237px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+    display: flex;
+    flex-direction: row;
+    width: 237px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 #icon {
-  width: 10%;
-  margin-right: 10px;
-  color: #C5B2A5;
+    width: 10%;
+    margin-right: 10px;
+    color: #c5b2a5;
 }
 
 #value {
-  width: 80%;
-  color: #00000099;
+    width: 80%;
+    color: #00000099;
 }

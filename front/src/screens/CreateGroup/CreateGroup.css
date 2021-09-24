@@ -1,16 +1,16 @@
-#creategroup-box-grid{
+#creategroup-box-grid {
     padding: 16px 10px 10px 16px;
 }
 
-.creategroup-form-box{
-    background: #FFFFFF;
+.creategroup-form-box {
+    background: #ffffff;
     width: 444px;
     height: 550px;
 }
 
-.creategroup-title{
+.creategroup-title {
     text-align: left;
-    color: #000000DE;
+    color: #000000de;
     opacity: 1;
     letter-spacing: 0.15px;
     font-family: Roboto, serif;
@@ -30,15 +30,15 @@
 }
 
 #creategroup-text-color {
-    color: #C5B2A5;
+    color: #c5b2a5;
 }
 
 #creategroup-button-color {
-    color: #C5B2A5;
+    color: #c5b2a5;
 }
 
 #creategroup-warning-box {
-    background: #E8A5A5;
+    background: #e8a5a5;
     height: 54px;
 }
 
