@@ -118,6 +118,41 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("USER")
+    public void createNewStudyGroupShouldReturnCreatedAndItsUserListShouldHaveCreatorInIt() throws Exception {
+        String uri = "/studyGroup";
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+
+        Optional<StudyGroup> studyGroup = groupRepository.findByName("Testgroup");
+
+        MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroup.get().getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int statusGetCode = mvcGETResult.getResponse().getStatus();
+        assertEquals(200, statusGetCode);
+
+
+        String getStatus = mvcGETResult.getResponse().getContentAsString();
+        FullStudyGroupDTO gottenStudyGroup = super.mapFromJson(getStatus, FullStudyGroupDTO.class);
+
+        //StudyGroup Check
+        assertEquals(gottenStudyGroup.getId(), studyGroup.get().getId());
+        assertEquals(gottenStudyGroup.getCreationDate(), studyGroup.get().getCreationDate());
+        assertEquals(gottenStudyGroup.getDescription(), studyGroup.get().getDescription());
+
+        //User in StudyGroup Check
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getId(), data.user1.getId());
+        assertEquals(gottenStudyGroup.getUserContacts().get(0).getEmail(), data.user1.getEmail());
+    }
+
+    @Test
+    @WithMockUser("USER")
     public void findStudyGroupAndReturnItsInfo() throws Exception {
         String uri = "/studyGroup";
 

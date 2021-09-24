@@ -39,9 +39,12 @@ public class StudyGroupService {
         }
         //TODO: find by label
 
-
         StudyGroup group = new StudyGroup(studyGroup.getName(), studyGroup.getDescription(), studyGroupCreator, studyGroup.getCreationDate());
         groupRepository.save(group);
+
+        StudyGroupUser studyGroupUser = new StudyGroupUser(studyGroupCreator, group);
+        studyGroupUsersRepository.save(studyGroupUser);
+
         return group.getId();
     }
 
