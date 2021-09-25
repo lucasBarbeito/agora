@@ -123,4 +123,8 @@ public class StudyGroupService {
             throw new NoSuchElementException("Group does not exist");
         }
     }
+
+    public String getInviteLink(int id) {
+        return "http://localhost:3000/studyGroup/"+id;
+    }
 }

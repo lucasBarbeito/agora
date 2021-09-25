@@ -76,4 +76,9 @@ public class StudyGroupController {
         groupService.removeCurrentUserFromStudyGroup(groupId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(value = "/{id}/inviteLink")
+    public String getLinkToStudyGroupPage(@PathVariable("id") int studyGroupId){
+        return groupService.getInviteLink(studyGroupId);
+    }
 }

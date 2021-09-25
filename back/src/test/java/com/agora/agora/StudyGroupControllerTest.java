@@ -5,6 +5,7 @@ import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
+import com.agora.agora.model.dto.FullUserDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
@@ -585,4 +586,20 @@ public class StudyGroupControllerTest extends AbstractTest{
         int statusPut = mvcResult.getResponse().getStatus();
         assertEquals(404, statusPut);
     }
+    @Test
+    @WithMockUser("USER")
+    public void gettingLinkToStudyGrouPageShouldReturnLink() throws Exception {
+        int groupId = data.group1.getId();
+        String uri = "/studyGroup/" + groupId + "/inviteLink";
+        String expectedLink = "http://localhost:3000/studyGroup/" + groupId;
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String link = mvcResult.getResponse().getContentAsString();
+
+        assertEquals(link, expectedLink);
+    }
+
 }
