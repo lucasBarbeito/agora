@@ -11,15 +11,22 @@ import { UserContext } from "../../user-context";
 
 class Group extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isFetching: true,
+    }
+  }
+
   getInvitationLink() {
     const groupId = this.props.match.params.id;
     navigator.clipboard.writeText(`ID de grupo: ${groupId}`);
   }
   componentDidMount() {
-    this.addUserToGroupIfNotAMember()
+    this.fetchGroupInformation()
   }
 
-  async addUserToGroupIfNotAMember() {
+  async fetchGroupInformation() {
     const groupId = this.props.match.params.id;
     try {
       const response = await fetch(`http://localhost:8080/studyGroup/${groupId}`, {
@@ -29,7 +36,17 @@ class Group extends Component {
         },
       })
       const res = await response.json()
+      this.setState({
+        name: res.name,
+        creationDate: res.creationDate,
+        description: res.description
+      })
       const userInGroup = res.userContacts.find(item => item.id === this.context.userInfo.id)
+      const creator = await this.getUserData(res.creatorId)
+      this.setState({
+        creatorName: creator.name,
+        isFetching: false
+      })
 
       if (!userInGroup) {
         await this.addUserToGroup(groupId);
@@ -53,6 +70,17 @@ class Group extends Component {
     } catch (e) {
       alert('Error, no es posible conectarse al back-end');
     }
+  }
+
+  async getUserData(id){
+    const response =  await fetch(`http://localhost:8080/user/${id}`,{
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        'Authorization': `Bearer ${this.context.token}`
+      },
+    })
+    return await response.json()
   }
 
   render() {
@@ -101,7 +129,6 @@ class Group extends Component {
           <Grid container spacing={2}>
             <Grid container item xs={3}>
               <Grid container direction="column" spacing={2}>
-
                 <Grid item>
                   <Button fullWidth id="back-button" variant="contained" color="primary"
                     onClick={() => this.props.history.goBack()}>
@@ -121,13 +148,12 @@ class Group extends Component {
                       </Grid>}
 
                       <Grid item xs={9} id="group-name-grid">
-                        <Typography id="group-name" variant="h5">Nombre de grupo</Typography>
-                        <Typography id="group-creation">Creado el 10/08/2021
-                          por {'User name'}</Typography>
+                        <Typography id="group-name" variant="h5">{!this.state.isFetching && this.state.name}</Typography>
+                        <Typography id="group-creation">Creado el {!this.state.isFetching && this.state.creationDate} por {!this.state.isFetching && this.state.creatorName}</Typography>
                       </Grid>
                     </Grid>
                     <Divider />
-                    <Typography id="group-description">Esta es una descripcion</Typography>
+                    <Typography id="group-description">{!this.state.isFetching && this.state.description}</Typography>
                     <Grid container justifyContent="flex-end">
                       <Button id="abandon-group-button" onClick={() => {/*TODO*/
                       }}>{this.props.admin ? "ELIMINAR GRUPO" : "ABANDONAR GRUPO"}</Button>
