@@ -25,31 +25,31 @@ class GroupMembersAccordion extends Component {
     render() {
       return(
         <> {
-          this.props.members.map((member, index) => (
-            <Accordion id="members-accordion" key={index} >
+          this.props.memberContacts.map((member, index) => (
+             <Accordion id="members-accordion" key={index} >
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon/>}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
                 <Typography id="member-name-typography">{ member.name }</Typography>
-                { member.isAdmin && <Typography id="admin-typography"> admin </Typography> }
+                { this.props.creatorId == member.id && <Typography id="admin-typography"> admin </Typography> }
               </AccordionSummary>
               <AccordionDetails id="accordion-details">
                 <Box>
                   <MenuList>
                     {
-                      member.contacts.map((contact, index) => (
+                      Object.keys(member).slice(2).map((contactType, index) => (
                         <MemberContact 
                           key={index} 
-                          type={contact.type}
-                          value={contact.value}  
+                          type={contactType}
+                          value={member[contactType]}  
                         />
                       ))
                     }
                   </MenuList>
                   {
-                    this.props.isAdmin && 
+                    !(this.props.creatorId == member.id) && 
                     <Box id="kick-member-button-container">
                       <Button 
                         id="kick-member-button"

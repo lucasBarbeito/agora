@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
 import { 
-  Button,
+  Button, 
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider, 
+  Divider,
   Grid, 
+  IconButton, 
   Paper, 
   Typography, 
-  IconButton, 
-  TextField, 
-  Container
+  TextField,  
 } from "@material-ui/core";
 import LinkIcon from '@material-ui/icons/Link';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import EditIcon from '@material-ui/icons/Edit';
 import './Group.css';
 import Post from '../../Post';
-import GroupMembersAccordion from '../../common/GroupMembersAccordion/GroupMembersAccordion.js'
+import GroupMembersAccordion from '../../common/GroupMembersAccordion/GroupMembersAccordion.js';
 import { UserContext } from "../../user-context";
 import { withRouter } from "react-router-dom";
 
@@ -29,7 +29,11 @@ class Group extends Component {
     super(props);
     this.state = {
       confirmationDialogIsOpen: false,
-      isFetching: true
+      isFetching: true,
+      groupName: '',
+      creationDate: '',
+      description: '',
+      creatorName: '',
     }
   }
 
@@ -41,7 +45,6 @@ class Group extends Component {
     this.props.history.push('/home');
   }
   
-
   getInvitationLink() {
     const groupId = this.props.match.params.id;
     navigator.clipboard.writeText(`ID de grupo: ${groupId}`);
@@ -53,29 +56,26 @@ class Group extends Component {
   async fetchGroupInformation() {
     const groupId = this.props.match.params.id;
     try {
-      const response = await fetch(`http://localhost:8080/studyGroup/${groupId}`, {
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-          'Authorization': `Bearer ${this.context.token}`
-        },
-      })
-      const res = await response.json()
-      this.setState({
-        name: res.name,
-        creationDate: res.creationDate,
-        description: res.description
-      })
-      const userInGroup = res.userContacts.find(item => item.id === this.context.userInfo.id)
-      const creator = await this.getUserData(res.creatorId)
-      this.setState({
-        creatorName: creator.name,
-        isFetching: false
-      })
+      let res = await this.getGroupData(groupId);
 
+      const userInGroup = res.userContacts.find(item => item.id === this.context.userInfo.id);
       if (!userInGroup) {
         await this.addUserToGroup(groupId);
+        res = await this.getGroupData(groupId);
       }
+      
+      const creator = await this.getUserData(res.creatorId);
 
+      this.setState({
+        groupName: res.name,
+        creationDate: res.creationDate,
+        description: res.description,
+        userContacts: res.userContacts,
+        isFetching: false,
+        creatorName: creator.name,
+        creatorId: res.creatorId,
+        isAdmin: res.creatorId === this.context.userInfo.id
+      })
     } catch (e) {
       alert('Error, no es posible conectarse al back-end');
     }
@@ -107,48 +107,17 @@ class Group extends Component {
     return await response.json()
   }
 
+  async getGroupData(groupId) {
+    const response = await fetch(`http://localhost:8080/studyGroup/${groupId}`, {
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        'Authorization': `Bearer ${this.context.token}`
+      },
+    })
+    return response.json();
+  }
+
   render() {
-
-    const members = [
-      {
-        name: "Manuel Pedrozo",
-        contacts: [
-          { type: 'email', value: "manuelpedrozo@gmail.com" },
-          { type: 'phone', value: "11123456" },
-        ],
-        isAdmin: true
-      },
-      {
-        name: "Tomás Pérez",
-        contacts: [
-          { type: 'email', value: "t.perez@gmail.com" },
-          { type: 'phone', value: "1112345678" },
-          { type: 'twitter', value: "tomipedrozo" }
-        ],
-        isAdmin: false
-      },
-      {
-        name: "Matías Boracchia",
-        contacts: [
-          { type: 'email', value: "matiboracchia@gmail.com" },
-          { type: 'phone', value: "1112345678" },
-          { type: 'instagram', value: "matiboracchia" },
-        ],
-        isAdmin: false
-      },
-      {
-        name: "Franco Velárdez",
-        contacts: [
-          { type: 'email', value: "franco.velardeeeeeez@gmail.com" },
-          { type: 'phone', value: "11123456" },
-          { type: 'instagram', value: "fvelardez" },
-          { type: 'twitter', value: "fvelardez" },
-          { type: 'facebook', value: 'fvelardez' }
-        ],
-        isAdmin: false
-      }
-    ]
-
     return (
       <div className="main-div">
         <Container id="main-container" maxWidth="lg">
@@ -166,7 +135,7 @@ class Group extends Component {
                 <Grid item>
                   <Paper>
                     <Grid container>
-                      {this.props.admin && <Grid item id="edit-group-grid" xs={1}>
+                      {this.state.isAdmin && <Grid item id="edit-group-grid" xs={1}>
                         <IconButton onClick={() => {/*TODO*/
                         }}>
                           <EditIcon id="edit-icon" />
@@ -174,7 +143,7 @@ class Group extends Component {
                       </Grid>}
 
                       <Grid item xs={9} id="group-name-grid">
-                        <Typography id="group-name" variant="h5">{!this.state.isFetching && this.state.name}</Typography>
+                        <Typography id="group-name" variant="h5">{!this.state.isFetching && this.state.groupName}</Typography>
                         <Typography id="group-creation">Creado el {!this.state.isFetching && this.state.creationDate} por {!this.state.isFetching && this.state.creatorName}</Typography>
                       </Grid>
                     </Grid>
@@ -182,24 +151,24 @@ class Group extends Component {
                     <Typography id="group-description">{!this.state.isFetching && this.state.description}</Typography>
                     <Grid container justifyContent="flex-end">
                       <Button id="action-group-button" onClick={() => this.setState({confirmationDialogIsOpen: true})} >
-                        {`${this.props.admin ? "ELIMINAR" : "ABANDONAR"} GRUPO`}
+                        {`${this.state.isAdmin ? "ELIMINAR" : "ABANDONAR"} GRUPO`}
                       </Button>
                       <Dialog
                         open={this.state.confirmationDialogIsOpen}
                         onClose={() => this.setState({confirmationDialogIsOpen: false})}
                       >
                         <DialogTitle>
-                          { `${this.props.admin ? "Eliminar" : "Abandonar"} grupo?` }
+                          { `${this.state.isAdmin ? "Eliminar" : "Abandonar"} grupo?` }
                         </DialogTitle>
                         <DialogContent>
                           <DialogContentText>
-                            { `Estas seguro de que deseas ${this.props.admin ? "eliminar" : "abandonar"} este grupo?`}
+                            { `Estas seguro de que deseas ${this.state.isAdmin ? "eliminar" : "abandonar"} este grupo?`}
                           </DialogContentText>
                         </DialogContent>
                         <DialogActions>
                           <Button onClick={() => this.setState({confirmationDialogIsOpen: false})}>Cancelar</Button>
-                          <Button onClick={this.props.admin ? () => this.deleteGroup() : () => this.abandonGroup()} autoFocus>
-                            { this.props.admin ? "Eliminar" : "Abandonar"}
+                          <Button onClick={this.state.isAdmin ? () => this.deleteGroup() : () => this.abandonGroup()} autoFocus>
+                            { this.state.isAdmin ? "Eliminar" : "Abandonar"}
                           </Button>
                         </DialogActions>
                       </Dialog>
@@ -257,7 +226,12 @@ class Group extends Component {
                   </Button>
                 </Grid>
                 <Grid item>
-                  <GroupMembersAccordion members={members} isAdmin={true} />
+                  { !this.state.isFetching &&
+                    <GroupMembersAccordion 
+                      memberContacts={this.state.userContacts} 
+                      creatorId={this.state.creatorId} 
+                    />
+                  }
                 </Grid>
               </Grid>
             </Grid>

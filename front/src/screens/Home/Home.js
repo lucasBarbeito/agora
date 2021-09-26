@@ -1,13 +1,11 @@
 import { Component } from 'react';
-import { Container, Grid, IconButton, TextField } from '@material-ui/core';
+import { Grid, IconButton, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import './Home.css';
 import GroupCard from '../../common/GroupCard/GroupCard';
 import HomeStructure from '../../common/HomeStructure/HomeStructure.js';
 import { UserContext } from '../../user-context';
-
-
 
 const tags = ['Etiqueta 1', 'Etiqueta con mucho texto', 'Etiqueta 3'];
 
