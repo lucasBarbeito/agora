@@ -1,16 +1,20 @@
 package com.agora.agora.service;
 
+import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
+import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,9 +43,12 @@ public class StudyGroupService {
         }
         //TODO: find by label
 
-
         StudyGroup group = new StudyGroup(studyGroup.getName(), studyGroup.getDescription(), studyGroupCreator, studyGroup.getCreationDate());
         groupRepository.save(group);
+
+        StudyGroupUser studyGroupUser = new StudyGroupUser(studyGroupCreator, group);
+        studyGroupUsersRepository.save(studyGroupUser);
+
         return group.getId();
     }
 
@@ -49,7 +56,10 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public List<StudyGroup> findAll() {
+    public List<StudyGroup> findStudyGroups(Optional<String> text) {
+        if (text.isPresent()) {
+            return studyGroupUsersRepository.findByNameOrDescription(text.get());
+        }
         return groupRepository.findAll();
     }
 
@@ -72,5 +82,49 @@ public class StudyGroupService {
 
     public List<StudyGroupUser> findUsersInStudyGroup(int studyGroupId){
         return studyGroupUsersRepository.findStudyGroupUserByStudyGroupId(studyGroupId);
+    }
+
+    public boolean update(int id, EditStudyGroupForm editGroupForm) {
+        final Optional<StudyGroup> groupId = groupRepository.findById(id);
+        if (groupId.isPresent()) {
+            StudyGroup studyGroup = groupId.get();
+            studyGroup.setName(editGroupForm.getName());
+            studyGroup.setDescription(editGroupForm.getDescription());
+            // TODO: Agregar la modificacion de Labels cuando esten diponibles!!
+            groupRepository.save(studyGroup);
+            return true;
+        }
+        return false;
+    }
+
+    public void removeCurrentUserFromStudyGroup(int groupId) {
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> userOptional = userRepository.findUserByEmail(email);
+        Optional<StudyGroup> groupOptional = groupRepository.findById(groupId);
+
+        if (groupOptional.isPresent()) {
+            if (userOptional.isPresent()) {
+                Optional<StudyGroupUser> studyGroupUserOptional = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(groupOptional.get().getId(), userOptional.get().getId());
+
+                if (studyGroupUserOptional.isPresent()) {
+                    if (studyGroupUserOptional.get().getUser().getId() != groupOptional.get().getCreator().getId()) {
+                        studyGroupUsersRepository.delete(studyGroupUserOptional.get());
+                    } else {
+                        throw new ForbiddenElementException("Group creator cannot leave a group");
+                    }
+                } else {
+                    throw new NoSuchElementException("User does not belong to study group.");
+                }
+            }else{
+                throw new NoSuchElementException("User does not exist");
+            }
+        }else {
+            throw new NoSuchElementException("Group does not exist");
+        }
+    }
+
+    public String getInviteLink(int id) {
+        return "http://localhost:3000/studyGroup/"+id;
     }
 }
