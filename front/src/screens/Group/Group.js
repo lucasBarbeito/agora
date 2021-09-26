@@ -1,6 +1,19 @@
 import React, { Component } from 'react';
-import { withRouter } from "react-router-dom";
-import { Button, Divider, Grid, Paper, Typography, IconButton, TextField, Container, Accordion } from "@material-ui/core";
+import { 
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider, 
+  Grid, 
+  Paper, 
+  Typography, 
+  IconButton, 
+  TextField, 
+  Container
+} from "@material-ui/core";
 import LinkIcon from '@material-ui/icons/Link';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import EditIcon from '@material-ui/icons/Edit';
@@ -8,15 +21,26 @@ import './Group.css';
 import Post from '../../Post';
 import GroupMembersAccordion from '../../common/GroupMembersAccordion/GroupMembersAccordion.js'
 import { UserContext } from "../../user-context";
+import { withRouter } from "react-router-dom";
 
 class Group extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      isFetching: true,
+      confirmationDialogIsOpen: false,
+      isFetching: true
     }
   }
+
+  deleteGroup = () => {
+    this.props.history.push('/home');
+  }
+
+  abandonGroup = () => {
+    this.props.history.push('/home');
+  }
+  
 
   getInvitationLink() {
     const groupId = this.props.match.params.id;
@@ -84,6 +108,7 @@ class Group extends Component {
   }
 
   render() {
+
     const members = [
       {
         name: "Manuel Pedrozo",
@@ -123,6 +148,7 @@ class Group extends Component {
         isAdmin: false
       }
     ]
+
     return (
       <div className="main-div">
         <Container id="main-container" maxWidth="lg">
@@ -155,8 +181,28 @@ class Group extends Component {
                     <Divider />
                     <Typography id="group-description">{!this.state.isFetching && this.state.description}</Typography>
                     <Grid container justifyContent="flex-end">
-                      <Button id="abandon-group-button" onClick={() => {/*TODO*/
-                      }}>{this.props.admin ? "ELIMINAR GRUPO" : "ABANDONAR GRUPO"}</Button>
+                      <Button id="action-group-button" onClick={() => this.setState({confirmationDialogIsOpen: true})} >
+                        {`${this.props.admin ? "ELIMINAR" : "ABANDONAR"} GRUPO`}
+                      </Button>
+                      <Dialog
+                        open={this.state.confirmationDialogIsOpen}
+                        onClose={() => this.setState({confirmationDialogIsOpen: false})}
+                      >
+                        <DialogTitle>
+                          { `${this.props.admin ? "Eliminar" : "Abandonar"} grupo?` }
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            { `Estas seguro de que deseas ${this.props.admin ? "eliminar" : "abandonar"} este grupo?`}
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={() => this.setState({confirmationDialogIsOpen: false})}>Cancelar</Button>
+                          <Button onClick={this.props.admin ? () => this.deleteGroup() : () => this.abandonGroup()} autoFocus>
+                            { this.props.admin ? "Eliminar" : "Abandonar"}
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                     </Grid>
                   </Paper>
                 </Grid>
