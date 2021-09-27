@@ -49,6 +49,7 @@ class GroupMembersAccordion extends Component {
                     }
                   </MenuList>
                   {
+                    this.props.isAdmin &&
                     !(this.props.creatorId == member.id) && 
                     <Box id="kick-member-button-container">
                       <Button 
