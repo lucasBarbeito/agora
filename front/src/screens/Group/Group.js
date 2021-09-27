@@ -45,10 +45,28 @@ class Group extends Component {
     this.props.history.push('/home');
   }
   
-  getInvitationLink() {
+  async getInvitationLink(){
     const groupId = this.props.match.params.id;
-    navigator.clipboard.writeText(`ID de grupo: ${groupId}`);
+    const response =  await fetch(`http://localhost:8080/studyGroup/${groupId}/inviteLink`,{
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        'Authorization': `Bearer ${this.context.token}`
+      },
+    })
+    return await response.text();
   }
+
+  async copyInvitationLinkToClipboard(){
+    try{
+      let res = await this.getInvitationLink();
+      navigator.clipboard.writeText(res);
+      alert('Link de invitación copiado al portapapeles');
+    }catch(e){
+      alert('Error, no es posible conectarse al back-end');
+    }
+  }
+
   componentDidMount() {
     this.fetchGroupInformation()
   }
@@ -220,7 +238,7 @@ class Group extends Component {
               <Grid container item direction="column" spacing={2}>
                 <Grid item>
                   <Button fullWidth id="invite-button" variant="contained" color="primary"
-                    onClick={() => this.getInvitationLink()}>
+                    onClick={() => this.copyInvitationLinkToClipboard()}>
                     <LinkIcon id="invite-icon" />
                     INVITAR AL GRUPO
                   </Button>
