@@ -4,10 +4,7 @@ import com.agora.agora.controller.StudyGroupController;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
-import com.agora.agora.model.dto.FullStudyGroupDTO;
-import com.agora.agora.model.dto.FullUserDTO;
-import com.agora.agora.model.dto.StudyGroupDTO;
-import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
@@ -600,6 +597,36 @@ public class StudyGroupControllerTest extends AbstractTest{
         String link = mvcResult.getResponse().getContentAsString();
 
         assertEquals(link, expectedLink);
+    }
+    @Test
+    @WithMockUser("USER")
+    public void creatingGroupShouldReturnId() throws Exception {
+        String uri = "/studyGroup";
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String response = mvcResult.getResponse().getContentAsString();
+        StudyGroupIdDTO groupDTO = super.mapFromJson(response, StudyGroupIdDTO.class);
+
+        int obtainedId = groupDTO.getId();
+
+        String uriId = "/studyGroup/" + obtainedId;
+        MvcResult mvcResultId = mvc.perform(
+                MockMvcRequestBuilders.get(uriId)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String responseId = mvcResultId.getResponse().getContentAsString();
+        FullStudyGroupDTO groupDTOId = super.mapFromJson(responseId, FullStudyGroupDTO.class);
+
+        assertEquals(groupForm.getName(),groupDTOId.getName());
+        assertEquals(groupForm.getDescription(), groupDTOId.getDescription());
+        assertEquals(groupForm.getCreationDate(), groupDTOId.getCreationDate());
+        assertEquals(groupForm.getCreatorId(), groupDTOId.getCreatorId());
     }
 
 }
