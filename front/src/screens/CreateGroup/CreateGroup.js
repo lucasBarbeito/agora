@@ -6,7 +6,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
-import HomeMenu from '../../common/HomeMenu/HomeMenu';
 import { UserContext } from "../../user-context";
 import HomeStructure from '../../common/HomeStructure/HomeStructure.js';
 
@@ -68,7 +67,6 @@ class CreateGroup extends Component {
                             errorMsg: 'Grupo creado con nombre ya existente',
                             createdUnsuccessfully: true
                         })
-
                     } else if (response.status === 404) {
                         this.setState({
                             errorMsg: 'Tu usuario no existe.',
@@ -80,15 +78,9 @@ class CreateGroup extends Component {
                             createdUnsuccessfully: true
                         })
                     } else {
+                        const res = await response.json();
                         this.props.history.push({
-                            pathname: `/group/${0}`,
-                            state: {
-                                name: this.state.groupName,
-                                description: this.state.description,
-                                creationDate: ('0' + date.getDate()).slice(-2) + '/' +
-                                    ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
-                                    date.getFullYear(),
-                            }
+                            pathname: `/group/${res.id}`
                         })
                     }
                 } catch (e) {

@@ -4,6 +4,7 @@ import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
+import com.agora.agora.model.dto.StudyGroupIdDTO;
 import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
@@ -30,9 +31,9 @@ public class StudyGroupController {
     }
 
     @PostMapping
-    public ResponseEntity createStudyGroup(@Valid @RequestBody StudyGroupForm studyGroup){
+    public StudyGroupIdDTO createStudyGroup(@Valid @RequestBody StudyGroupForm studyGroup){
         int id = groupService.create(studyGroup);
-        return ResponseEntity.ok().build();
+        return new StudyGroupIdDTO(id);
     }
 
     @GetMapping
