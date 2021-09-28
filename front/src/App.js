@@ -17,6 +17,7 @@ import CreateGroup from './screens/CreateGroup/CreateGroup';
 import EmailConfirmation from './screens/EmailConfirmation/EmailConfirmation';
 import LandingPage from './screens/LandingPage/LandingPage';
 import Home from './screens/Home/Home';
+import baseUrl from './baseUrl.js'
 import CheckYourEmailPage from './screens/CheckYourEmail/CheckYourEmailPage';
 
 const AuthRoute = ({children, ...rest}) => (
@@ -51,7 +52,7 @@ class App extends Component {
 
     async getUserInfo(token){
         try{
-            const response = await fetch("http://localhost:8080/user/me", {
+            const response = await fetch(`${baseUrl}/user/me`, {
                 method: 'GET',
                 headers: {
                     'Content-type': 'application/json; charset=UTF-8',
