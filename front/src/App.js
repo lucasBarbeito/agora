@@ -13,6 +13,7 @@ import EmailConfirmation from "./screens/EmailConfirmation/EmailConfirmation";
 import LandingPage from "./screens/LandingPage/LandingPage";
 import Home from "./screens/Home/Home";
 import CheckYourEmailPage from "./screens/CheckYourEmail/CheckYourEmailPage";
+import baseUrl from "./baseUrl.js";
 
 const AuthRoute = ({ children, ...rest }) => (
   <UserContext.Consumer>
@@ -57,7 +58,7 @@ class App extends Component {
 
   async getUserInfo(token) {
     try {
-      const response = await fetch("http://localhost:8080/user/me", {
+      const response = await fetch(`${baseUrl}/user/me`, {
         method: "GET",
         headers: {
           "Content-type": "application/json; charset=UTF-8",

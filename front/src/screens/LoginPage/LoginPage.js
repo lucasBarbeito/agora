@@ -9,6 +9,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { UserContext } from "../../user-context";
+import baseUrl from "../../baseUrl";
 
 class LoginPage extends Component {
   constructor(props) {
@@ -32,7 +33,7 @@ class LoginPage extends Component {
     const verificationEmail = this.validateEmail();
     if (verificationEmail) {
       try {
-        const response = await fetch("http://localhost:8080/auth", {
+        const response = await fetch(`${baseUrl}/auth`, {
           method: "POST",
           body: JSON.stringify({
             email: this.state.email,

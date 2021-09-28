@@ -19,14 +19,20 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import EditIcon from "@material-ui/icons/Edit";
 import "./Group.css";
 import Post from "../../Post";
+import EditGroup from "../../common/EditGroup/EditGroup.jsx";
 import GroupMembersAccordion from "../../common/GroupMembersAccordion/GroupMembersAccordion.js";
 import { UserContext } from "../../user-context";
 import { withRouter } from "react-router-dom";
+import baseUrl from "../../baseUrl";
 
 class Group extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
+      editGroupFormVisible: false,
+      groupName: "",
+      description: "",
       confirmationDialogIsOpen: false,
       isFetching: true,
       groupName: "",
@@ -35,6 +41,25 @@ class Group extends Component {
       creatorName: "",
     };
   }
+
+  handleEditGroupClick = () => {
+    this.setState((state) => ({
+      editGroupFormVisible: !state.editGroupFormVisible,
+    }));
+  };
+
+  handleOnChange = (newGroupName, newDescription) => {
+    if (newGroupName) {
+      this.setState({
+        groupName: newGroupName,
+      });
+    }
+    if (newDescription) {
+      this.setState({
+        description: newDescription,
+      });
+    }
+  };
 
   componentDidMount() {
     this.fetchGroupInformation();
@@ -51,7 +76,7 @@ class Group extends Component {
   async getInvitationLink() {
     const groupId = this.props.match.params.id;
     const response = await fetch(
-      `http://localhost:8080/studyGroup/${groupId}/inviteLink`,
+      `${baseUrl}/studyGroup/${groupId}/inviteLink`,
       {
         method: "GET",
         headers: {
@@ -106,7 +131,7 @@ class Group extends Component {
   async addUserToGroup(groupId) {
     try {
       const userId = this.context.userInfo.id;
-      await fetch(`http://localhost:8080/studyGroup/${groupId}/${userId}`, {
+      await fetch(`${baseUrl}/studyGroup/${groupId}/${userId}`, {
         method: "POST",
         headers: {
           "Content-type": "application/json; charset=UTF-8",
@@ -119,7 +144,7 @@ class Group extends Component {
   }
 
   async getUserData(id) {
-    const response = await fetch(`http://localhost:8080/user/${id}`, {
+    const response = await fetch(`${baseUrl}/user/${id}`, {
       method: "GET",
       headers: {
         "Content-type": "application/json; charset=UTF-8",
@@ -130,15 +155,12 @@ class Group extends Component {
   }
 
   async getGroupData(groupId) {
-    const response = await fetch(
-      `http://localhost:8080/studyGroup/${groupId}`,
-      {
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${this.context.token}`,
-        },
-      }
-    );
+    const response = await fetch(`${baseUrl}/studyGroup/${groupId}`, {
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: `Bearer ${this.context.token}`,
+      },
+    });
     return response.json();
   }
 
@@ -168,12 +190,19 @@ class Group extends Component {
                       {this.state.isAdmin && (
                         <Grid item id="edit-group-grid" xs={1}>
                           <IconButton
-                            onClick={() => {
-                              /*TODO*/
-                            }}
+                            onClick={() => this.handleEditGroupClick()}
                           >
                             <EditIcon id="edit-icon" />
                           </IconButton>
+                          <EditGroup
+                            visible={this.state.editGroupFormVisible}
+                            onClose={() => this.handleEditGroupClick()}
+                            initialGroupName={this.state.groupName}
+                            initialDescription={this.state.description}
+                            onChange={(newGroupName, newDescription) =>
+                              this.handleOnChange(newGroupName, newDescription)
+                            }
+                          />
                         </Grid>
                       )}
 

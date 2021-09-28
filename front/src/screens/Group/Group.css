@@ -111,3 +111,23 @@
 #posts-container {
   width: 100%;
 }
+
+#edit-group-save-changes-button {
+  text-align: center;
+  font-family: "Roboto";
+  letter-spacing: 1.25px;
+  color: #c5b2a5;
+  text-transform: uppercase;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+}
+
+#edit-group-customized-dialog-title-paragraph {
+  font-family: "Roboto";
+  color: #000000de;
+  opacity: 1;
+}
