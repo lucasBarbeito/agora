@@ -1,5 +1,5 @@
 .menu-box {
-  background: #C5B2A529;
+  background: #c5b2a529;
   border-radius: 4px;
   font-family: Roboto, serif;
   opacity: 1;
@@ -10,7 +10,7 @@
 #menu-text {
   text-align: left;
   letter-spacing: 0.5px;
-  color: #000000DE;
+  color: #000000de;
   opacity: 1;
   font-family: Roboto, serif;
   font-size: 16px;
@@ -21,12 +21,12 @@
 #selected-menu-text {
   text-align: left;
   letter-spacing: 0.5px;
-  color: #000000DE;
+  color: #000000de;
   opacity: 1;
   font-family: Roboto, serif;
   font-size: 16px;
   padding-top: 10px;
   padding-bottom: 10px;
   font-weight: 500;
-  background-color: #E6E2D5;
+  background-color: #e6e2d5;
 }
