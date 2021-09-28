@@ -5,6 +5,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import './Home.css';
 import GroupCard from '../../common/GroupCard/GroupCard';
 import HomeStructure from '../../common/HomeStructure/HomeStructure.js';
+import baseUrl from '../../baseUrl'
 import { UserContext } from '../../user-context';
 
 const tags = ['Etiqueta 1', 'Etiqueta con mucho texto', 'Etiqueta 3'];
@@ -23,7 +24,7 @@ class Home extends Component {
   getGroups = async () => {
     const { token } = this.context;
     try {
-      const response = await fetch('http://localhost:8080/studyGroup', {
+      const response = await fetch(`${baseUrl}/studyGroup`, {
         method: 'GET',
         headers: {
           'Content-type': 'application/json; charset=UTF-8',

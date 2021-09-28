@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {CircularProgress, Grid, Button} from '@material-ui/core';
+import baseUrl from '../../baseUrl'
 import "./EmailConfirmation.css";
 
 
@@ -15,7 +16,7 @@ export default class EmailConfirmation extends Component {
 
     makeRequest = async () => {
         try {
-            const response = await fetch('http://localhost:8080/user/verify_user', {
+            const response = await fetch(`${baseUrl}/user/verify_user`, {
                 method: 'POST',
                 body: JSON.stringify({
                     userVerificationToken: this.props.match.params.id,
