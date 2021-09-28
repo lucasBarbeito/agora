@@ -247,7 +247,8 @@ class Group extends Component {
                   { !this.state.isFetching &&
                     <GroupMembersAccordion 
                       memberContacts={this.state.userContacts} 
-                      creatorId={this.state.creatorId} 
+                      creatorId={this.state.creatorId}
+                      isAdmin={this.state.isAdmin}
                     />
                   }
                 </Grid>
