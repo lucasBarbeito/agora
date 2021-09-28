@@ -1,36 +1,36 @@
 #GroupCard {
-    height: 260px;
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  height: 260px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #content {
-    max-width: fit-content;
+  max-width: fit-content;
 }
 
 #name {
-    font-size: x-large;
-    font-weight: 700;
-    color: #000000de;
+  font-size: x-large;
+  font-weight: 700;
+  color: #000000de;
 }
 
 #tags {
-    margin-bottom: 30px;
-    color: #00000099;
+  margin-bottom: 30px;
+  color: #00000099;
 }
 
 #description {
-    color: #00000099;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+  color: #00000099;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 #join-group-button {
-    padding: 16px 9px 9px 0;
-    color: #c5b2a5;
+  padding: 16px 9px 9px 0;
+  color: #c5b2a5;
 }

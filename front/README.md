@@ -1,8 +1,8 @@
 # Getting started
 
 1. Install node
-    - Use brew (MacOS), apt (Linux), scoop (Windows) or whatever package manager you want
-    - Or follow the instructions: https://nodejs.org/en/download/
+   - Use brew (MacOS), apt (Linux), scoop (Windows) or whatever package manager you want
+   - Or follow the instructions: https://nodejs.org/en/download/
 2. Download dependencies: `npm install`
 
 # Useful links
