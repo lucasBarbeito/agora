@@ -1,102 +1,98 @@
-
-
-.Register-Container{
-    top: 144px;
-    left: 231px;
-    width: 32.5%;
-    height: 72%;
-    position: absolute;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border-radius: 4px;
-    opacity: 1;
-}  
-
-.Header{
-    color: #000000;
-    margin-left: 16px;    
+.Register-Container {
+  top: 144px;
+  left: 231px;
+  width: 32.5%;
+  height: 72%;
+  position: absolute;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border-radius: 4px;
+  opacity: 1;
 }
 
-.Title{
-    text-align: left;
-    font-family: 'Roboto';
-    letter-spacing: 0.15px;
-    color: #000000DE;
-    opacity: 1;
+.Header {
+  color: #000000;
+  margin-left: 16px;
 }
 
-.Description{
-    margin-top: -15px;
-    color: #000;
-    text-align: left;
-    font-family: 'Roboto';
-    font-size: 13px;
-    line-height: 19px;
-    letter-spacing: 0.23px;
-    opacity: 1;
-}
-.AgoraLogIn{
-    text-align: left;
-    color: #C5B2A5;
-    cursor: pointer;
+.Title {
+  text-align: left;
+  font-family: "Roboto";
+  letter-spacing: 0.15px;
+  color: #000000de;
+  opacity: 1;
 }
 
-.Form-First-Row{
-    position: relative;
-    top: 21px;
-    left: 11px;
+.Description {
+  margin-top: -15px;
+  color: #000;
+  text-align: left;
+  font-family: "Roboto";
+  font-size: 13px;
+  line-height: 19px;
+  letter-spacing: 0.23px;
+  opacity: 1;
 }
-.Email-Row{
-    position:relative;
-    top: 42px;
-    left: 11px;
-}
-.Password-Row{
-    position: relative;
-    top: 83px;
-    left: 11px;
-}
-.Errormsg{
-    position:relative;
-    background: #E8A5A5 0% 0% no-repeat padding-box;
-    display: table;
-    opacity: 1;
-    top: 13vh;
-    left: 11px;
-    width: 95%;
-    height: 45px;    
-}
-.ErrorMsg__MSG{
-    padding: px;
-    margin-left: 16px;
-    font-family: 'Roboto';
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.25px;
-    color: #00000099;
-    opacity: 1;
-}
-.CreateAccountButton{
-    position: absolute;
-    left: 70%;
-    top: 95%;
-    text-align: center;
-    font-family: 'Roboto';
-    letter-spacing: 1.25px;
-    color: #C5B2A5;
-    text-transform: uppercase;
-    background-color: Transparent;
-    background-repeat:no-repeat;
-    border: none;
-    cursor:pointer;
-    overflow: hidden;
-    outline:none;
-
+.AgoraLogIn {
+  text-align: left;
+  color: #c5b2a5;
+  cursor: pointer;
 }
 
-.AgoraLogo{
-    position: absolute;
-    width: 32.4vw;
-    margin-top: 5.17vw;
-    margin-left: 60.41vw;
+.Form-First-Row {
+  position: relative;
+  top: 21px;
+  left: 11px;
+}
+.Email-Row {
+  position: relative;
+  top: 42px;
+  left: 11px;
+}
+.Password-Row {
+  position: relative;
+  top: 83px;
+  left: 11px;
+}
+.Errormsg {
+  position: relative;
+  background: #e8a5a5 0% 0% no-repeat padding-box;
+  display: table;
+  opacity: 1;
+  top: 13vh;
+  left: 11px;
+  width: 95%;
+  height: 45px;
+}
+.ErrorMsg__MSG {
+  padding: px;
+  margin-left: 16px;
+  font-family: "Roboto";
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  color: #00000099;
+  opacity: 1;
+}
+.CreateAccountButton {
+  position: absolute;
+  left: 70%;
+  top: 95%;
+  text-align: center;
+  font-family: "Roboto";
+  letter-spacing: 1.25px;
+  color: #c5b2a5;
+  text-transform: uppercase;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
 }
 
+.AgoraLogo {
+  position: absolute;
+  width: 32.4vw;
+  margin-top: 5.17vw;
+  margin-left: 60.41vw;
+}

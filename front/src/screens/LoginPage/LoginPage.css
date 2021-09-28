@@ -1,94 +1,92 @@
-
 .login-page-form-box {
-    top: 144px;
-    left: 231px;
-    /* width: 30%;  a ojo*/
-    width: 32.5%;
-    height: 64.2%;
-    position: absolute;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    border-radius: 4px;
-    opacity: 1;
+  top: 144px;
+  left: 231px;
+  /* width: 30%;  a ojo*/
+  width: 32.5%;
+  height: 64.2%;
+  position: absolute;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  border-radius: 4px;
+  opacity: 1;
 }
-.login-page-header{
-    color: #000000;
-    margin-left: 16px;    
+.login-page-header {
+  color: #000000;
+  margin-left: 16px;
 }
 .login-page-title {
-    text-align: left;
-    font-family: 'Roboto';
-    letter-spacing: 0.15px;
-    color: #000000DE;
-    opacity: 1;
+  text-align: left;
+  font-family: "Roboto";
+  letter-spacing: 0.15px;
+  color: #000000de;
+  opacity: 1;
 }
 
 .login-page-subtitle {
-    margin-top: -15px;
-    color: #000;
-    text-align: left;
-    font-family: 'Roboto';
-    font-size: 13px;
-    line-height: 19px;
-    letter-spacing: 0.23px;
-    opacity: 1;
+  margin-top: -15px;
+  color: #000;
+  text-align: left;
+  font-family: "Roboto";
+  font-size: 13px;
+  line-height: 19px;
+  letter-spacing: 0.23px;
+  opacity: 1;
 }
 
 .login-page-link {
-    text-align: left;
-    color: #C5B2A5;
-    cursor: pointer;
+  text-align: left;
+  color: #c5b2a5;
+  cursor: pointer;
 }
 
 .login-page-form-description {
-    position:relative;
-    margin-left: 15px;
-    top: 42px;
-    margin-left: 15px;
+  position: relative;
+  margin-left: 15px;
+  top: 42px;
+  margin-left: 15px;
 }
 
 .login-page-form-description-pass {
-    position:relative;
-    top: 83px;
-    margin-left: 15px;
+  position: relative;
+  top: 83px;
+  margin-left: 15px;
 }
 
-#login-page-create-button{
-    position: absolute;
-    right: 20px;
-    bottom: 10px;
-    text-align: center;
-    letter-spacing: 1.25px;
-    color: #C5B2A5;
-    text-transform: uppercase;
+#login-page-create-button {
+  position: absolute;
+  right: 20px;
+  bottom: 10px;
+  text-align: center;
+  letter-spacing: 1.25px;
+  color: #c5b2a5;
+  text-transform: uppercase;
 }
 
 #login-page-warning-box {
-   
-    position:relative;
-    background: #E8A5A5;
-    display: table;
-    opacity: 1;
-    top: 13vh;
-    left: 17px;
-    width: 92.5%;
-    height: 54px;
+  position: relative;
+  background: #e8a5a5;
+  display: table;
+  opacity: 1;
+  top: 13vh;
+  left: 17px;
+  width: 92.5%;
+  height: 54px;
 }
 
 #login-page-warning-message {
-    padding-top: 15px;
-    position: absolute;
-    left: 5px;
-    letter-spacing: 0.25px;
-    margin-left: 5px;
-    font-family: Roboto;
-    color: #00000099;
-    opacity: 1;
-    font-size: 14px;
+  padding-top: 15px;
+  position: absolute;
+  left: 5px;
+  letter-spacing: 0.25px;
+  margin-left: 5px;
+  font-family: Roboto;
+  color: #00000099;
+  opacity: 1;
+  font-size: 14px;
 }
 
-.login-page-agoraLogo{
-    position: absolute;
-    width: 32.4vw;
-    margin-top: 5.17vw;
-    margin-left: 60.41vw;
+.login-page-agoraLogo {
+  position: absolute;
+  width: 32.4vw;
+  margin-top: 5.17vw;
+  margin-left: 60.41vw;
 }

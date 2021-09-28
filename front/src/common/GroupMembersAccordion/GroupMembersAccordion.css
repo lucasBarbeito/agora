@@ -1,46 +1,46 @@
-#member-name-typography{
-    color: #000000DE;
-    font-family: "Roboto";
-    font-size: 2.2ch;
-    letter-spacing: 0.08ch;
-    font-weight: 400;
-    line-height: 3.5ch;
-    margin-right: 1.2ch;
+#member-name-typography {
+  color: #000000de;
+  font-family: "Roboto";
+  font-size: 2.2ch;
+  letter-spacing: 0.08ch;
+  font-weight: 400;
+  line-height: 3.5ch;
+  margin-right: 1.2ch;
 }
 
-#admin-typography{
-    color: #C5B2A5;
-    font-family: "Roboto";
-    font-size: 1.76ch;
-    letter-spacing: 0.06ch;
-    font-weight: 700;
-    line-height: 3.5ch;
-    margin-top: 0.6ch;
+#admin-typography {
+  color: #c5b2a5;
+  font-family: "Roboto";
+  font-size: 1.76ch;
+  letter-spacing: 0.06ch;
+  font-weight: 700;
+  line-height: 3.5ch;
+  margin-top: 0.6ch;
 }
 
 #accordion-details {
   margin-top: -25px;
 }
 
-#member-contact-info{
-    color: #00000099;
-    font-family: "Roboto";
-    font-size: 1.7ch;
-    letter-spacing: 0.0366ch;
-    font-weight: 400;
-    line-height: 2.52ch;
-    margin-left: 2.52ch;
-    margin-top: 2.5ch
+#member-contact-info {
+  color: #00000099;
+  font-family: "Roboto";
+  font-size: 1.7ch;
+  letter-spacing: 0.0366ch;
+  font-weight: 400;
+  line-height: 2.52ch;
+  margin-left: 2.52ch;
+  margin-top: 2.5ch;
 }
 
-#contact-icon{
-    margin-top: 1.5ch;
-    color: #C5B2A5;
+#contact-icon {
+  margin-top: 1.5ch;
+  color: #c5b2a5;
 }
 
-#members-accordion{
-    background-color: #C5B2A529;
-    box-shadow: none;
+#members-accordion {
+  background-color: #c5b2a529;
+  box-shadow: none;
 }
 
 #kick-member-button-container {
@@ -49,5 +49,5 @@
 }
 
 #kick-member-button {
-  color: #E8A5A5;
+  color: #e8a5a5;
 }
