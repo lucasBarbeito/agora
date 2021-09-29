@@ -15,7 +15,7 @@ public interface StudyGroupUsersRepository extends CrudRepository<StudyGroupUser
     Optional<StudyGroupUser> findStudyGroupUserByStudyGroupIdAndAndUserId(int studyGroupId, int userId);
 
     @Query(value = "select sg from StudyGroup sg " +
-                        "where (lower(sg.name) like lower(:text)) " +
+                        "where (lower(sg.name) like lower(concat('%',concat(:text, '%')))) " +
                             "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))")
     List<StudyGroup> findByNameOrDescription(@Param("text")String text);
 

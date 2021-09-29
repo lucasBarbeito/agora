@@ -412,6 +412,18 @@ public class StudyGroupControllerTest extends AbstractTest{
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
     }
+
+    @Test
+    @WithMockUser("USER")
+    public void findStudyGroupByPartialNameHasExpectedValue() {
+        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of(("Du")));
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group2.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
     @Test
     @WithMockUser(username = "tolkien@gmail.com")
     public void deleteExistentUserFromExistentStudyGroupShouldReturnOk() throws Exception {
