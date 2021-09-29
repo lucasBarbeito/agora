@@ -1,6 +1,7 @@
 package com.agora.agora;
 
 import com.agora.agora.controller.StudyGroupController;
+import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
@@ -62,6 +63,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         User user2;
         StudyGroup group1;
         StudyGroup group2;
+        Post post;
 
         void setup() {
             user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
@@ -78,6 +80,9 @@ public class StudyGroupControllerTest extends AbstractTest{
             StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
+
+            post = new Post("...", group1, user1, LocalDateTime.now());
+            postRepository.save(post);
         }
 
         void rollback() {
@@ -693,6 +698,29 @@ public class StudyGroupControllerTest extends AbstractTest{
         ).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deletePostWithBadForumIdShouldReturnNotFound() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum/" + -1;
+        MvcResult deleteResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        int status = deleteResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deletePostWithBadStudyGroupIdShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
+        MvcResult deleteResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        int status = deleteResult.getResponse().getStatus();
+        assertEquals(204, status);
     }
 
 
