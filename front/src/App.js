@@ -14,6 +14,7 @@ import LandingPage from "./screens/LandingPage/LandingPage";
 import Home from "./screens/Home/Home";
 import CheckYourEmailPage from "./screens/CheckYourEmail/CheckYourEmailPage";
 import baseUrl from "./baseUrl.js";
+import { CircularProgress } from "@material-ui/core";
 
 const AuthRoute = ({ children, ...rest }) => (
   <UserContext.Consumer>
@@ -41,22 +42,25 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.setToken = (newToken) => {
-      this.setState({ token: newToken });
+    this.setToken = (newToken, redirectTo) => {
+      this.setState({ token: newToken, logingIn: false });
       if (newToken !== null) {
         localStorage.setItem("token", newToken);
-        this.getUserInfo(newToken);
+        this.getUserInfo(newToken, redirectTo);
+      } else {
+        localStorage.removeItem("token");
       }
     };
 
     this.state = {
       token: null,
       userInfo: null,
+      logingIn: true,
       setToken: this.setToken,
     };
   }
 
-  async getUserInfo(token) {
+  async getUserInfo(token, redirectTo) {
     try {
       const response = await fetch(`${baseUrl}/user/me`, {
         method: "GET",
@@ -68,65 +72,74 @@ class App extends Component {
       if (response.ok) {
         const userInfo = await response.json();
         this.setState({ userInfo });
-        history.push("/home");
+        history.push(redirectTo || "/home");
       } else {
         this.setToken(null);
-        history.push("/");
+        history.push("/login");
       }
     } catch (e) {
+      console.log(e);
       this.setToken(null);
-      history.push("/");
+      history.push("/login");
     }
   }
 
   componentDidMount() {
-    this.setToken(localStorage.getItem("token"));
+    console.log(history.location.pathname);
+    this.setToken(localStorage.getItem("token"), history.location.pathname);
   }
 
   render() {
     return (
-      <UserContext.Provider value={this.state}>
-        <Router history={history}>
-          <div>
-            <Navbar history={history} />
-            <Switch>
-              <Route exact path="/">
-                <LandingPage
-                  onRegisterClick={() => history.push("/register")}
-                  onLoginClick={() => history.push("/login")}
-                />
-              </Route>
-              <Route path="/login">
-                <LoginPage history={history} />
-              </Route>
-              <Route path="/register">
-                <RegisterPage history={history} />
-              </Route>
-              <Route
-                path="/user/verify-user/:id"
-                render={(props) => (
-                  <EmailConfirmation history={history} {...props} />
-                )}
-              />
-              <Route exact path="/check-email">
-                <CheckYourEmailPage history={history} />
-              </Route>
-              <AuthRoute path="/home">
-                <Home history={history} />
-              </AuthRoute>
-              <AuthRoute path="/create-group">
-                <CreateGroup history={history} />
-              </AuthRoute>
-              <AuthRoute path="/group/:id">
-                <Group />
-              </AuthRoute>
-              <Route>
-                <ErrorNotFound history={history} />
-              </Route>
-            </Switch>
-          </div>
-        </Router>
-      </UserContext.Provider>
+      <>
+        {" "}
+        {this.state.logingIn ? (
+          <CircularProgress />
+        ) : (
+          <UserContext.Provider value={this.state}>
+            <Router history={history}>
+              <div>
+                <Navbar history={history} />
+                <Switch>
+                  <Route exact path="/">
+                    <LandingPage
+                      onRegisterClick={() => history.push("/register")}
+                      onLoginClick={() => history.push("/login")}
+                    />
+                  </Route>
+                  <Route path="/login">
+                    <LoginPage history={history} />
+                  </Route>
+                  <Route path="/register">
+                    <RegisterPage history={history} />
+                  </Route>
+                  <Route
+                    path="/user/verify-user/:id"
+                    render={(props) => (
+                      <EmailConfirmation history={history} {...props} />
+                    )}
+                  />
+                  <Route exact path="/check-email">
+                    <CheckYourEmailPage history={history} />
+                  </Route>
+                  <AuthRoute path="/home">
+                    <Home history={history} />
+                  </AuthRoute>
+                  <AuthRoute path="/create-group">
+                    <CreateGroup history={history} />
+                  </AuthRoute>
+                  <AuthRoute path="/group/:id">
+                    <Group />
+                  </AuthRoute>
+                  <Route>
+                    <ErrorNotFound history={history} />
+                  </Route>
+                </Switch>
+              </div>
+            </Router>
+          </UserContext.Provider>
+        )}
+      </>
     );
   }
 }
