@@ -26,9 +26,9 @@ import baseUrl from "../../baseUrl";
 import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 
 class Group extends Component {
+
   constructor(props) {
     super(props);
-
     this.state = {
       editGroupFormVisible: false,
       groupName: "",
@@ -39,8 +39,11 @@ class Group extends Component {
       creationDate: "",
       description: "",
       creatorName: "",
+      announcements: [],
+      newAnnouncementContent: "",
     };
   }
+
 
   handleEditGroupClick = () => {
     this.setState((state) => ({
@@ -122,6 +125,18 @@ class Group extends Component {
         creatorName: creator.name,
         creatorId: res.creatorId,
         isAdmin: res.creatorId === this.context.userInfo.id,
+        announcements: [
+          {
+            name: "Matias Boracchia",
+            date: "28/09/2021",
+            content: "Hola soy Mati",
+          },
+          {
+            name: "Manuel Pedrozo",
+            date: "27/09/2021",
+            content: "Buenas buenas",
+          },
+        ]
       });
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -162,6 +177,24 @@ class Group extends Component {
       },
     });
     return response.json();
+  }
+
+  addAnnouncement() {
+    const date = new Date();
+    const newAnnouncements = this.state.announcements;
+    const newAnnouncement = {
+      name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
+      date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+      content: this.state.newAnnouncementContent
+    }
+    newAnnouncements.unshift(newAnnouncement);
+    this.setState({announcements: newAnnouncements});
+  }
+
+  deleteAnnouncement(id) {
+    const newAnnouncements = this.state.announcements;
+    newAnnouncements.splice(id, 1);
+    this.setState({announcements: newAnnouncements});
   }
 
   render() {
@@ -297,9 +330,7 @@ class Group extends Component {
                       fullWidth
                       label="Nuevo anuncio"
                       variant="outlined"
-                      onChange={(e) => {
-                        /*TODO*/
-                      }}
+                      onChange={(e) => this.setState({newAnnouncementContent: e.target.value})}
                     />
                   </Grid>
                   <Grid item xs={5}>
@@ -308,27 +339,25 @@ class Group extends Component {
                       id="new-announcement-button"
                       variant="contained"
                       color="primary"
-                      onClick={() => {
-                        /*TODO*/
-                      }}
+                      onClick={() => this.addAnnouncement()}
                     >
                       AGREGAR ANUNCIO
                     </Button>
                   </Grid>
                 </Grid>
                 <Container id="announcement">
-                  <GroupAnnouncement
-                    canDelete={false}
-                    name="Matias Boracchia"
-                    date={"28/09/2021"}
-                    content={"Hola soy Mati"}
-                  />
-                  <GroupAnnouncement 
-                    canDelete={true}
-                    name="Manuel Pedrozo"
-                    date={"27/09/2021"}
-                    content={"Buenas buenas"}
-                  />
+                  {
+                    this.state.announcements.map((announcement, index) => (
+                      <GroupAnnouncement
+                        key={index}
+                        canDelete={this.state.isAdmin || announcement.name === `${this.context.userInfo.name} ${this.context.userInfo.surname}`}
+                        handleDelete={() => this.deleteAnnouncement(index)}
+                        name={announcement.name}
+                        date={announcement.date}
+                        content={announcement.content}
+                      />
+                    ))
+                  }
                 </Container>
               </Grid>
             </Grid>

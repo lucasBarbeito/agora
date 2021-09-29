@@ -18,7 +18,7 @@ class GroupAnnouncement extends Component {
             <Container id="cancel-button-and-title">
               { 
                 this.props.canDelete && 
-                <IconButton id="delete-button">
+                <IconButton id="delete-button" onClick={() => this.props.handleDelete(this.props.id)}>
                   <CancelIcon id="delete-icon"/>
                 </IconButton>
               }
