@@ -185,10 +185,13 @@ class Group extends Component {
     const newAnnouncement = {
       name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
       date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-      content: this.state.newAnnouncementContent
+      content: this.state.newAnnouncementContent,
     }
     newAnnouncements.unshift(newAnnouncement);
-    this.setState({announcements: newAnnouncements});
+    this.setState({
+      announcements: newAnnouncements,
+      newAnnouncementContent: "",
+    });
   }
 
   deleteAnnouncement(id) {
@@ -331,6 +334,7 @@ class Group extends Component {
                       label="Nuevo anuncio"
                       variant="outlined"
                       onChange={(e) => this.setState({newAnnouncementContent: e.target.value})}
+                      value={this.state.newAnnouncementContent}
                     />
                   </Grid>
                   <Grid item xs={5}>
