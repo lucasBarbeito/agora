@@ -7,6 +7,7 @@ import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.dto.StudyGroupIdDTO;
 import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.service.StudyGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,5 +83,11 @@ public class StudyGroupController {
     @GetMapping(value = "/{id}/inviteLink")
     public String getLinkToStudyGroupPage(@PathVariable("id") int studyGroupId){
         return groupService.getInviteLink(studyGroupId);
+    }
+
+    @PostMapping(value = "/{id}/forum")
+    public ResponseEntity postAnnouncementToStudyGroup(@PathVariable("id") int studyGroupId, @Valid @RequestBody PostForm postForm) {
+        int postId = groupService.createPost(studyGroupId, postForm);
+        return ResponseEntity.created(URI.create("/studyGroup/" + studyGroupId + "/forum/" + postId)).build();
     }
 }

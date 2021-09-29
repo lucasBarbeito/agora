@@ -6,8 +6,10 @@ import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
+import com.agora.agora.repository.PostRepository;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +47,9 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Autowired
     private StudyGroupUsersRepository studyGroupUsersRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private StudyGroupController studyGroupController;
@@ -75,6 +81,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         }
 
         void rollback() {
+            postRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
@@ -628,5 +635,65 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(groupForm.getCreationDate(), groupDTOId.getCreationDate());
         assertEquals(groupForm.getCreatorId(), groupDTOId.getCreatorId());
     }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void creatingPostShouldReturnCreated() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void creatingPostShouldReturnForbidden() throws Exception {
+        StudyGroup studyGroup = data.group2;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(403, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void creatingPostWithWrongStudyGroupIdShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + -1 + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void creatingPostWithWrongUserIdShouldReturnNotFound() throws Exception {
+        StudyGroup studyGroup = data.group2;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
 
 }
