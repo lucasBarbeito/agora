@@ -18,12 +18,12 @@ import LinkIcon from "@material-ui/icons/Link";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import EditIcon from "@material-ui/icons/Edit";
 import "./Group.css";
-import Post from "../../Post";
 import EditGroup from "../../common/EditGroup/EditGroup.jsx";
 import GroupMembersAccordion from "../../common/GroupMembersAccordion/GroupMembersAccordion.js";
 import { UserContext } from "../../user-context";
 import { withRouter } from "react-router-dom";
 import baseUrl from "../../baseUrl";
+import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 
 class Group extends Component {
   constructor(props) {
@@ -316,19 +316,19 @@ class Group extends Component {
                     </Button>
                   </Grid>
                 </Grid>
-                <Container>
-                  <br></br>
-                  <Post />
-                  <br></br>
-                  <Post />
-                  <br></br>
-                  <Post />
-                  <br></br>
-                  <Post />
-                  <br></br>
-                  <Post />
-                  <br></br>
-                  <Post />
+                <Container id="announcement">
+                  <GroupAnnouncement
+                    canDelete={false}
+                    name="Matias Boracchia"
+                    date={"28/09/2021"}
+                    content={"Hola soy Mati"}
+                  />
+                  <GroupAnnouncement 
+                    canDelete={true}
+                    name="Manuel Pedrozo"
+                    date={"27/09/2021"}
+                    content={"Buenas buenas"}
+                  />
                 </Container>
               </Grid>
             </Grid>
