@@ -35,9 +35,7 @@ class Group extends Component {
       description: "",
       confirmationDialogIsOpen: false,
       isFetching: true,
-      groupName: "",
       creationDate: "",
-      description: "",
       creatorName: "",
     };
   }
