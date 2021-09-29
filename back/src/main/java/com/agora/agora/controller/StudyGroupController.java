@@ -1,5 +1,6 @@
 package com.agora.agora.controller;
 
+import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
@@ -89,5 +90,11 @@ public class StudyGroupController {
     public ResponseEntity postAnnouncementToStudyGroup(@PathVariable("id") int studyGroupId, @Valid @RequestBody PostForm postForm) {
         int postId = groupService.createPost(studyGroupId, postForm);
         return ResponseEntity.created(URI.create("/studyGroup/" + studyGroupId + "/forum/" + postId)).build();
+    }
+
+    @DeleteMapping(value = "/{id}/forum/{postId}")
+    public ResponseEntity deletePost(@PathVariable("id") int groupId, @PathVariable("postId") int postId) {
+        groupService.deletePost(groupId, postId);
+        return ResponseEntity.noContent().build();
     }
 }
