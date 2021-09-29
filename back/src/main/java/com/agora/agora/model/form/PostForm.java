@@ -1,10 +1,5 @@
 package com.agora.agora.model.form;
 
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.User;
-
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
