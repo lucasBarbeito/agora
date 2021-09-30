@@ -1,7 +1,9 @@
 package com.agora.agora.controller;
 
+import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.service.UserService;
@@ -12,6 +14,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -50,5 +54,17 @@ public class UserController {
         final Optional<User> optional = userService.findById(id);
         final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
         return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/onlyMyGroups={onlyMyGroups}")
+    public List<StudyGroupDTO> getGroups(@PathVariable("onlyMyGroups") @RequestBody Optional<Boolean> onlyMyGroups){
+        final List<StudyGroup> groups = userService.findGroups(onlyMyGroups);
+        List<StudyGroupDTO> groupDTOs = new ArrayList<>();
+
+        for (StudyGroup studyGroup : groups) {
+            StudyGroupDTO groupForm = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+            groupDTOs.add(groupForm);
+        }
+        return groupDTOs;
     }
 }
