@@ -19,18 +19,17 @@ import LinkIcon from "@material-ui/icons/Link";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import EditIcon from "@material-ui/icons/Edit";
 import "./Group.css";
-import Post from "../../Post";
 import EditGroup from "../../common/EditGroup/EditGroup.jsx";
 import GroupMembersAccordion from "../../common/GroupMembersAccordion/GroupMembersAccordion.js";
 import {UserContext} from "../../user-context";
 import {withRouter} from "react-router-dom";
 import baseUrl from "../../baseUrl";
+import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js"
-
+ 
 class Group extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             editGroupFormVisible: false,
             groupName: "",
@@ -51,6 +50,13 @@ class Group extends Component {
         }));
     };
 
+
+  handleEditGroupClick = () => {
+    this.setState((state) => ({
+      editGroupFormVisible: !state.editGroupFormVisible,
+    }));
+  };
+  
     handleOnChange = (newGroupName, newDescription) => {
         if (newGroupName) {
             this.setState({
@@ -66,7 +72,7 @@ class Group extends Component {
 
     componentDidMount() {
         this.fetchGroupInformation();
-    }
+    };
 
     deleteGroup = () => {
         this.props.history.push("/home");
@@ -135,19 +141,31 @@ class Group extends Component {
 
             const creator = await this.getUserData(res.creatorId);
 
-            this.setState({
-                groupName: res.name,
-                creationDate: res.creationDate,
-                description: res.description,
-                userContacts: res.userContacts,
-                isFetching: false,
-                creatorName: creator.name,
-                creatorId: res.creatorId,
-                isAdmin: res.creatorId === this.context.userInfo.id,
-            });
-        } catch (e) {
-            alert("Error, no es posible conectarse al back-end");
-        }
+        this.setState({
+          groupName: res.name,
+          creationDate: res.creationDate,
+          description: res.description,
+          userContacts: res.userContacts,
+          isFetching: false,
+          creatorName: creator.name,
+          creatorId: res.creatorId,
+          isAdmin: res.creatorId === this.context.userInfo.id,
+          announcements: [
+            {
+              name: "Matias Boracchia",
+              date: "28/09/2021",
+              content: "Hola soy Mati",
+            },
+            {
+              name: "Manuel Pedrozo",
+              date: "27/09/2021",
+              content: "Buenas buenas",
+            },
+          ]
+        });
+      } catch (e) {
+        alert("Error, no es posible conectarse al back-end");
+      }
     }
 
     async addUserToGroup(groupId) {
@@ -186,6 +204,27 @@ class Group extends Component {
         return response.json();
     }
 
+    addAnnouncement() {
+      const date = new Date();
+      const newAnnouncements = this.state.announcements;
+      const newAnnouncement = {
+        name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
+        date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+        content: this.state.newAnnouncementContent,
+      }
+      newAnnouncements.unshift(newAnnouncement);
+      this.setState({
+        announcements: newAnnouncements,
+        newAnnouncementContent: "",
+      });
+    }
+  
+    deleteAnnouncement(id) {
+      const newAnnouncements = this.state.announcements;
+      newAnnouncements.splice(id, 1);
+      this.setState({announcements: newAnnouncements});
+    }
+
     render() {
         return (
             <div className="main-div">
@@ -195,17 +234,16 @@ class Group extends Component {
                             <Grid container direction="column" spacing={2}>
                                 <Grid item>
                                     <Button
-                                        fullWidth
-                                        id="back-button"
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => this.props.history.goBack()}
+                                      fullWidth
+                                      id="back-button"
+                                      variant="contained"
+                                      color="primary"
+                                      onClick={() => this.props.history.goBack()}
                                     >
-                                        <ArrowBackIosIcon id="back-icon"/>
+                                        <ArrowBackIosIcon id="back-icon" />
                                         VOLVER ATRÁS
                                     </Button>
                                 </Grid>
-
                                 <Grid item>
                                     <Paper>
                                         <Grid container>
@@ -227,7 +265,6 @@ class Group extends Component {
                                                     />
                                                 </Grid>
                                             )}
-
                                             <Grid item xs={9} id="group-name-grid">
                                                 <Typography id="group-name" variant="h5">
                                                     {!this.state.isFetching && this.state.groupName}
@@ -306,58 +343,53 @@ class Group extends Component {
                                 </Grid>
                             </Grid>
                         </Grid>
-
                         <Grid container item xs={6}>
                             <Grid container direction="column">
                                 <Grid
-                                    item
-                                    container
-                                    direction="row"
-                                    id="inner-mid-container"
-                                    spacing={2}
+                                  item
+                                  container
+                                  direction="row"
+                                  id="inner-mid-container"
+                                  spacing={2}
                                 >
                                     <Grid item xs={7}>
                                         <TextField
-                                            id="new-announcement-textfield"
-                                            fullWidth
-                                            label="Nuevo anuncio"
-                                            variant="outlined"
-                                            onChange={(e) => {
-                                                /*TODO*/
-                                            }}
+                                          id="new-announcement-textfield"
+                                          fullWidth
+                                          label="Nuevo anuncio"
+                                          variant="outlined"
+                                          onChange={(e) => this.setState({newAnnouncementContent: e.target.value})}
+                                          value={this.state.newAnnouncementContent}
                                         />
                                     </Grid>
                                     <Grid item xs={5}>
                                         <Button
-                                            fullWidth
-                                            id="new-announcement-button"
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => {
-                                                /*TODO*/
-                                            }}
+                                          fullWidth
+                                          id="new-announcement-button"
+                                          variant="contained"
+                                          color="primary"
+                                          onClick={() => this.addAnnouncement()}
                                         >
-                                            AGREGAR ANUNCIO
+                                          AGREGAR ANUNCIO
                                         </Button>
                                     </Grid>
                                 </Grid>
-                                <Container>
-                                    <br></br>
-                                    <Post/>
-                                    <br></br>
-                                    <Post/>
-                                    <br></br>
-                                    <Post/>
-                                    <br></br>
-                                    <Post/>
-                                    <br></br>
-                                    <Post/>
-                                    <br></br>
-                                    <Post/>
-                                </Container>
+                                <Container id="announcement">
+                                    {   !this.state.isFetching &&
+                                        this.state.announcements.map((announcement, index) => (
+                                          <GroupAnnouncement
+                                            key={index}
+                                            canDelete={this.state.isAdmin || announcement.name === `${this.context.userInfo.name} ${this.context.userInfo.surname}`}
+                                            handleDelete={() => this.deleteAnnouncement(index)}
+                                            name={announcement.name}
+                                            date={announcement.date}
+                                            content={announcement.content}
+                                          />
+                                        ))
+                                    }
+                                </Container>      
                             </Grid>
                         </Grid>
-
                         <Grid container item xs={3}>
                             <Grid container item direction="column" spacing={2}>
                                 <Grid item>
@@ -387,7 +419,7 @@ class Group extends Component {
                                     )}
                                 </Grid>
                             </Grid>
-                        </Grid>
+                        </Grid>  
                     </Grid>
                     <SimpleSnackbar
                       open={this.state.openAbandonGroupSnack}
