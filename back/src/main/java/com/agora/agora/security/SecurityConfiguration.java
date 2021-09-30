@@ -1,5 +1,7 @@
 package com.agora.agora.security;
 
+import com.agora.agora.exceptions.ForbiddenElementException;
+import com.agora.agora.repository.JwtBlacklistRepository;
 import com.agora.agora.security.jwt.JWTConfigurer;
 import com.agora.agora.security.jwt.TokenProvider;
 import com.agora.agora.service.AuthService;
@@ -31,11 +33,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final TokenProvider tokenProvider;
     private AuthService authService;
+    private JwtBlacklistRepository blacklistRepository;
 
     @Autowired
-    public SecurityConfiguration(AuthService authService, TokenProvider tokenProvider) {
+    public SecurityConfiguration(AuthService authService, TokenProvider tokenProvider, JwtBlacklistRepository blacklistRepository) {
         this.tokenProvider = tokenProvider;
         this.authService = authService;
+        this.blacklistRepository = blacklistRepository;
     }
 
     @Bean
@@ -45,31 +49,31 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                .and()
-                .csrf()
-                .disable()
-                .headers()
-                .frameOptions()
-                .disable()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST,"/user/**").permitAll()
-                .antMatchers("**").authenticated()
-                .and()
-                .apply(securityConfigurerAdapter())
-                .and()
-                .cors();
+            http
+                    .exceptionHandling()
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    .and()
+                    .csrf()
+                    .disable()
+                    .headers()
+                    .frameOptions()
+                    .disable()
+                    .and()
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .authorizeRequests()
+                    .antMatchers("/auth/**").permitAll()
+                    .antMatchers(HttpMethod.POST,"/user/**").permitAll()
+                    .antMatchers("**").authenticated()
+                    .and()
+                    .apply(securityConfigurerAdapter())
+                    .and()
+                    .cors();
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
-        return new JWTConfigurer(tokenProvider);
+        return new JWTConfigurer(tokenProvider, blacklistRepository);
     }
 
     @Override
@@ -78,7 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers(
                         "/v2/api-docs",
                         "/configuration/ui",
