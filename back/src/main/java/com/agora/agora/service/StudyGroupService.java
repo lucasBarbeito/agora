@@ -164,7 +164,7 @@ public class StudyGroupService {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = userRepository.findUserByEmail(email).get();
-        if (user.equals(studyGroupOptional.get().getCreator()) || user.equals(postOptional.get().getCreator())) {
+        if (user.getId() == studyGroupOptional.get().getCreator().getId() || user.getId() == postOptional.get().getCreator().getId()) {
             postRepository.delete(postOptional.get());
             return;
         }
