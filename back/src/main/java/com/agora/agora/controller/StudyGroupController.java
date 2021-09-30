@@ -90,4 +90,10 @@ public class StudyGroupController {
         int postId = groupService.createPost(studyGroupId, postForm);
         return ResponseEntity.created(URI.create("/studyGroup/" + studyGroupId + "/forum/" + postId)).build();
     }
+
+    @PostMapping(value = "/{id}/me")
+    public ResponseEntity addCurrentUserToGroup(@PathVariable("id") int studyGroupId){
+        groupService.addCurrentUserToStudyGroup(studyGroupId);
+        return ResponseEntity.ok().build();
+    }
 }
