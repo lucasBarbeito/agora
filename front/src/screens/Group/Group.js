@@ -65,8 +65,27 @@ class Group extends Component {
         this.fetchGroupInformation();
     }
 
-    deleteGroup = () => {
-        this.props.history.push("/home");
+    deleteGroup = async () => {
+      const groupId = this.props.match.params.id;
+      this.setState({requestLoading: true})
+      // try {
+      //   const response = await fetch(`${baseUrl}/studyGroup/${groupId}/me`, {
+      //       method: "DELETE",
+      //       headers: {
+      //           "Content-type": "application/json; charset=UTF-8",
+      //           Authorization: `Bearer ${this.context.token}`,
+      //       },
+      //   })
+
+      //   if (response.ok) {
+      //       this.setState({requestLoading: false})
+      //       this.props.history.push("/home");
+      //   } else {
+      //       this.setState({requestLoading: false, snackOpen: true})
+      //   }
+      // } catch (e) {
+      //     alert("Error, no es posible conectarse al back-end");
+      // } 
     };
 
     abandonGroup = async () => {
