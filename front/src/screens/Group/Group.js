@@ -35,9 +35,7 @@ class Group extends Component {
       description: "",
       confirmationDialogIsOpen: false,
       isFetching: true,
-      groupName: "",
       creationDate: "",
-      description: "",
       creatorName: "",
     };
   }
@@ -195,6 +193,8 @@ class Group extends Component {
                             <EditIcon id="edit-icon" />
                           </IconButton>
                           <EditGroup
+                            groupId = {this.props.match.params.id}
+                            token = {this.context.token}
                             visible={this.state.editGroupFormVisible}
                             onClose={() => this.handleEditGroupClick()}
                             initialGroupName={this.state.groupName}
