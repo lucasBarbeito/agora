@@ -715,6 +715,28 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void deletePostWithBadStudyGroupIdShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + -1 + "/forum/" + data.post.getId();
+        MvcResult deleteResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        int status = deleteResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void deletePostWithBadUserShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
+        MvcResult deleteResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        int status = deleteResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deletePostWithUserCreatorShould() throws Exception {
         String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
         MvcResult deleteResult = mvc.perform(
                 MockMvcRequestBuilders.delete(uri)
@@ -722,6 +744,19 @@ public class StudyGroupControllerTest extends AbstractTest{
         int status = deleteResult.getResponse().getStatus();
         assertEquals(204, status);
     }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deletePostWithPostCreatorShould() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
+        MvcResult deleteResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        int status = deleteResult.getResponse().getStatus();
+        assertEquals(204, status);
+    }
+
+
 
 
 }
