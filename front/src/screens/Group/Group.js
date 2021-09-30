@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {
     Button,
+    CircularProgress,
     Container,
     Dialog,
     DialogActions,
@@ -12,7 +13,7 @@ import {
     IconButton,
     Paper,
     Typography,
-    TextField, CircularProgress, Snackbar,
+    TextField,
 } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
@@ -24,6 +25,7 @@ import GroupMembersAccordion from "../../common/GroupMembersAccordion/GroupMembe
 import {UserContext} from "../../user-context";
 import {withRouter} from "react-router-dom";
 import baseUrl from "../../baseUrl";
+import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js"
 
 class Group extends Component {
     constructor(props) {
@@ -38,7 +40,8 @@ class Group extends Component {
             creationDate: "",
             creatorName: "",
             requestLoading: false,
-            snackOpen: false
+            openAbandonGroupSnack: false,
+            openInvitationLinkSnack: false
         };
     }
 
@@ -85,7 +88,7 @@ class Group extends Component {
                 this.setState({requestLoading: false})
                 this.props.history.push("/home");
             } else {
-                this.setState({requestLoading: false, snackOpen: true})
+                this.setState({requestLoading: false, openAbandonGroupSnack: true})
             }
         } catch (e) {
             alert("Error, no es posible conectarse al back-end");
@@ -111,7 +114,7 @@ class Group extends Component {
         try {
             let res = await this.getInvitationLink();
             navigator.clipboard.writeText(res);
-            alert("Link de invitación copiado al portapapeles");
+            this.setState({openInvitationLinkSnack: true})
         } catch (e) {
             alert("Error, no es posible conectarse al back-end");
         }
@@ -368,6 +371,11 @@ class Group extends Component {
                                         <LinkIcon id="invite-icon"/>
                                         INVITAR AL GRUPO
                                     </Button>
+                                    <SimpleSnackbar
+                                      open={this.state.openInvitationLinkSnack}
+                                      handleClose={() => this.setState({openInvitationLinkSnack: false})}
+                                      message="Link de invitación copiado al portapapeles"
+                                    />
                                 </Grid>
                                 <Grid item>
                                     {!this.state.isFetching && (
@@ -381,11 +389,10 @@ class Group extends Component {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Snackbar open={this.state.snackOpen}
-                              onClose={() => this.setState({snackOpen: false})}
-                              message="Hubo un error al abandonar el grupo"
-                              action={<Button color="inherit" size="small"
-                                              onClick={() => this.setState({snackOpen: false})}>x</Button>}
+                    <SimpleSnackbar
+                      open={this.state.openAbandonGroupSnack}
+                      handleClose={() => this.setState({openAbandonGroupSnack: false})}
+                      message="Hubo un error al abandonar el grupo"
                     />
                 </Container>
             </div>
