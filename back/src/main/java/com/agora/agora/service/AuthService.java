@@ -1,6 +1,8 @@
 package com.agora.agora.service;
 
+import com.agora.agora.model.JwtBlacklist;
 import com.agora.agora.model.User;
+import com.agora.agora.repository.JwtBlacklistRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -20,9 +22,11 @@ import com.agora.agora.exceptions.ForbiddenElementException;
 public class AuthService implements AuthenticationProvider {
 
     private UserRepository userRepository;
+    private JwtBlacklistRepository blacklistRepository;
 
     @Autowired
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, JwtBlacklistRepository blacklistRepository) {
+        this.blacklistRepository = blacklistRepository;
         this.userRepository = userRepository;
     }
 
@@ -55,6 +59,12 @@ public class AuthService implements AuthenticationProvider {
             return BCrypt.checkpw(password, user.getPassword());
         }
         return false;
+    }
+
+    public int logout(String token){
+        JwtBlacklist blacklist = new JwtBlacklist(token);
+        blacklistRepository.save(blacklist);
+        return blacklist.getId();
     }
 
     public boolean checkUsername(String username) {
