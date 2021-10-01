@@ -67,8 +67,11 @@ class LoginPage extends Component {
         } else {
           const res = await response.json();
           const { setToken } = this.context;
-          setToken(res.token);
-          this.props.history.push("/home");
+          if (this.props.history.location.state) {
+            setToken(res.token, this.props.history.location.state.from);
+          } else {
+            setToken(res.token);
+          }
         }
       } catch (e) {
         alert("Error, no es posible conectarse al back-end");
