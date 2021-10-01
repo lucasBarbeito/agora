@@ -81,7 +81,7 @@ public class StudyGroupControllerTest extends AbstractTest{
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
 
-            post = new Post("...", group1, user1, LocalDateTime.now());
+            post = new Post("...", group1, user2, LocalDateTime.now());
             postRepository.save(post);
         }
 
@@ -746,7 +746,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("tolkien@gmail.com")
+    @WithMockUser("herbert@gmail.com")
     public void deletePostWithPostCreatorShould() throws Exception {
         String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
         MvcResult deleteResult = mvc.perform(
