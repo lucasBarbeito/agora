@@ -5,6 +5,7 @@ import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
@@ -17,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -60,11 +62,35 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public List<StudyGroup> findStudyGroups(Optional<String> text) {
-        if (text.isPresent()) {
-            return studyGroupUsersRepository.findByNameOrDescription(text.get());
+    public List<StudyGroupDTO> findStudyGroups(Optional<String> text) {
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<StudyGroup> studyGroups;
+            List<StudyGroupDTO> studyGroupDTOS = new ArrayList<>();
+            if (text.isPresent()) {
+                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get());
+            }else {
+                studyGroups = groupRepository.findAll();
+            }
+            for (StudyGroup studyGroup : studyGroups) {
+                if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
+                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+                    studyGroupDTO.setCurrentUserIsMember(true);
+                    studyGroupDTOS.add(studyGroupDTO);
+                }else{
+                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+                    studyGroupDTO.setCurrentUserIsMember(false);
+                    studyGroupDTOS.add(studyGroupDTO);
+                }
+            }
+            return studyGroupDTOS;
+        }else{
+            throw new NoSuchElementException("User does not exist.");
         }
-        return groupRepository.findAll();
     }
 
     public void addUserToStudyGroup(int studyGroupId, int userId){
