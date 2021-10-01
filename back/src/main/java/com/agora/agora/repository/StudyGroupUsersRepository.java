@@ -19,4 +19,5 @@ public interface StudyGroupUsersRepository extends CrudRepository<StudyGroupUser
                             "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))")
     List<StudyGroup> findByNameOrDescription(@Param("text")String text);
 
+    void deleteAllByStudyGroupId(int studyGroupId);
 }
