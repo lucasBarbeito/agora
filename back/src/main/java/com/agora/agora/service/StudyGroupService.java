@@ -155,4 +155,24 @@ public class StudyGroupService {
         throw new NoSuchElementException("User does not exist");
 
     }
+
+    public List<Post> getStudyGroupPosts(int studyGroupId){
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
+            if(groupOptional.isPresent()){
+                Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
+                if(optionalStudyGroupUser.isPresent()){
+                    return postRepository.findAllByStudyGroupId(studyGroupId);
+                }
+                throw new ForbiddenElementException("Only members can see posts.");
+            }
+            throw new NoSuchElementException("Group does not exist");
+        }
+        throw new NoSuchElementException("User does not exist");
+    }
 }
