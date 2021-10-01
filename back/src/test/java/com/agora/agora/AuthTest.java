@@ -2,8 +2,11 @@ package com.agora.agora;
 
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.LoginForm;
+import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.type.UserType;
+import com.agora.agora.repository.JwtBlacklistRepository;
 import com.agora.agora.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
@@ -12,8 +15,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.NestedServletException;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -21,6 +28,8 @@ public class AuthTest extends AbstractTest{
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JwtBlacklistRepository blacklistRepository;
 
     private final Data data = new Data();
 
@@ -121,5 +130,59 @@ public class AuthTest extends AbstractTest{
 
         int status = loginResult.getResponse().getStatus();
         assertEquals(403, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void addingTokenToBlackListShouldAdd() throws Exception {
+        String uri = "/auth";
+        String token = "123";
+        MvcResult deleteTokenResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + token)).andReturn();
+        int status = deleteTokenResult.getResponse().getStatus();
+        assertEquals(200,status);
+        String tokenInBlackList = blacklistRepository.findByToken(token).getToken();
+        assertEquals(token, tokenInBlackList);
+    }
+
+    @Test
+    public void tryingToDeleteUserWithoutTokenShouldForbid() throws Exception {
+        String uri = "/auth";
+        MvcResult deleteTokenResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = deleteTokenResult.getResponse().getStatus();
+        assertEquals(401,status);
+    }
+
+    @WithMockUser("USER")
+    public void deletingExistingTokenShouldForbid() throws Exception {
+        String uri = "/auth";
+        String protectedRoute= "/user/" + data.user.getId();
+        LoginForm loginForm = new LoginForm("carlos@gmail.com", "Carlos123");
+
+        MvcResult loginResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(loginForm))).andReturn();
+
+        ObjectMapper mapper = new ObjectMapper();
+        String loginContent = loginResult.getResponse().getContentAsString();
+        String token = mapper.readTree(loginContent).get("token").toString();
+
+        mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + token)).andReturn();
+
+        MvcResult getUserResult =mvc.perform(
+                MockMvcRequestBuilders.get(protectedRoute)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("Authorization", "Bearer " + token)).andReturn();
+        int status = getUserResult.getResponse().getStatus();
+        System.out.println(status);
+        assertEquals(401,status);
     }
 }
