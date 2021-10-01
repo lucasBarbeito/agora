@@ -147,6 +147,16 @@ public class AuthTest extends AbstractTest{
         assertEquals(token, tokenInBlackList);
     }
 
+    @Test
+    public void tryingToDeleteUserWithoutTokenShouldForbid() throws Exception {
+        String uri = "/auth";
+        MvcResult deleteTokenResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = deleteTokenResult.getResponse().getStatus();
+        assertEquals(401,status);
+    }
+
     @WithMockUser("USER")
     public void deletingExistingTokenShouldForbid() throws Exception {
         String uri = "/auth";
