@@ -55,16 +55,4 @@ public class UserController {
         final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
         return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-
-    @GetMapping(value = "/onlyMyGroups={onlyMyGroups}")
-    public List<StudyGroupDTO> getGroups(@PathVariable("onlyMyGroups") @RequestBody Optional<Boolean> onlyMyGroups){
-        final List<StudyGroup> groups = userService.findGroups(onlyMyGroups);
-        List<StudyGroupDTO> groupDTOs = new ArrayList<>();
-
-        for (StudyGroup studyGroup : groups) {
-            StudyGroupDTO groupForm = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
-            groupDTOs.add(groupForm);
-        }
-        return groupDTOs;
-    }
 }

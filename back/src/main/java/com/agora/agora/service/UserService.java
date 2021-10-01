@@ -78,20 +78,4 @@ public class UserService {
         }
         throw new NoSuchElementException();
     }
-
-    public List<StudyGroup> findGroups(Optional<Boolean> onlyMyGroups){
-        Optional<User> userOptional = findCurrentUser();
-        User currentUser = userOptional.orElseThrow(() -> new NoSuchElementException(String.format("User: %d does not exist.", userOptional.get().getId())));
-        if(!onlyMyGroups.isPresent() || !onlyMyGroups.get()){
-            return studyGroupRepository.findAll();
-        }
-        else{
-            List<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId());
-            List<StudyGroup> myGroups = new ArrayList<>();
-            for (StudyGroupUser userGroup : userGroups) {
-                myGroups.add(userGroup.getStudyGroup());
-            }
-            return myGroups;
-        }
-    }
 }

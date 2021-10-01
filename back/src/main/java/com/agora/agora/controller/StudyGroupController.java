@@ -44,6 +44,13 @@ public class StudyGroupController {
         return fromStudyGroupToStudyGroupDTO(studyGroups);
     }
 
+    @GetMapping(value = "/me")
+    public List<StudyGroupDTO> getCurrentUserGroups(){
+        final List<StudyGroup> groups = groupService.findCurrentUserGroups();
+        List<StudyGroupDTO> groupDTOs = groups.stream().map(group -> new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate())).collect(Collectors.toList());
+        return groupDTOs;
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity getStudyGroupInfoById(@PathVariable("id") int id){
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
