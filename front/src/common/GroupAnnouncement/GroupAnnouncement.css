@@ -1,0 +1,49 @@
+#group-announcement {
+  margin: 15px 0 15px 0;
+  padding: 0;
+}
+
+#announcement-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  height: 25px;
+}
+
+#cancel-button-and-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+}
+
+#delete-button {
+  color: #E8A5A5;
+  padding: 0;
+  margin-right: 15px;
+}
+
+#delete-icon {
+  font-size: 50px;
+}
+
+#announcement-name {
+  font-weight: 550;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+} 
+
+#announcement-date {
+  display: flex;
+}
+
+#announcement-content {
+  margin: 25px 0 10px 5px;
+}
