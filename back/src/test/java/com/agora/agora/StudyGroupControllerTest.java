@@ -6,6 +6,7 @@ import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.LoginForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
@@ -15,6 +16,7 @@ import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -60,14 +63,17 @@ public class StudyGroupControllerTest extends AbstractTest{
     private class Data {
         User user1;
         User user2;
+        User user3;
         StudyGroup group1;
         StudyGroup group2;
 
         void setup() {
             user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
             user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false, UserType.USER);
+            user3 = new User( "Pepe", "Mendez", "pepe@mail.com", "Pepe12345", false, UserType.USER);
             userRepository.save(user1);
             userRepository.save(user2);
+            userRepository.save(user3);
 
             group1 = new StudyGroup("Lord of the rings", "...", user1, LocalDate.of(2021, 8, 17));
             group2 = new StudyGroup("Dune", "....", user2, LocalDate.of(2021, 8, 16));
@@ -695,5 +701,47 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(404, status);
     }
 
+    @Test
+    @WithMockUser(username = "pepe@mail.com")
+    public void addingNotMemberCurrentUserShouldAdd() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
 
+        assertEquals(200, result.getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "tolkien@gmail.com")
+    public void whenAddingUserThatExistsInGroupShouldReturnConflict() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(409, result.getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "tolkien@gmail.com")
+    public void whenAddingToNonExistingGroupShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/100/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(404, result.getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "NonExistingUser")
+    public void whenAddingNonExistingUserShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(404, result.getResponse().getStatus());
+    }
 }
