@@ -204,4 +204,6 @@ public class StudyGroupCreationTest {
 
         assertEquals(expectedJson, jsonEditForm.write(form).getJson());
     }
+
+
 }

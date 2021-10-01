@@ -5,35 +5,35 @@
   font-weight: 400;
   letter-spacing: 0px;
   line-height: 2.083vw;
-  color: #E6E2D5;
+  color: #e6e2d5;
 }
 
-#email-verification-buttons-grid{
+#email-verification-buttons-grid {
   margin-top: 0.5vh;
 }
 
-#email-verification-left-grid{
+#email-verification-left-grid {
   margin-top: 26vh;
   margin-left: 10.1vw;
 }
 
-#email-verification-main-grid{
-position: absolute;
-margin-top: 5vh;
+#email-verification-main-grid {
+  position: absolute;
+  margin-top: 5vh;
 }
 
-.email-verification-agora-Logo{
-width: 32.4vw;
-margin-top: 2.6vw;
-margin-left:10.41vw;
+.email-verification-agora-Logo {
+  width: 32.4vw;
+  margin-top: 2.6vw;
+  margin-left: 10.41vw;
 }
 
-#email-verification-button{
-width: 100%;
-height: 3.33vw;
-font-size: 0.85vw;
-letter-spacing: 0.091vw;
-background-color: #C5B2A5;
+#email-verification-button {
+  width: 100%;
+  height: 3.33vw;
+  font-size: 0.85vw;
+  letter-spacing: 0.091vw;
+  background-color: #c5b2a5;
 }
 
 #email-verification-spinner-container {
@@ -44,6 +44,6 @@ background-color: #C5B2A5;
 }
 
 #email-verification-spinner {
-  color: #E3E8E6;
+  color: #e3e8e6;
   margin-top: 500px;
 }
