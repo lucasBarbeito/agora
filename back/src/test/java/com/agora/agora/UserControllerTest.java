@@ -31,7 +31,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class UserControlerTest extends AbstractTest{
+public class UserControllerTest extends AbstractTest{
 
     @Autowired
     private StudyGroupRepository groupRepository;
