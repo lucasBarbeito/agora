@@ -147,12 +147,10 @@ public class AuthTest extends AbstractTest{
         assertEquals(token, tokenInBlackList);
     }
 
-    /*
-    @Test(expected = NestedServletException.class)
     @WithMockUser("USER")
     public void deletingExistingTokenShouldForbid() throws Exception {
         String uri = "/auth";
-        String protectedRoute= "/user/me";
+        String protectedRoute= "/user/" + data.user.getId();
         LoginForm loginForm = new LoginForm("carlos@gmail.com", "Carlos123");
 
         MvcResult loginResult = mvc.perform(
@@ -169,7 +167,6 @@ public class AuthTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", "Bearer " + token)).andReturn();
 
-
         MvcResult getUserResult =mvc.perform(
                 MockMvcRequestBuilders.get(protectedRoute)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -178,5 +175,4 @@ public class AuthTest extends AbstractTest{
         System.out.println(status);
         assertEquals(401,status);
     }
-     */
 }
