@@ -17,6 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -154,6 +155,25 @@ public class StudyGroupService {
         }
         throw new NoSuchElementException("User does not exist");
 
+    }
+
+    public List<StudyGroup> findCurrentUserGroups(){
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+
+        if(optionalUser.isPresent()){
+            User currentUser = optionalUser.get();
+            List<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId());
+            List<StudyGroup> myGroups = new ArrayList<>();
+            for (StudyGroupUser userGroup : userGroups) {
+                myGroups.add(userGroup.getStudyGroup());
+            }
+            return myGroups;
+        }
+        else{
+            throw new NoSuchElementException("User does not exist.");
+        }
     }
 
     public List<Post> getStudyGroupPosts(int studyGroupId){

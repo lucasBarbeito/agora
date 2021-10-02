@@ -1,8 +1,12 @@
 package com.agora.agora.service;
 
+import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.type.UserType;
+import com.agora.agora.repository.StudyGroupRepository;
+import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,19 +15,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
 
     private UserRepository userRepository;
+    private StudyGroupRepository studyGroupRepository;
+    private StudyGroupUsersRepository studyGroupUsersRepository;
     private EmailService emailService;
 
     @Autowired
-    public UserService(UserRepository userRepository, EmailService emailService) {
+    public UserService(UserRepository userRepository,StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.studyGroupRepository = studyGroupRepository;
+        this.studyGroupUsersRepository = studyGroupUsersRepository;
         this.emailService = emailService;
     }
 
