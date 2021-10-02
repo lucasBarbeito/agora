@@ -103,7 +103,7 @@ class Group extends Component {
         const groupId = this.props.match.params.id;
         this.setState({requestLoading: true})
         try {
-            const response = await fetch(`${baseUrl}/studyGroup/${groupId}/me`, {
+            const response = await fetch(`${baseUrl}/studyGroup/${groupId}`, {
                 method: "DELETE",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
