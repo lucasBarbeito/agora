@@ -1,11 +1,14 @@
 package com.agora.agora.service;
 
 import com.agora.agora.exceptions.ForbiddenElementException;
+import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
+import com.agora.agora.repository.PostRepository;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
@@ -14,7 +17,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,12 +26,14 @@ public class StudyGroupService {
 
     private StudyGroupRepository groupRepository;
     private UserRepository userRepository;
+    private PostRepository postRepository;
     private StudyGroupUsersRepository studyGroupUsersRepository;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, StudyGroupUsersRepository studyGroupUsersRepository) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
     }
 
@@ -126,5 +130,49 @@ public class StudyGroupService {
 
     public String getInviteLink(int id) {
         return "http://localhost:3000/studyGroup/"+id;
+    }
+
+    public int createPost(int studyGroupId, PostForm postForm) {
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            Optional<StudyGroup> studyGroupOptional = groupRepository.findById(studyGroupId);
+            if (studyGroupOptional.isPresent()) {
+                StudyGroup studyGroup = studyGroupOptional.get();
+                Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
+                if (optionalStudyGroupUser.isPresent()) {
+                    Post post = new Post(postForm.getContent(), studyGroup, user, postForm.getCreationDateAndTime());
+                    postRepository.save(post);
+                    return post.getId();
+                }
+                throw new ForbiddenElementException("User does not belong to study group.");
+            }
+            throw new NoSuchElementException("Group does not exist");
+        }
+        throw new NoSuchElementException("User does not exist");
+
+    }
+
+    public List<Post> getStudyGroupPosts(int studyGroupId){
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
+            if(groupOptional.isPresent()){
+                Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
+                if(optionalStudyGroupUser.isPresent()){
+                    return postRepository.findAllByStudyGroupId(studyGroupId);
+                }
+                throw new ForbiddenElementException("Only members can see posts.");
+            }
+            throw new NoSuchElementException("Group does not exist");
+        }
+        throw new NoSuchElementException("User does not exist");
     }
 }

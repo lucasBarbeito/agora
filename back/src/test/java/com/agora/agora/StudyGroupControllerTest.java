@@ -1,13 +1,16 @@
 package com.agora.agora;
 
 import com.agora.agora.controller.StudyGroupController;
+import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
+import com.agora.agora.repository.PostRepository;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +50,9 @@ public class StudyGroupControllerTest extends AbstractTest{
     private StudyGroupUsersRepository studyGroupUsersRepository;
 
     @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
     private StudyGroupController studyGroupController;
 
     private Data data = new Data();
@@ -56,6 +63,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         User user2;
         StudyGroup group1;
         StudyGroup group2;
+        Post post1;
+        Post post2;
 
         void setup() {
             user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
@@ -72,9 +81,15 @@ public class StudyGroupControllerTest extends AbstractTest{
             StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
+
+            post1 = new Post("LOTR 2 is out", group1, user1, LocalDateTime.of(2021, 9, 23, 3, 15));
+            post2 = new Post("LOTR 2 is great", group1, user1, LocalDateTime.of(2021, 9, 24, 12, 3));
+            postRepository.save(post1);
+            postRepository.save(post2);
         }
 
         void rollback() {
+            postRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
@@ -629,4 +644,160 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(groupForm.getCreatorId(), groupDTOId.getCreatorId());
     }
 
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void creatingPostShouldReturnCreated() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void creatingPostShouldReturnForbidden() throws Exception {
+        StudyGroup studyGroup = data.group2;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(403, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void creatingPostWithWrongStudyGroupIdShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + -1 + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void creatingPostWithWrongUserIdShouldReturnNotFound() throws Exception {
+        StudyGroup studyGroup = data.group2;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void getPostsFromStudyGroupShouldReturnOk() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void getPostsFromStudyGroupWithWrongIdShouldReturnNotFound() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+
+        String getUri = "/studyGroup/" + -1 + "/forum";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(getUri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(404, getStatus);
+    }
+
+    @Test
+    @WithMockUser("tolk@gmail.com")
+    public void getPostsFromStudyGroupWithNonExistingUserShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(404, getStatus);
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getPostsFromStudyGroupWithNonMemberUserShouldReturnForbidden() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(403, getStatus);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void getPostsFromStudyGroupShouldReturnPostsInOrder() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        List<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<List<PostDTO>>(){});
+
+        assertEquals(3, postDTOS.size());
+        assertEquals(data.post1.getContent(), postDTOS.get(0).getContent());
+        assertEquals(data.post2.getCreationDateAndTime(), postDTOS.get(1).getCreationDateAndTime());
+    }
 }

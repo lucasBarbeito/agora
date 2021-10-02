@@ -4,7 +4,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import { Slide, TextField , CircularProgress, Box} from "@material-ui/core";
+import { TextField , CircularProgress, Box } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import baseUrl from "../../baseUrl";
 
@@ -121,7 +121,7 @@ export default function CustomizedDialogs(props) {
             onChange={(text) => setDescription(text.target.value)}
           />
           <div style={{display: 'flex', justifyContent: 'center'}}>
-            {waitingResponse ?<CircularProgress  size={20}/> : null}
+            {waitingResponse ? <CircularProgress  size={20}/> : null}
           </div>
           {editUnsuccessfully ? (
                 <Box id="editGroup-warning-box">

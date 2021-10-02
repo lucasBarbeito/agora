@@ -1,12 +1,11 @@
 package com.agora.agora.controller;
 
+import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.dto.FullStudyGroupDTO;
-import com.agora.agora.model.dto.StudyGroupDTO;
-import com.agora.agora.model.dto.StudyGroupIdDTO;
-import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.service.StudyGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,4 +82,18 @@ public class StudyGroupController {
     public String getLinkToStudyGroupPage(@PathVariable("id") int studyGroupId){
         return groupService.getInviteLink(studyGroupId);
     }
+
+    @PostMapping(value = "/{id}/forum")
+    public ResponseEntity postAnnouncementToStudyGroup(@PathVariable("id") int studyGroupId, @Valid @RequestBody PostForm postForm) {
+        int postId = groupService.createPost(studyGroupId, postForm);
+        return ResponseEntity.created(URI.create("/studyGroup/" + studyGroupId + "/forum/" + postId)).build();
+    }
+
+    @GetMapping(value = "/{id}/forum")
+    public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId){
+        List<Post> groupPosts = groupService.getStudyGroupPosts(studyGroupId);
+        List<PostDTO> postDTOS = groupPosts.stream().map(post -> new PostDTO(post.getId(), post.getContent(), post.getStudyGroup().getId(), post.getCreator().getId(), post.getCreationDateAndTime())).collect(Collectors.toList());
+        return postDTOS;
+    }
+
 }

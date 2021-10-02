@@ -42,10 +42,21 @@ class Home extends Component {
     this.getGroups();
   }
 
-  searchGroups() {
-    console.log(
-      `searching group named ${this.state.groupName} with labels: ${this.state.tags}`
-    );
+  async searchGroups() {
+    const esc = encodeURIComponent;
+    try {
+      const response = await fetch(`${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`, {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        }
+      })
+      this.setState({
+        studyGroups: await response.json(),
+      });
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
   }
 
   joinGroup(id) {
