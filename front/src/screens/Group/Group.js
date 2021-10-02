@@ -67,8 +67,29 @@ class Group extends Component {
         this.fetchGroupInformation();
     };
 
-    deleteGroup = () => {
-        this.props.history.push("/home");
+    deleteGroup = async () => {
+      const groupId = this.props.match.params.id;
+      this.setState({requestLoading: true});
+      try {
+          const response = await fetch(`${baseUrl}/studyGroup/${groupId}`, {
+              method: "DELETE",
+              headers: {
+                  "Content-type": "application/json; charset=UTF-8",
+                  Authorization: `Bearer ${this.context.token}`,
+              },
+            })
+          this.setState({requestLoading: false});
+          if (response.ok) {
+              this.props.history.push("/home");
+          } else {
+              this.setState({
+                openAbandonGroupSnack: true,
+                confirmationDialogIsOpen: false,
+              })
+          }
+      } catch (e) {
+          alert("Error, no es posible conectarse al back-end");
+      } 
     };
 
     abandonGroup = async () => {
@@ -316,6 +337,7 @@ class Group extends Component {
                                                                 confirmationDialogIsOpen: false,
                                                             })
                                                         }
+                                                        disabled={this.state.requestLoading}
                                                     >
                                                         Cancelar
                                                     </Button>
@@ -419,7 +441,7 @@ class Group extends Component {
                     <SimpleSnackbar
                       open={this.state.openAbandonGroupSnack}
                       handleClose={() => this.setState({openAbandonGroupSnack: false})}
-                      message="Hubo un error al abandonar el grupo"
+                      message={`Hubo un error al ${this.state.isAdmin ? 'eliminar' : 'abandonar'} el grupo`}
                     />
                 </Container>
             </div>
