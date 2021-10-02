@@ -1,40 +1,24 @@
 package com.agora.agora;
 
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.form.UserForm;
-import com.agora.agora.model.type.UserType;
-import com.agora.agora.repository.StudyGroupRepository;
-import com.agora.agora.repository.StudyGroupUsersRepository;
-import com.agora.agora.repository.UserRepository;
 import com.agora.agora.service.StudyGroupService;
 import com.agora.agora.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 
 @Component
 public class StartUpDatabase {
-    private UserRepository userRepository;
-    private UserService userService;
-    private StudyGroupService studyGroupService;
-    private StudyGroupRepository studyGroupRepository;
-    private StudyGroupUsersRepository studyGroupUsersRepository;
+    private final UserService userService;
+    private final StudyGroupService studyGroupService;
 
     @Autowired
-    public StartUpDatabase(UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, UserService userService, StudyGroupService studyGroupService) {
-        this.userRepository = userRepository;
-        this.studyGroupRepository = studyGroupRepository;
-        this.studyGroupUsersRepository = studyGroupUsersRepository;
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
     }
@@ -60,18 +44,18 @@ public class StartUpDatabase {
                 UserForm user12 = new UserForm("Juan", "Cruz", "diaz@gmail.com", "Juan2015");
 
                 ArrayList<Integer> userIds = new ArrayList<>();
-                userIds.add(userService.save(user1));
-                userIds.add(userService.save(user2));
-                userIds.add(userService.save(user3));
-                userIds.add(userService.save(user4));
-                userIds.add(userService.save(user5));
-                userIds.add(userService.save(user6));
-                userIds.add(userService.save(user7));
-                userIds.add(userService.save(user8));
-                userIds.add(userService.save(user9));
-                userIds.add(userService.save(user10));
-                userIds.add(userService.save(user11));
-                userIds.add(userService.save(user12));
+                userIds.add(userService.saveCustom(user1,true, false));
+                userIds.add(userService.saveCustom(user2,true, false));
+                userIds.add(userService.saveCustom(user3,true, false));
+                userIds.add(userService.saveCustom(user4,true, false));
+                userIds.add(userService.saveCustom(user5,true, false));
+                userIds.add(userService.saveCustom(user6,false, false));
+                userIds.add(userService.saveCustom(user7,false, false));
+                userIds.add(userService.saveCustom(user8,false, false));
+                userIds.add(userService.saveCustom(user9,false, false));
+                userIds.add(userService.saveCustom(user10,false, false));
+                userIds.add(userService.saveCustom(user11,false, false));
+                userIds.add(userService.saveCustom(user12,false, false));
 
                 //Study Groups
                 StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userIds.get(0),LocalDate.of(2020, 10, 25));
@@ -119,13 +103,14 @@ public class StartUpDatabase {
                 groupIds.add(studyGroupService.create(group20));
                 groupIds.add(studyGroupService.create(group21));
 
+                int count = 0;
                 for (Integer groupId: groupIds) {
                     ArrayList<Integer> list = new ArrayList<>();
-                    for (int i = 0; i < 11; i++) {
+                    for (int i = 0; i < 12; i++) {
                         list.add(i);
                     }
-                    Collections.shuffle(list);
-                    for (int i = 0; i < 4; i++) {
+                    count++;
+                    for (int i = count%10; i < count%10+3; i++) {
                         studyGroupService.addUserToStudyGroup(groupId,userIds.get(list.get(i)));
                     }
                 }
