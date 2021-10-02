@@ -38,8 +38,7 @@ public class StudyGroupController {
 
     @GetMapping
     public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
-        List<StudyGroup> studyGroups = groupService.findStudyGroups(text);
-        return fromStudyGroupToStudyGroupDTO(studyGroups);
+        return groupService.findStudyGroups(text);
     }
 
     @GetMapping(value = "/me")
@@ -56,16 +55,6 @@ public class StudyGroupController {
         final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
         final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs));
         return studyGroupDTOOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
-    private List<StudyGroupDTO> fromStudyGroupToStudyGroupDTO(List<StudyGroup> studyGroups) {
-        List<StudyGroupDTO> studyGroupResponse = new ArrayList<>();
-
-        for (StudyGroup studyGroup : studyGroups) {
-            StudyGroupDTO groupForm = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
-            studyGroupResponse.add(groupForm);
-        }
-        return studyGroupResponse;
     }
 
     @PostMapping(value = "/{id}/{userId}")
