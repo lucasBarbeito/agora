@@ -44,13 +44,6 @@ class Group extends Component {
         };
     }
 
-    handleEditGroupClick = () => {
-        this.setState((state) => ({
-            editGroupFormVisible: !state.editGroupFormVisible,
-        }));
-    };
-
-
   handleEditGroupClick = () => {
     this.setState((state) => ({
       editGroupFormVisible: !state.editGroupFormVisible,
@@ -256,6 +249,8 @@ class Group extends Component {
                                                     </IconButton>
                                                     <EditGroup
                                                         visible={this.state.editGroupFormVisible}
+                                                        groupId = {this.props.match.params.id}
+                                                        token = {this.context.token}
                                                         onClose={() => this.handleEditGroupClick()}
                                                         initialGroupName={this.state.groupName}
                                                         initialDescription={this.state.description}
