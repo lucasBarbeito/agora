@@ -822,7 +822,72 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(data.post2.getCreationDateAndTime(), postDTOS.get(1).getCreationDateAndTime());
     }
 
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deleteStudyGroupWithCreatorShouldReturnOk() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri + "/" + data.group1.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+    }
 
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void deleteStudyGroupWithNonCreatorShouldReturnForbidden() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri + "/" + data.group1.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(403, status);
+    }
+
+    @Test
+    @WithMockUser("tolk@gmail.com")
+    public void deleteStudyGroupWithNonExistingUserShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri + "/" + data.group1.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deleteNonExistingStudyGroupUserShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri + "/" + -1)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deletedStudyGroupShouldBeDeleted() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri + "/" + data.group1.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+
+        MvcResult mvcGETResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri + "/" + data.group1.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGETResult.getResponse().getStatus();
+        assertEquals(404, getStatus);
+    }
 
     @Test
     @WithMockUser(username = "tolkien@gmail.com")

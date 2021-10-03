@@ -13,4 +13,6 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "where p.studyGroup.id = (:id)" +
             "ORDER BY p.creationDateAndTime ASC")
     List<Post> findAllByStudyGroupId(@Param("id")int id);
+
+    void deleteAllByStudyGroupId(int studyGroupId);
 }

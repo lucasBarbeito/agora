@@ -92,6 +92,12 @@ public class StudyGroupController {
         return postDTOS;
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteGroupById(@PathVariable("id") int studyGroupId){
+        groupService.deleteGroup(studyGroupId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/{id}/forum/{postId}")
     public ResponseEntity getGroupPostById(@PathVariable("id") int studyGroupId, @PathVariable("postId") int postId){
         Optional<Post> post = groupService.getStudyGroupPostById(studyGroupId, postId);
