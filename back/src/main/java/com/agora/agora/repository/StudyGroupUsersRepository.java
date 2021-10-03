@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface StudyGroupUsersRepository extends CrudRepository<StudyGroupUser, Integer> {
     List<StudyGroupUser> findStudyGroupUserByStudyGroupId(int studyGroupId);
     Optional<StudyGroupUser> findStudyGroupUserByStudyGroupIdAndAndUserId(int studyGroupId, int userId);
+    List<StudyGroupUser> findStudyGroupUserByUserId(int userId);
 
     @Query(value = "select sg from StudyGroup sg " +
                         "where (lower(sg.name) like lower(:text)) " +
