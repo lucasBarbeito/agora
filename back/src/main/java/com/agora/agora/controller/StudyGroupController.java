@@ -92,4 +92,9 @@ public class StudyGroupController {
         return postDTOS;
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteGroupById(@PathVariable("id") int studyGroupId){
+        groupService.deleteGroup(studyGroupId);
+        return ResponseEntity.ok().build();
+    }
 }

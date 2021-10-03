@@ -220,4 +220,29 @@ public class StudyGroupService {
         }
         throw new NoSuchElementException("User does not exist");
     }
+
+    public void deleteGroup(int studyGroupId){
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
+            if(groupOptional.isPresent()){
+                StudyGroup studyGroup = groupOptional.get();
+                if(studyGroup.getCreator().getId() == user.getId()){
+                    postRepository.deleteAll(postRepository.findAllByStudyGroupId(studyGroupId));
+                    studyGroupUsersRepository.deleteAll(studyGroupUsersRepository.findStudyGroupUserByStudyGroupId(studyGroupId));
+                    groupRepository.deleteById(studyGroupId);
+                }else{
+                    throw new ForbiddenElementException("Only group creator can delete group.");
+                }
+            }else{
+                throw new NoSuchElementException("Group does not exist.");
+            }
+        }else{
+            throw new NoSuchElementException("User does not exist");
+        }
+    }
 }
