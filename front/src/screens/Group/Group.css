@@ -136,3 +136,17 @@
   color: #000000de;
   opacity: 1;
 }
+#editGroup-warning-box {
+  background: #e8a5a5;
+  height: 54px;
+}
+
+#editGroup-warning-message {
+  padding-top: 15px;
+  letter-spacing: 0.25px;
+  font-family: "Roboto";
+  color: #00000099;
+  opacity: 1;
+  font-size: 14px;
+  margin-left: 11px;
+}

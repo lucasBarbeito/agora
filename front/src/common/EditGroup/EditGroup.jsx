@@ -4,12 +4,16 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import { Slide, TextField } from "@material-ui/core";
+import { TextField , CircularProgress, Box } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
+import baseUrl from "../../baseUrl";
 
 export default function CustomizedDialogs(props) {
   const [name, setName] = useState(props.initialGroupName);
   const [description, setDescription] = useState(props.initialDescription);
+  const [waringMsg, setWarningMsg] = useState("");
+  const [waitingResponse, setWaitingResponse] = useState(false);
+  const [editUnsuccessfully,setEditUnsuccessfully] = useState(false);
   const [label, setLabel] = useState([]);
   const labels = ["Etiqueta1", "Etiqueta2", "Etiqueta3"];
 
@@ -17,6 +21,46 @@ export default function CustomizedDialogs(props) {
     props.onChange(name, description);
     props.onClose();
   };
+
+ 
+  const waitABit = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(), 1000);
+    });
+  }
+
+  const requestBackChanges = async () =>{
+
+  
+    setWaitingResponse(true)
+    setEditUnsuccessfully(false)
+    setWarningMsg("")
+
+    try{
+      const response = await fetch(`${baseUrl}/studyGroup/${props.groupId}`,{
+      method: "PUT",
+      body: JSON.stringify({
+        "description": description,
+        "name": name
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        Authorization: `Bearer ${props.token}`,
+      },
+    })
+    if(response.ok){
+      setWaitingResponse(false)
+      handleSaveChanges()
+    } else if(response.status === 409){
+      setWarningMsg("Grupo creado con nombre ya existente")
+      setWaitingResponse(false)
+      setEditUnsuccessfully(true)
+    }
+  } catch (e){
+    alert("Error, no es posible conectarse al back-end");
+  }
+  
+} 
 
   return (
     <div>
@@ -76,11 +120,22 @@ export default function CustomizedDialogs(props) {
             defaultValue={description}
             onChange={(text) => setDescription(text.target.value)}
           />
+          <div style={{display: 'flex', justifyContent: 'center'}}>
+            {waitingResponse ? <CircularProgress  size={20}/> : null}
+          </div>
+          {editUnsuccessfully ? (
+                <Box id="editGroup-warning-box">
+                  <div id="editGroup-warning-message">
+                    {waringMsg}
+                  </div>
+                </Box>
+              ) : null}
         </DialogContent>
         <DialogActions>
           <Button
             id="edit-group-save-changes-button"
             autoFocus
+            disabled = {waitingResponse}
             onClick={() => props.onClose()}
           >
             Cancelar
@@ -88,7 +143,8 @@ export default function CustomizedDialogs(props) {
           <Button
             id="edit-group-save-changes-button"
             autoFocus
-            onClick={() => handleSaveChanges()}
+            disabled = {waitingResponse}
+            onClick={() => requestBackChanges()}
           >
             Guardar Cambios
           </Button>
@@ -97,3 +153,5 @@ export default function CustomizedDialogs(props) {
     </div>
   );
 }
+
+
