@@ -97,4 +97,11 @@ public class StudyGroupController {
         groupService.deleteGroup(studyGroupId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping(value = "/{id}/forum/{postId}")
+    public ResponseEntity getGroupPostById(@PathVariable("id") int studyGroupId, @PathVariable("postId") int postId){
+        Optional<Post> post = groupService.getStudyGroupPostById(studyGroupId, postId);
+        Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateAndTime()));
+        return postDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 }
