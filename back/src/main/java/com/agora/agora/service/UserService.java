@@ -78,4 +78,12 @@ public class UserService {
         }
         throw new NoSuchElementException();
     }
+
+    public List<User> findUsers(Optional<String> name) {
+        if (name.isPresent()) {
+            return userRepository.findByNameAndOrSurname(name.get());
+        } else {
+            return userRepository.findAll();
+        }
+    }
 }
