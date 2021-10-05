@@ -1,6 +1,5 @@
 package com.agora.agora;
 
-import com.agora.agora.controller.StudyGroupController;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
@@ -13,27 +12,19 @@ import com.agora.agora.repository.PostRepository;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
@@ -50,9 +41,6 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Autowired
     private PostRepository postRepository;
-
-    @Autowired
-    private StudyGroupController studyGroupController;
 
     private Data data = new Data();
 
@@ -221,15 +209,29 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("USER")
-    public void findAllStudyGroupsReturnsReturnsAmountExpected() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.empty());
+    public void findAllStudyGroupsReturnsReturnsAmountExpected() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         assertEquals(2,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("USER")
-    public void findAllStudyGroupsHasExpectedValues() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.empty());
+    public void findAllStudyGroupsHasExpectedValues() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group1.getName());
         expectedStudyGroupsNames.add(data.group2.getName());
@@ -371,29 +373,61 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("USER")
-    public void findStudyGroupByExistingNameShouldReturnValues(){
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of("Dune"));
+    public void findStudyGroupByExistingNameShouldReturnValues() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "Dune")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         assertEquals(1,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("USER")
-    public void findStudyGroupByExistingDescriptionShouldReturnValues(){
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of("."));
+    public void findStudyGroupByExistingDescriptionShouldReturnValues() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", ".")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         assertEquals(2,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("USER")
-    public void findStudyGroupByNonExistingDescriptionShouldReturnNothing(){
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of(("No hay un grupo con esto")));
+    public void findStudyGroupByNonExistingDescriptionShouldReturnNothing() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "No hay un grupo con esto")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         assertEquals(0,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("USER")
-    public void findStudyGroupByDescriptionHasExpectedValues() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of((".")));
+    public void findStudyGroupByDescriptionHasExpectedValues() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", ".")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group1.getName());
         expectedStudyGroupsNames.add(data.group2.getName());
@@ -404,8 +438,16 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("USER")
-    public void findStudyGroupByNameHasExpectedValue() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of(("Dune")));
+    public void findStudyGroupByNameHasExpectedValue() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "Dune")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group2.getName());
         for (StudyGroupDTO studyGroup : allStudyGroups) {
@@ -415,8 +457,16 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("USER")
-    public void findStudyGroupByPartialNameHasExpectedValue() {
-        List<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.of(("Du")));
+    public void findStudyGroupByPartialNameHasExpectedValue() throws Exception {
+        String uri = "/studyGroup";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "Du")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group2.getName());
         for (StudyGroupDTO studyGroup : allStudyGroups) {
