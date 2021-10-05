@@ -45,12 +45,15 @@ class Home extends Component {
   async searchGroups() {
     const esc = encodeURIComponent;
     try {
-      const response = await fetch(`${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`, {
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${this.context.token}`,
+      const response = await fetch(
+        `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`,
+        {
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
         }
-      })
+      );
       this.setState({
         studyGroups: await response.json(),
       });
@@ -122,7 +125,9 @@ class Home extends Component {
                 //tags={group.groupTags}
                 description={group.description}
                 buttonAction={() => this.joinGroup(group.id)}
-                buttonLabel={"Sumarme al grupo"}
+                buttonLabel={
+                  group.currentUserIsMember ? "Ver grupo" : "Sumarme al grupo"
+                }
               />
             </Grid>
           ))}
