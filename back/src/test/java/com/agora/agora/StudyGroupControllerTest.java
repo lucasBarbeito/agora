@@ -223,7 +223,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void getAllStudentsShouldReturnOk() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -821,7 +821,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         String gottenStatus = mvcGetResult.getResponse().getContentAsString();
         List<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<List<PostDTO>>(){});
 
-        assertEquals(3, postDTOS.size());
+        assertEquals(4, postDTOS.size());
         assertEquals(data.post1.getContent(), postDTOS.get(0).getContent());
         assertEquals(data.post2.getCreationDateAndTime(), postDTOS.get(1).getCreationDateAndTime());
     }
