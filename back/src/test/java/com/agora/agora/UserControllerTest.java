@@ -285,12 +285,71 @@ public class UserControllerTest extends AbstractTest{
         fullUserDTOListExpectedNames.add(data.user2.getId());
         fullUserDTOListExpectedNames.add(data.user3.getId());
         fullUserDTOListExpectedNames.add(data.user4.getId());
+
         for (FullUserDTO userDTO : fullUserDTOList) {
             assertThat(fullUserDTOListExpectedNames, hasItems(userDTO.getId()));
         }
-
-
     }
+
+    @Test
+    @WithMockUser("USER")
+    public void getAllUsersWithNameShouldReturnExpectedValues() throws Exception {
+        String uri = "/user";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .param("name", "Frank")
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
+
+        List<FullUserDTO> fullUserDTOList = Arrays.stream(fullUserDTO).collect(Collectors.toList());
+        List<Integer> fullUserDTOListExpectedNames = new ArrayList<>();
+        fullUserDTOListExpectedNames.add(data.user2.getId());
+        fullUserDTOListExpectedNames.add(data.user4.getId());
+
+        for (FullUserDTO userDTO : fullUserDTOList) {
+            assertThat(fullUserDTOListExpectedNames, hasItems(userDTO.getId()));
+        }
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void getAllUsersWithSurnameShouldReturnExpectedValues() throws Exception {
+        String uri = "/user";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .param("name", "Gimenez")
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
+
+        List<FullUserDTO> fullUserDTOList = Arrays.stream(fullUserDTO).collect(Collectors.toList());
+        List<Integer> fullUserDTOListExpectedNames = new ArrayList<>();
+        fullUserDTOListExpectedNames.add(data.user1.getId());
+        fullUserDTOListExpectedNames.add(data.user4.getId());
+
+        for (FullUserDTO userDTO : fullUserDTOList) {
+            assertThat(fullUserDTOListExpectedNames, hasItems(userDTO.getId()));
+        }
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void getAllUsersWithNameAndSurnameShouldReturnExpectedValues() throws Exception {
+        String uri = "/user";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .param("name", "J. R. R. Tolkien")
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
+
+        List<FullUserDTO> fullUserDTOList = Arrays.stream(fullUserDTO).collect(Collectors.toList());
+        List<Integer> fullUserDTOListExpectedNames = new ArrayList<>();
+        fullUserDTOListExpectedNames.add(data.user3.getId());
+
+        for (FullUserDTO userDTO : fullUserDTOList) {
+            assertThat(fullUserDTOListExpectedNames, hasItems(userDTO.getId()));
+        }
+    }
+
 
 
 
