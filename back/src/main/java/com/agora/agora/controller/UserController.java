@@ -1,7 +1,9 @@
 package com.agora.agora.controller;
 
+import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.service.UserService;
@@ -12,6 +14,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 

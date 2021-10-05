@@ -79,7 +79,7 @@ public class StudyGroupCreationTest {
     @Test
     public void testStudyGroupDTOSerialization() throws Exception {
         StudyGroupDTO studyGroup = new StudyGroupDTO(0,"Lord of the rings", "...", 1 ,LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
         assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
     }
 
@@ -93,6 +93,7 @@ public class StudyGroupCreationTest {
         assertEquals(studyGroup.getCreationDate(),studyGroupObtained.getCreationDate());
         assertEquals(studyGroup.getCreatorId(),studyGroupObtained.getCreatorId());
         assertEquals(studyGroup.getDescription(),studyGroupObtained.getDescription());
+        assertEquals(studyGroup.isCurrentUserIsMember(), studyGroupObtained.isCurrentUserIsMember());
     }
 
     @Test
@@ -103,7 +104,8 @@ public class StudyGroupCreationTest {
         studyGroup.setDescription("...");
         studyGroup.setCreatorId(1);
         studyGroup.setCreationDate(LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        studyGroup.setCurrentUserIsMember(false);
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
         assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
     }
 
@@ -120,7 +122,7 @@ public class StudyGroupCreationTest {
 
         FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }
@@ -168,7 +170,7 @@ public class StudyGroupCreationTest {
         dto.setUserContacts(users);
         dto.setName(studyGroup.getName());
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }

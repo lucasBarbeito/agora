@@ -11,7 +11,7 @@ import ErrorNotFound from "./screens/Error/ErrorNotFound";
 import CreateGroup from "./screens/CreateGroup/CreateGroup";
 import EmailConfirmation from "./screens/EmailConfirmation/EmailConfirmation";
 import LandingPage from "./screens/LandingPage/LandingPage";
-import Home from "./screens/Home/Home";
+import GroupsPage from "./screens/GroupsPage/GroupsPage";
 import CheckYourEmailPage from "./screens/CheckYourEmail/CheckYourEmailPage";
 import baseUrl from "./baseUrl.js";
 import { CircularProgress } from "@material-ui/core";
@@ -123,7 +123,10 @@ class App extends Component {
                     <CheckYourEmailPage history={history} />
                   </Route>
                   <AuthRoute path="/home">
-                    <Home history={history} />
+                    <GroupsPage history={history} onlyMyGroups={false} />
+                  </AuthRoute>
+                  <AuthRoute path="/my-groups">
+                    <GroupsPage history={history} onlyMyGroups={true} />
                   </AuthRoute>
                   <AuthRoute path="/create-group">
                     <CreateGroup history={history} />

@@ -19,6 +19,8 @@ public class StudyGroupDTO {
 
     private LocalDate creationDate;
 
+    private boolean currentUserIsMember = false;
+
     public StudyGroupDTO() {
     }
 
@@ -68,5 +70,13 @@ public class StudyGroupDTO {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public boolean isCurrentUserIsMember() {
+        return currentUserIsMember;
+    }
+
+    public void setCurrentUserIsMember(boolean currentUserIsMember) {
+        this.currentUserIsMember = currentUserIsMember;
     }
 }
