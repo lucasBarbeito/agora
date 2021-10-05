@@ -157,7 +157,9 @@ class GroupsPage extends Component {
                 //tags={group.groupTags}
                 description={group.description}
                 buttonAction={() => this.joinGroup(group.id)}
-                buttonLabel={"Sumarme al grupo"}
+                buttonLabel={
+                  group.currentUserIsMember ? "Ver grupo" : "Sumarme al grupo"
+                }
               />
             </Grid>
           ))}
