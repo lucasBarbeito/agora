@@ -1,12 +1,10 @@
 package com.agora.agora.controller;
 
 import com.agora.agora.exceptions.ForbiddenElementException;
+import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.dto.FullStudyGroupDTO;
-import com.agora.agora.model.dto.StudyGroupDTO;
-import com.agora.agora.model.dto.StudyGroupIdDTO;
-import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
@@ -41,8 +39,14 @@ public class StudyGroupController {
 
     @GetMapping
     public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
-        List<StudyGroup> studyGroups = groupService.findStudyGroups(text);
-        return fromStudyGroupToStudyGroupDTO(studyGroups);
+        return groupService.findStudyGroups(text);
+    }
+
+    @GetMapping(value = "/me")
+    public List<StudyGroupDTO> getCurrentUserGroups(){
+        final List<StudyGroup> groups = groupService.findCurrentUserGroups();
+        List<StudyGroupDTO> groupDTOs = groups.stream().map(group -> new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate())).collect(Collectors.toList());
+        return groupDTOs;
     }
 
     @GetMapping(value = "/{id}")
@@ -52,16 +56,6 @@ public class StudyGroupController {
         final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
         final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs));
         return studyGroupDTOOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
-
-    private List<StudyGroupDTO> fromStudyGroupToStudyGroupDTO(List<StudyGroup> studyGroups) {
-        List<StudyGroupDTO> studyGroupResponse = new ArrayList<>();
-
-        for (StudyGroup studyGroup : studyGroups) {
-            StudyGroupDTO groupForm = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
-            studyGroupResponse.add(groupForm);
-        }
-        return studyGroupResponse;
     }
 
     @PostMapping(value = "/{id}/{userId}")
@@ -96,5 +90,25 @@ public class StudyGroupController {
     public ResponseEntity deletePost(@PathVariable("id") int groupId, @PathVariable("postId") int postId) {
         groupService.deletePost(groupId, postId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/{id}/forum")
+    public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId){
+        List<Post> groupPosts = groupService.getStudyGroupPosts(studyGroupId);
+        List<PostDTO> postDTOS = groupPosts.stream().map(post -> new PostDTO(post.getId(), post.getContent(), post.getStudyGroup().getId(), post.getCreator().getId(), post.getCreationDateAndTime())).collect(Collectors.toList());
+        return postDTOS;
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteGroupById(@PathVariable("id") int studyGroupId){
+        groupService.deleteGroup(studyGroupId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/{id}/forum/{postId}")
+    public ResponseEntity getGroupPostById(@PathVariable("id") int studyGroupId, @PathVariable("postId") int postId){
+        Optional<Post> post = groupService.getStudyGroupPostById(studyGroupId, postId);
+        Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateAndTime()));
+        return postDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 }
