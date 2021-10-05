@@ -15,6 +15,8 @@ import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -69,12 +71,12 @@ public class StudyGroupService {
 
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
-            List<StudyGroup> studyGroups;
+            Page<StudyGroup> studyGroups;
             List<StudyGroupDTO> studyGroupDTOS = new ArrayList<>();
             if (text.isPresent()) {
-                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get());
+                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get(),Sort.by("creationDate"));
             }else {
-                studyGroups = groupRepository.findAll();
+                studyGroups = groupRepository.findAll(Sort.by("creationDate"));
             }
             for (StudyGroup studyGroup : studyGroups) {
                 if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
