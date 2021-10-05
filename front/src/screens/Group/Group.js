@@ -40,7 +40,10 @@ class Group extends Component {
             creatorName: "",
             requestLoading: false,
             openAbandonGroupSnack: false,
-            openInvitationLinkSnack: false
+            openInvitationLinkSnack: false,
+            newAnnouncementContent: '',
+            creatingAnnouncement: false,
+            openAnnouncementCreationErrorSnack: false,
         };
     }
 
@@ -218,19 +221,43 @@ class Group extends Component {
         return response.json();
     }
 
-    addAnnouncement() {
+    async addAnnouncement() {
+      const groupId = this.props.match.params.id;
       const date = new Date();
-      const newAnnouncements = this.state.announcements;
-      const newAnnouncement = {
-        name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
-        date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-        content: this.state.newAnnouncementContent,
+      this.setState({creatingAnnouncement: true});
+
+      try {
+        const response = await fetch(`${baseUrl}/studyGroup/${groupId}/forum`, {
+          method: "POST",
+          body: JSON.stringify({
+            content: this.state.newAnnouncementContent,
+            creationDateAndTime: date.toISOString(), 
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
+        });
+
+        this.setState({creatingAnnouncement: false});
+        
+        if(!response.ok) {
+          this.setState({openAnnouncementCreationErrorSnack: true});
+        } else {
+          const newAnnouncements = this.state.announcements;
+          const newAnnouncement = {
+            name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
+            date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+            content: this.state.newAnnouncementContent,
+          }
+          newAnnouncements.unshift(newAnnouncement);
+          this.setState({ announcements: newAnnouncements });
+        }
+      } catch (e) {
+        alert("Error, no es posible conectarse al back-end");
       }
-      newAnnouncements.unshift(newAnnouncement);
-      this.setState({
-        announcements: newAnnouncements,
-        newAnnouncementContent: "",
-      });
+
+      this.setState({ newAnnouncementContent: ""});
     }
   
     deleteAnnouncement(id) {
@@ -379,16 +406,25 @@ class Group extends Component {
                                           value={this.state.newAnnouncementContent}
                                         />
                                     </Grid>
-                                    <Grid item xs={5}>
-                                        <Button
-                                          fullWidth
-                                          id="new-announcement-button"
-                                          variant="contained"
-                                          color="primary"
-                                          onClick={() => this.addAnnouncement()}
-                                        >
-                                          AGREGAR ANUNCIO
-                                        </Button>
+                                    <Grid container item xs={5} justifyContent="space-between" alignItems="center">
+                                        { 
+                                          this.state.creatingAnnouncement &&
+                                          <Grid item xs={2}>
+                                            <CircularProgress size={30}/>
+                                          </Grid>
+                                        }
+                                        <Grid item xs={this.state.creatingAnnouncement ? 10 : 12 }>
+                                          <Button
+                                            fullWidth
+                                            id="new-announcement-button"
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.addAnnouncement()}
+                                            disabled={this.state.creatingAnnouncement || this.state.newAnnouncementContent === ""}
+                                          >
+                                            AGREGAR ANUNCIO
+                                          </Button>
+                                        </Grid>
                                     </Grid>
                                 </Grid>
                                 <Container id="announcement">
@@ -442,6 +478,11 @@ class Group extends Component {
                       open={this.state.openAbandonGroupSnack}
                       handleClose={() => this.setState({openAbandonGroupSnack: false})}
                       message={`Hubo un error al ${this.state.isAdmin ? 'eliminar' : 'abandonar'} el grupo`}
+                    />
+                    <SimpleSnackbar
+                      open={this.state.openAnnouncementCreationErrorSnack}
+                      handleClose={() => this.setState({openAnnouncementCreationErrorSnack: false})}
+                      message="Hubo un error al crear el anuncio"
                     />
                 </Container>
             </div>
