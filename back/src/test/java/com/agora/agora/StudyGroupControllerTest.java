@@ -951,6 +951,10 @@ public class StudyGroupControllerTest extends AbstractTest{
 
         String gottenStatus = mvcGetResult.getResponse().getContentAsString();
         PostDTO postDTO = super.mapFromJson(gottenStatus, PostDTO.class);
+        assertEquals(data.post1.getCreator().getId(), postDTO.getCreatorId());
+        assertEquals(data.post1.getContent(), postDTO.getContent());
+    }
+
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void deletePostWithBadForumIdShouldReturnNotFound() throws Exception {
@@ -1005,13 +1009,6 @@ public class StudyGroupControllerTest extends AbstractTest{
         ).andReturn();
         int status = deleteResult.getResponse().getStatus();
         assertEquals(204, status);
-    }
-
-
-
-
-        assertEquals(data.post1.getCreator().getId(), postDTO.getCreatorId());
-        assertEquals(data.post1.getContent(), postDTO.getContent());
     }
 
     @Test
