@@ -23,13 +23,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.*;
 
 public class UserControllerTest extends AbstractTest{
 
@@ -54,6 +56,7 @@ public class UserControllerTest extends AbstractTest{
         User user1;
         User user2;
         User user3;
+        User user4;
         StudyGroup group1;
         StudyGroup group2;
 
@@ -61,9 +64,11 @@ public class UserControllerTest extends AbstractTest{
             user1 = new User("Carlos", "Gimenez", "carlos@mail.com", "Carlos123", false, UserType.USER);
             user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false, UserType.USER);
             user3 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
+            user4 = new User("Frank", "Gimenez", "frankgimenez@gmail.com", "Frankherbert2021", false, UserType.USER);
             userRepository.save(user1);
             userRepository.save(user2);
             userRepository.save(user3);
+            userRepository.save(user4);
 
             group1 = new StudyGroup("Lord of the rings", "...", user1, LocalDate.of(2021, 8, 17));
             group2 = new StudyGroup("Dune", "....", user2, LocalDate.of(2021, 8, 16));
@@ -243,4 +248,52 @@ public class UserControllerTest extends AbstractTest{
         int statusCode = mvcResult.getResponse().getStatus();
         assertEquals(404, statusCode);
     }
+
+    @Test
+    @WithMockUser("USER")
+    public void getAllUsersShouldReturnOk() throws Exception {
+        String uri = "/user";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void getAllUsersShouldReturnAmountExpected() throws Exception {
+        String uri = "/user";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
+        assertEquals(4,fullUserDTO.length);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void getAllUsersShouldReturnExpectedValues() throws Exception {
+        String uri = "/user";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
+
+        List<FullUserDTO> fullUserDTOList = Arrays.stream(fullUserDTO).collect(Collectors.toList());
+        List<Integer> fullUserDTOListExpectedNames = new ArrayList<>();
+        fullUserDTOListExpectedNames.add(data.user1.getId());
+        fullUserDTOListExpectedNames.add(data.user2.getId());
+        fullUserDTOListExpectedNames.add(data.user3.getId());
+        fullUserDTOListExpectedNames.add(data.user4.getId());
+        for (FullUserDTO userDTO : fullUserDTOList) {
+            assertThat(fullUserDTOListExpectedNames, hasItems(userDTO.getId()));
+        }
+
+
+    }
+
+
+
+
+
 }
