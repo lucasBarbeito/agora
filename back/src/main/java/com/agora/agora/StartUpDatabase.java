@@ -63,27 +63,27 @@ public class StartUpDatabase {
                 int userId12 = userService.saveCustom(user12,false, false);
 
                 //Study Groups
-                StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId1,LocalDate.of(2020, 10, 25));
-                StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId2, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group3 = new StudyGroupForm("Aristoteles", "Estudios de Aristoteles", userId4, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group4 = new StudyGroupForm("Analisis matematico", "Estudios de matematicas", userId6, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId4,LocalDate.of(2020, 10, 25));
+                StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId5, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group3 = new StudyGroupForm("Aristoteles", "Estudios de Aristoteles", userId6, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group4 = new StudyGroupForm("Analisis matematico", "Estudios de matematicas", userId7, LocalDate.of(2016, 7, 1));
                 StudyGroupForm group5 = new StudyGroupForm("Geometria", "Estudios de las formas", userId8, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group6 = new StudyGroupForm("Geografia", "Estudios de la tierra", userId10, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group7 = new StudyGroupForm("Historia romana", "Estudios de la historia romana", userId1, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group8 = new StudyGroupForm("Legales", "Estudios de leyes", userId3, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group9 = new StudyGroupForm("Composicion musical", "Estudios de la musica", userId5, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group10 = new StudyGroupForm("Jardineria", "Estudios del cuidado de las plantas", userId7, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group11 = new StudyGroupForm("Biologia", "Estudios de los seres vivos", userId9, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group12 = new StudyGroupForm("Cartografia", "Estudios de los mapas", userId11, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group13 = new StudyGroupForm("Lenguajes", "Estudios de lenguajes de programacion", userId9, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group14 = new StudyGroupForm("Analisis sintactico", "Estudio y analisis de la composicion del lenguaje", userId2, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group15 = new StudyGroupForm("Deportes", "Estudios de los deportes", userId4, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group16 = new StudyGroupForm("Diseño grafico", "Estudios de diseño de imagen y sonido", userId6, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group6 = new StudyGroupForm("Geografia", "Estudios de la tierra", userId9, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group7 = new StudyGroupForm("Historia romana", "Estudios de la historia romana", userId10, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group8 = new StudyGroupForm("Legales", "Estudios de leyes", userId11, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group9 = new StudyGroupForm("Composicion musical", "Estudios de la musica", userId12, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group10 = new StudyGroupForm("Jardineria", "Estudios del cuidado de las plantas", userId1, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group11 = new StudyGroupForm("Biologia", "Estudios de los seres vivos", userId2, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group12 = new StudyGroupForm("Cartografia", "Estudios de los mapas", userId3, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group13 = new StudyGroupForm("Lenguajes", "Estudios de lenguajes de programacion", userId4, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group14 = new StudyGroupForm("Analisis sintactico", "Estudio y analisis de la composicion del lenguaje", userId5, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group15 = new StudyGroupForm("Deportes", "Estudios de los deportes", userId6, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group16 = new StudyGroupForm("Diseño grafico", "Estudios de diseño de imagen y sonido", userId7, LocalDate.of(2016, 7, 1));
                 StudyGroupForm group17 = new StudyGroupForm("Corte y confeccion", "Estudios de las telas", userId8, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group18 = new StudyGroupForm("Teatro", "Estudios de obras teatrales", userId10, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group19 = new StudyGroupForm("Algebra", "Estudios de algebra tradicional", userId1, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group20 = new StudyGroupForm("IntroCom", "Estudios de introduccion a la computacion", userId3, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group21 = new StudyGroupForm("AYED", "Estudio de algoritmos y estructura de datos", userId5, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group18 = new StudyGroupForm("Teatro", "Estudios de obras teatrales", userId9, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group19 = new StudyGroupForm("Algebra", "Estudios de algebra tradicional", userId10, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group20 = new StudyGroupForm("IntroCom", "Estudios de introduccion a la computacion", userId11, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group21 = new StudyGroupForm("AYED", "Estudio de algoritmos y estructura de datos", userId12, LocalDate.of(2019, 3, 6));
 
                 ArrayList<Integer> groupIds = new ArrayList<>();
                 int groupId1 = studyGroupService.create(group1);
