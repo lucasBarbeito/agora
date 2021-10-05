@@ -627,7 +627,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     public void gettingLinkToStudyGrouPageShouldReturnLink() throws Exception {
         int groupId = data.group1.getId();
         String uri = "/studyGroup/" + groupId + "/inviteLink";
-        String expectedLink = "http://localhost:3000/studyGroup/" + groupId;
+        String expectedLink = "http://localhost:3000/group/" + groupId;
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int statusCode = mvcResult.getResponse().getStatus();

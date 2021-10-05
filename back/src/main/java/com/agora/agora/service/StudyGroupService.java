@@ -157,7 +157,7 @@ public class StudyGroupService {
     }
 
     public String getInviteLink(int id) {
-        return "http://localhost:3000/studyGroup/"+id;
+        return "http://localhost:3000/group/"+id;
     }
 
     public int createPost(int studyGroupId, PostForm postForm) {
