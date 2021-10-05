@@ -728,7 +728,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser(username = "pepe@mail.com")
+    @WithMockUser(username = "carlos@mail.com")
     public void addingNotMemberCurrentUserShouldAdd() throws Exception {
         String uri = "/studyGroup/" + data.group1.getId() + "/me";
         MvcResult result = mvc.perform(
