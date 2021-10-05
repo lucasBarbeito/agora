@@ -13,7 +13,6 @@ import EmailConfirmation from "./screens/EmailConfirmation/EmailConfirmation";
 import LandingPage from "./screens/LandingPage/LandingPage";
 import GroupsPage from "./screens/GroupsPage/GroupsPage";
 import CheckYourEmailPage from "./screens/CheckYourEmail/CheckYourEmailPage";
-import User from "./screens/User/User";
 import baseUrl from "./baseUrl.js";
 import { CircularProgress } from "@material-ui/core";
 
@@ -134,9 +133,6 @@ class App extends Component {
                   </AuthRoute>
                   <AuthRoute path="/group/:id">
                     <Group />
-                  </AuthRoute>
-                  <AuthRoute path="/user/:id">
-                    <User />
                   </AuthRoute>
                   <Route>
                     <ErrorNotFound history={history} />
