@@ -2,7 +2,7 @@ import { Component } from "react";
 import { Grid, IconButton, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
-import "./Home.css";
+import "./GroupsPage.css";
 import GroupCard from "../../common/GroupCard/GroupCard";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import { UserContext } from "../../user-context";
@@ -10,7 +10,7 @@ import baseUrl from "../../baseUrl";
 
 const tags = ["Etiqueta 1", "Etiqueta con mucho texto", "Etiqueta 3"];
 
-class Home extends Component {
+class GroupsPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,8 +38,40 @@ class Home extends Component {
     }
   };
 
+  getMyGroups = async () => {
+    const { token } = this.context;
+    try {
+      const response = await fetch(`${baseUrl}/studyGroup/me`, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      this.setState({
+        studyGroups: await response.json(),
+      });
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  };
+
+  checkIfOnlyMyGroups() {
+    if (this.props.onlyMyGroups) {
+      this.getMyGroups();
+    } else {
+      this.getGroups();
+    }
+  }
+
   componentDidMount() {
-    this.getGroups();
+    this.checkIfOnlyMyGroups();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.onlyMyGroups !== prevProps.onlyMyGroups) {
+      this.checkIfOnlyMyGroups();
+    }
   }
 
   async searchGroups() {
@@ -137,6 +169,6 @@ class Home extends Component {
   }
 }
 
-Home.contextType = UserContext;
+GroupsPage.contextType = UserContext;
 
-export default Home;
+export default GroupsPage;
