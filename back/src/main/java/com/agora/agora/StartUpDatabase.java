@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class StartUpDatabase {
@@ -21,6 +23,10 @@ public class StartUpDatabase {
     public StartUpDatabase(UserService userService, StudyGroupService studyGroupService) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
+    }
+
+    private void addManyToGroup(int groupId, List<Integer> userId){
+        userId.forEach(user -> studyGroupService.addUserToStudyGroup(groupId, user));
     }
 
     @EventListener
@@ -39,81 +45,90 @@ public class StartUpDatabase {
                 UserForm user7 = new UserForm("Matias", "Lopez", "matias@gmail.com","Matias2020");
                 UserForm user8 = new UserForm("Carlos", "Mendez", "carlos@gmail.com", "Carlos2019");
                 UserForm user9 = new UserForm("Sofia", "Gimenez", "sofia@gmail.com", "Sofia2018");
-                UserForm user10 = new UserForm("Micaela", "Diaz", "alonso@gmail.com", "Micaela2017");
-                UserForm user11 = new UserForm("Fernando", "Rojas", "lopez@gmail.com","Fernando2016");
-                UserForm user12 = new UserForm("Juan", "Cruz", "diaz@gmail.com", "Juan2015");
+                UserForm user10 = new UserForm("Micaela", "Diaz", "mica@gmail.com", "Micaela2017");
+                UserForm user11 = new UserForm("Fernando", "Rojas", "rojas@gmail.com","Fernando2016");
+                UserForm user12 = new UserForm("Juan", "Cruz", "cruz@gmail.com", "Juan2015");
 
-                ArrayList<Integer> userIds = new ArrayList<>();
-                userIds.add(userService.saveCustom(user1,true, false));
-                userIds.add(userService.saveCustom(user2,true, false));
-                userIds.add(userService.saveCustom(user3,true, false));
-                userIds.add(userService.saveCustom(user4,true, false));
-                userIds.add(userService.saveCustom(user5,true, false));
-                userIds.add(userService.saveCustom(user6,false, false));
-                userIds.add(userService.saveCustom(user7,false, false));
-                userIds.add(userService.saveCustom(user8,false, false));
-                userIds.add(userService.saveCustom(user9,false, false));
-                userIds.add(userService.saveCustom(user10,false, false));
-                userIds.add(userService.saveCustom(user11,false, false));
-                userIds.add(userService.saveCustom(user12,false, false));
+                int userId1 = userService.saveCustom(user1,true, false);
+                int userId2 = userService.saveCustom(user2,true, false);
+                int userId3 = userService.saveCustom(user3,true, false);
+                int userId4 = userService.saveCustom(user4,true, false);
+                int userId5 = userService.saveCustom(user5,true, false);
+                int userId6 = userService.saveCustom(user6,false, false);
+                int userId7 = userService.saveCustom(user7,false, false);
+                int userId8 = userService.saveCustom(user8,false, false);
+                int userId9 = userService.saveCustom(user9,false, false);
+                int userId10 = userService.saveCustom(user10,false, false);
+                int userId11 = userService.saveCustom(user11,false, false);
+                int userId12 = userService.saveCustom(user12,false, false);
 
                 //Study Groups
-                StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userIds.get(0),LocalDate.of(2020, 10, 25));
-                StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userIds.get(2), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group3 = new StudyGroupForm("Aristoteles", "Estudios de Aristoteles", userIds.get(4), LocalDate.of(2019, 3, 6));
-                StudyGroupForm group4 = new StudyGroupForm("Analisis matematico", "Estudios de matematicas", userIds.get(6), LocalDate.of(2016, 7, 1));
-                StudyGroupForm group5 = new StudyGroupForm("Geometria", "Estudios de las formas", userIds.get(8), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group6 = new StudyGroupForm("Geografia", "Estudios de la tierra", userIds.get(10), LocalDate.of(2019, 3, 6));
-                StudyGroupForm group7 = new StudyGroupForm("Historia romana", "Estudios de la historia romana", userIds.get(1), LocalDate.of(2016, 7, 1));
-                StudyGroupForm group8 = new StudyGroupForm("Legales", "Estudios de leyes", userIds.get(3), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group9 = new StudyGroupForm("Composicion musical", "Estudios de la musica", userIds.get(5), LocalDate.of(2019, 3, 6));
-                StudyGroupForm group10 = new StudyGroupForm("Jardineria", "Estudios del cuidado de las plantas", userIds.get(7), LocalDate.of(2016, 7, 1));
-                StudyGroupForm group11 = new StudyGroupForm("Biologia", "Estudios de los seres vivos", userIds.get(9), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group12 = new StudyGroupForm("Cartografia", "Estudios de los mapas", userIds.get(11), LocalDate.of(2019, 3, 6));
-                StudyGroupForm group13 = new StudyGroupForm("Lenguajes", "Estudios de lenguajes de programacion", userIds.get(0), LocalDate.of(2016, 7, 1));
-                StudyGroupForm group14 = new StudyGroupForm("Analisis sintactico", "Estudio y analisis de la composicion del lenguaje", userIds.get(2), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group15 = new StudyGroupForm("Deportes", "Estudios de los deportes", userIds.get(4), LocalDate.of(2019, 3, 6));
-                StudyGroupForm group16 = new StudyGroupForm("Diseño grafico", "Estudios de diseño de imagen y sonido", userIds.get(6), LocalDate.of(2016, 7, 1));
-                StudyGroupForm group17 = new StudyGroupForm("Corte y confeccion", "Estudios de las telas", userIds.get(8), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group18 = new StudyGroupForm("Teatro", "Estudios de obras teatrales", userIds.get(10), LocalDate.of(2019, 3, 6));
-                StudyGroupForm group19 = new StudyGroupForm("Algebra", "Estudios de algebra tradicional", userIds.get(1), LocalDate.of(2016, 7, 1));
-                StudyGroupForm group20 = new StudyGroupForm("IntroCom", "Estudios de introduccion a la computacion", userIds.get(3), LocalDate.of(2020, 10, 25));
-                StudyGroupForm group21 = new StudyGroupForm("AYED", "Estudio de algoritmos y estructura de datos", userIds.get(5), LocalDate.of(2019, 3, 6));
+                StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId1,LocalDate.of(2020, 10, 25));
+                StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId2, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group3 = new StudyGroupForm("Aristoteles", "Estudios de Aristoteles", userId4, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group4 = new StudyGroupForm("Analisis matematico", "Estudios de matematicas", userId6, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group5 = new StudyGroupForm("Geometria", "Estudios de las formas", userId8, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group6 = new StudyGroupForm("Geografia", "Estudios de la tierra", userId10, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group7 = new StudyGroupForm("Historia romana", "Estudios de la historia romana", userId1, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group8 = new StudyGroupForm("Legales", "Estudios de leyes", userId3, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group9 = new StudyGroupForm("Composicion musical", "Estudios de la musica", userId5, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group10 = new StudyGroupForm("Jardineria", "Estudios del cuidado de las plantas", userId7, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group11 = new StudyGroupForm("Biologia", "Estudios de los seres vivos", userId9, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group12 = new StudyGroupForm("Cartografia", "Estudios de los mapas", userId11, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group13 = new StudyGroupForm("Lenguajes", "Estudios de lenguajes de programacion", userId9, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group14 = new StudyGroupForm("Analisis sintactico", "Estudio y analisis de la composicion del lenguaje", userId2, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group15 = new StudyGroupForm("Deportes", "Estudios de los deportes", userId4, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group16 = new StudyGroupForm("Diseño grafico", "Estudios de diseño de imagen y sonido", userId6, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group17 = new StudyGroupForm("Corte y confeccion", "Estudios de las telas", userId8, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group18 = new StudyGroupForm("Teatro", "Estudios de obras teatrales", userId10, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group19 = new StudyGroupForm("Algebra", "Estudios de algebra tradicional", userId1, LocalDate.of(2016, 7, 1));
+                StudyGroupForm group20 = new StudyGroupForm("IntroCom", "Estudios de introduccion a la computacion", userId3, LocalDate.of(2020, 10, 25));
+                StudyGroupForm group21 = new StudyGroupForm("AYED", "Estudio de algoritmos y estructura de datos", userId5, LocalDate.of(2019, 3, 6));
 
                 ArrayList<Integer> groupIds = new ArrayList<>();
-                groupIds.add(studyGroupService.create(group1));
-                groupIds.add(studyGroupService.create(group2));
-                groupIds.add(studyGroupService.create(group3));
-                groupIds.add(studyGroupService.create(group4));
-                groupIds.add(studyGroupService.create(group5));
-                groupIds.add(studyGroupService.create(group6));
-                groupIds.add(studyGroupService.create(group7));
-                groupIds.add(studyGroupService.create(group8));
-                groupIds.add(studyGroupService.create(group9));
-                groupIds.add(studyGroupService.create(group10));
-                groupIds.add(studyGroupService.create(group11));
-                groupIds.add(studyGroupService.create(group12));
-                groupIds.add(studyGroupService.create(group13));
-                groupIds.add(studyGroupService.create(group14));
-                groupIds.add(studyGroupService.create(group15));
-                groupIds.add(studyGroupService.create(group16));
-                groupIds.add(studyGroupService.create(group17));
-                groupIds.add(studyGroupService.create(group18));
-                groupIds.add(studyGroupService.create(group19));
-                groupIds.add(studyGroupService.create(group20));
-                groupIds.add(studyGroupService.create(group21));
+                int groupId1 = studyGroupService.create(group1);
+                int groupId2 = studyGroupService.create(group2);
+                int groupId3 = studyGroupService.create(group3);
+                int groupId4 = studyGroupService.create(group4);
+                int groupId5 = studyGroupService.create(group5);
+                int groupId6 = studyGroupService.create(group6);
+                int groupId7 = studyGroupService.create(group7);
+                int groupId8 = studyGroupService.create(group8);
+                int groupId9 = studyGroupService.create(group9);
+                int groupId10 = studyGroupService.create(group10);
+                int groupId11 = studyGroupService.create(group11);
+                int groupId12 = studyGroupService.create(group12);
+                int groupId13 = studyGroupService.create(group13);
+                int groupId14 = studyGroupService.create(group14);
+                int groupId15 = studyGroupService.create(group15);
+                int groupId16 = studyGroupService.create(group16);
+                int groupId17 = studyGroupService.create(group17);
+                int groupId18 = studyGroupService.create(group18);
+                int groupId19 = studyGroupService.create(group19);
+                int groupId20 = studyGroupService.create(group20);
+                int groupId21 = studyGroupService.create(group21);
 
-                int count = 0;
-                for (Integer groupId: groupIds) {
-                    ArrayList<Integer> list = new ArrayList<>();
-                    for (int i = 0; i < 12; i++) {
-                        list.add(i);
-                    }
-                    count++;
-                    for (int i = count%10; i < count%10+3; i++) {
-                        studyGroupService.addUserToStudyGroup(groupId,userIds.get(list.get(i)));
-                    }
-                }
+                addManyToGroup(groupId1, Arrays.asList(userId1, userId2, userId3));
+                addManyToGroup(groupId2, Arrays.asList(userId2, userId3, userId4));
+                addManyToGroup(groupId3, Arrays.asList(userId3, userId4, userId5));
+                addManyToGroup(groupId4, Arrays.asList(userId4, userId5, userId6));
+                addManyToGroup(groupId5, Arrays.asList(userId5, userId6, userId7));
+                addManyToGroup(groupId6, Arrays.asList(userId6, userId7, userId8));
+                addManyToGroup(groupId7, Arrays.asList(userId7, userId8, userId9));
+                addManyToGroup(groupId8, Arrays.asList(userId8, userId9, userId10));
+                addManyToGroup(groupId9, Arrays.asList(userId9, userId10, userId11));
+                addManyToGroup(groupId10, Arrays.asList(userId10, userId11, userId12));
+                addManyToGroup(groupId11, Arrays.asList(userId11, userId12, userId1));
+                addManyToGroup(groupId12, Arrays.asList(userId12, userId1, userId2));
+                addManyToGroup(groupId13, Arrays.asList(userId1, userId2, userId3));
+                addManyToGroup(groupId14, Arrays.asList(userId2, userId3, userId4));
+                addManyToGroup(groupId15, Arrays.asList(userId3, userId4, userId5));
+                addManyToGroup(groupId16, Arrays.asList(userId4, userId5, userId6));
+                addManyToGroup(groupId17, Arrays.asList(userId3, userId6, userId7));
+                addManyToGroup(groupId18, Arrays.asList(userId3, userId7, userId8));
+                addManyToGroup(groupId19, Arrays.asList(userId3, userId8, userId9));
+                addManyToGroup(groupId20, Arrays.asList(userId3, userId9, userId10));
+                addManyToGroup(groupId21, Arrays.asList(userId3, userId10, userId11));
 
             } catch (Exception ignored){}
         }
