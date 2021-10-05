@@ -7,6 +7,7 @@ import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
+import com.agora.agora.model.form.LoginForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
@@ -16,6 +17,7 @@ import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -628,7 +631,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     public void gettingLinkToStudyGrouPageShouldReturnLink() throws Exception {
         int groupId = data.group1.getId();
         String uri = "/studyGroup/" + groupId + "/inviteLink";
-        String expectedLink = "http://localhost:3000/studyGroup/" + groupId;
+        String expectedLink = "http://localhost:3000/group/" + groupId;
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int statusCode = mvcResult.getResponse().getStatus();
@@ -726,6 +729,50 @@ public class StudyGroupControllerTest extends AbstractTest{
         ).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser(username = "carlos@mail.com")
+    public void addingNotMemberCurrentUserShouldAdd() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(200, result.getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "tolkien@gmail.com")
+    public void whenAddingUserThatExistsInGroupShouldReturnConflict() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(409, result.getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "tolkien@gmail.com")
+    public void whenAddingToNonExistingGroupShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/100/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(404, result.getResponse().getStatus());
+    }
+
+    @Test
+    @WithMockUser(username = "NonExistingUser")
+    public void whenAddingNonExistingUserShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/me";
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        assertEquals(404, result.getResponse().getStatus());
     }
 
     @Test

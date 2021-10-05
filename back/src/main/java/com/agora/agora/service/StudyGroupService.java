@@ -30,13 +30,15 @@ public class StudyGroupService {
     private UserRepository userRepository;
     private PostRepository postRepository;
     private StudyGroupUsersRepository studyGroupUsersRepository;
+    private UserService userService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, UserService userService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
+        this.userService = userService;
     }
 
     public int create(StudyGroupForm studyGroup){
@@ -155,7 +157,7 @@ public class StudyGroupService {
     }
 
     public String getInviteLink(int id) {
-        return "http://localhost:3000/studyGroup/"+id;
+        return "http://localhost:3000/group/"+id;
     }
 
     public int createPost(int studyGroupId, PostForm postForm) {
@@ -265,6 +267,12 @@ public class StudyGroupService {
         }
         throw new NoSuchElementException("User does not exist");
     }
+    public void addCurrentUserToStudyGroup(int studyGroupId) {
+        int currentUserId = userService.findCurrentUser().orElseThrow(NoSuchElementException::new).getId();
+        addUserToStudyGroup(studyGroupId, currentUserId);
+    }
+
+
 
     public void deletePost(int groupId, int postId) {
         Optional<StudyGroup> studyGroupOptional = groupRepository.findById(groupId);

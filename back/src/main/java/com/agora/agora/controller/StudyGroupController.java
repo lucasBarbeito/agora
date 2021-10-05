@@ -111,4 +111,10 @@ public class StudyGroupController {
         Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateAndTime()));
         return postDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping(value = "/{id}/me")
+    public ResponseEntity addCurrentUserToGroup(@PathVariable("id") int studyGroupId){
+        groupService.addCurrentUserToStudyGroup(studyGroupId);
+        return ResponseEntity.ok().build();
+    }
 }

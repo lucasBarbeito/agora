@@ -22,7 +22,7 @@ public class ExceptionMapper extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleException(DataIntegrityViolationException ex, WebRequest request) {
         final Map<String, Object> errorAttributes = new DefaultErrorAttributes().getErrorAttributes(request, false);
         errorAttributes.put("status", HttpStatus.CONFLICT.value());
-        errorAttributes.put("message", "Data integrity violation");
+        errorAttributes.put("message", "Data integrity violation. Your error is : " + ex.getMessage());
         errorAttributes.put("error", HttpStatus.CONFLICT.getReasonPhrase());
         return handleExceptionInternal(ex, errorAttributes, new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
