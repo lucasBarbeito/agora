@@ -75,7 +75,7 @@
 }
 .CreateAccountButton {
   position: absolute;
-  left: 71%;
+  left: 65%;
   top: 95%;
   text-align: center;
   font-family: "Roboto";
@@ -108,6 +108,6 @@
   .CreateAccountButton {
     left: 73%;
     top: 95%;
-   font-size: 15px;
+    font-size: 15px;
   } 
 }
