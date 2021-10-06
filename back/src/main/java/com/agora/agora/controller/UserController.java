@@ -55,4 +55,14 @@ public class UserController {
         final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
         return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping
+    public List<FullUserDTO> getUsers(@RequestParam Optional<String> name){
+        List<User> users = userService.findUsers(name);
+        List<FullUserDTO> responseUsers = new ArrayList<>();
+        for (User user : users) {
+            responseUsers.add(new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
+        }
+        return responseUsers;
+    }
 }
