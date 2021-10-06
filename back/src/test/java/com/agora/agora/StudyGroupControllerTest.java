@@ -231,7 +231,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findAllStudyGroupsReturnsReturnsAmountExpected() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -245,7 +245,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findAllStudyGroupsHasExpectedValues() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -413,7 +413,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByExistingNameShouldReturnValues() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -422,13 +422,13 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        StudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, StudyGroupDTO[].class);
         List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
         assertEquals(1,allStudyGroups.size());
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByExistingDescriptionShouldReturnValues() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -443,7 +443,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByNonExistingDescriptionShouldReturnNothing() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -458,7 +458,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByDescriptionHasExpectedValues() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -478,7 +478,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByNameHasExpectedValue() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -497,7 +497,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("USER")
+    @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByPartialNameHasExpectedValue() throws Exception {
         String uri = "/studyGroup";
         MvcResult mvcResult = mvc.perform(
@@ -698,7 +698,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     public void gettingLinkToStudyGrouPageShouldReturnLink() throws Exception {
         int groupId = data.group1.getId();
         String uri = "/studyGroup/" + groupId + "/inviteLink";
-        String expectedLink = "http://localhost:3000/studyGroup/" + groupId;
+        String expectedLink = "http://localhost:3000/group/" + groupId;
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int statusCode = mvcResult.getResponse().getStatus();
