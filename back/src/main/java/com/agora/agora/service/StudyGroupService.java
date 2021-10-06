@@ -16,6 +16,8 @@ import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,7 +66,7 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public List<StudyGroupDTO> findStudyGroups(Optional<String> text) {
+    public Page<StudyGroupDTO> findStudyGroups(Optional<String> text) {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -78,7 +80,7 @@ public class StudyGroupService {
             }else {
                 studyGroups = groupRepository.findAll(Sort.by("creationDate"));
             }
-            for (StudyGroup studyGroup : studyGroups) {
+            for (StudyGroup studyGroup : studyGroups.getContent()) {
                 if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
                     StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
                     studyGroupDTO.setCurrentUserIsMember(true);
@@ -89,7 +91,8 @@ public class StudyGroupService {
                     studyGroupDTOS.add(studyGroupDTO);
                 }
             }
-            return studyGroupDTOS;
+            Page<StudyGroupDTO> pageDTO = new PageImpl<StudyGroupDTO>(studyGroupDTOS, PageRequest.of(0,3,Sort.by("creationDate")), studyGroupDTOS.size());
+            return pageDTO;
         }else{
             throw new NoSuchElementException("User does not exist.");
         }

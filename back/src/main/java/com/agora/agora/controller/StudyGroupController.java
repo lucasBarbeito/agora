@@ -9,6 +9,7 @@ import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.service.StudyGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +38,7 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
+    public Page<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
         return groupService.findStudyGroups(text);
     }
 
