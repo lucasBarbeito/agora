@@ -157,7 +157,7 @@ public class StudyGroupService {
     }
 
     public String getInviteLink(int id) {
-        return "http://localhost:3000/studyGroup/"+id;
+        return "http://localhost:3000/group/"+id;
     }
 
     public int createPost(int studyGroupId, PostForm postForm) {
@@ -270,5 +270,22 @@ public class StudyGroupService {
     public void addCurrentUserToStudyGroup(int studyGroupId) {
         int currentUserId = userService.findCurrentUser().orElseThrow(NoSuchElementException::new).getId();
         addUserToStudyGroup(studyGroupId, currentUserId);
+    }
+
+
+
+    public void deletePost(int groupId, int postId) {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findById(groupId);
+        if (!studyGroupOptional.isPresent()) throw new NoSuchElementException("Group does not exist");
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (!postOptional.isPresent()) throw new NoSuchElementException("Post does not exist");
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByEmail(email).get();
+        if (user.getId() == studyGroupOptional.get().getCreator().getId() || user.getId() == postOptional.get().getCreator().getId()) {
+            postRepository.delete(postOptional.get());
+            return;
+        }
+        throw new ForbiddenElementException("User cannot delete post.");
     }
 }
