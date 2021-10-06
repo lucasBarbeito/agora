@@ -28,22 +28,25 @@ import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.
 import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js";
 
 class Group extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editGroupFormVisible: false,
-      groupName: "",
-      description: "",
-      confirmationDialogIsOpen: false,
-      isFetching: true,
-      creationDate: "",
-      creatorName: "",
-      requestLoading: false,
-      openAbandonGroupSnack: false,
-      openInvitationLinkSnack: false,
-      announcements: [],
-    };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            editGroupFormVisible: false,
+            groupName: "",
+            description: "",
+            confirmationDialogIsOpen: false,
+            isFetching: true,
+            creationDate: "",
+            creatorName: "",
+            requestLoading: false,
+            openAbandonGroupSnack: false,
+            openInvitationLinkSnack: false,
+            newAnnouncementContent: '',
+            creatingAnnouncement: false,
+            openAnnouncementCreationErrorSnack: false,
+            announcements: [],
+        };
+    }
 
   handleEditGroupClick = () => {
     this.setState((state) => ({
@@ -237,26 +240,50 @@ class Group extends Component {
     return response.json();
   }
 
-  addAnnouncement() {
-    const date = new Date();
-    const newAnnouncements = this.state.announcements;
-    const newAnnouncement = {
-      name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
-      date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-      content: this.state.newAnnouncementContent,
-    };
-    newAnnouncements.unshift(newAnnouncement);
-    this.setState({
-      announcements: newAnnouncements,
-      newAnnouncementContent: "",
-    });
-  }
+    async addAnnouncement() {
+      const groupId = this.props.match.params.id;
+      const date = new Date();
+      this.setState({creatingAnnouncement: true});
 
-  deleteAnnouncement(id) {
-    const newAnnouncements = this.state.announcements;
-    newAnnouncements.splice(id, 1);
-    this.setState({ announcements: newAnnouncements });
-  }
+      try {
+        const response = await fetch(`${baseUrl}/studyGroup/${groupId}/forum`, {
+          method: "POST",
+          body: JSON.stringify({
+            content: this.state.newAnnouncementContent,
+            creationDateAndTime: date.toISOString(),
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
+        });
+
+        this.setState({creatingAnnouncement: false});
+
+        if(!response.ok) {
+          this.setState({openAnnouncementCreationErrorSnack: true});
+        } else {
+          const newAnnouncements = this.state.announcements;
+          const newAnnouncement = {
+            name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
+            date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+            content: this.state.newAnnouncementContent,
+          }
+          newAnnouncements.unshift(newAnnouncement);
+          this.setState({ announcements: newAnnouncements });
+        }
+      } catch (e) {
+        alert("Error, no es posible conectarse al back-end");
+      }
+
+      this.setState({ newAnnouncementContent: ""});
+    }
+  
+    deleteAnnouncement(id) {
+      const newAnnouncements = this.state.announcements;
+      newAnnouncements.splice(id, 1);
+      this.setState({announcements: newAnnouncements});
+    }
 
   render() {
     return (
@@ -348,124 +375,138 @@ class Group extends Component {
                             } este grupo?`}
                           </DialogContentText>
 
-                        </DialogContent>
-                        <DialogActions>
-                          <Button
-                            onClick={() =>
-                              this.setState({
-                                confirmationDialogIsOpen: false,
-                              })
-                            }
-                            disabled={this.state.requestLoading}
-                          >
-                            Cancelar
-                          </Button>
-                          <Button
-                            onClick={
-                              this.state.isAdmin
-                                ? () => this.deleteGroup()
-                                : () => this.abandonGroup()
-                            }
-                            disabled={this.state.requestLoading}
-                            autoFocus>
-                            {this.state.requestLoading ?
-                              <CircularProgress size={20} /> : null}
-                            {this.state.isAdmin ? "Eliminar" : "Abandonar"}
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button
+                                                        onClick={() =>
+                                                            this.setState({
+                                                                confirmationDialogIsOpen: false,
+                                                            })
+                                                        }
+                                                        disabled={this.state.requestLoading}
+                                                    >
+                                                        Cancelar
+                                                    </Button>
+                                                    <Button
+                                                        onClick={
+                                                            this.state.isAdmin
+                                                                ? () => this.deleteGroup()
+                                                                : () => this.abandonGroup()
+                                                        }
+                                                        disabled={this.state.requestLoading}
+                                                        autoFocus>
+                                                        {this.state.requestLoading ?
+                                                            <CircularProgress size={20}/> : null}
+                                                        {this.state.isAdmin ? "Eliminar" : "Abandonar"}
+                                                    </Button>
+                                                </DialogActions>
+                                            </Dialog>
+                                        </Grid>
+                                    </Paper>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid container item xs={6}>
+                            <Grid container direction="column">
+                                <Grid
+                                  item
+                                  container
+                                  direction="row"
+                                  id="inner-mid-container"
+                                  spacing={2}
+                                >
+                                    <Grid item xs={7}>
+                                        <TextField
+                                          id="new-announcement-textfield"
+                                          fullWidth
+                                          label="Nuevo anuncio"
+                                          variant="outlined"
+                                          onChange={(e) => this.setState({newAnnouncementContent: e.target.value})}
+                                          value={this.state.newAnnouncementContent}
+                                        />
+                                    </Grid>
+                                    <Grid container item xs={5} justifyContent="space-between" alignItems="center">
+                                        {
+                                          this.state.creatingAnnouncement &&
+                                          <Grid item xs={2}>
+                                            <CircularProgress size={30}/>
+                                          </Grid>
+                                        }
+                                        <Grid item xs={this.state.creatingAnnouncement ? 10 : 12 }>
+                                          <Button
+                                            fullWidth
+                                            id="new-announcement-button"
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => this.addAnnouncement()}
+                                            disabled={this.state.creatingAnnouncement || this.state.newAnnouncementContent === ""}
+                                          >
+                                            AGREGAR ANUNCIO
+                                          </Button>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Container id="announcement">
+                                    {   !this.state.isFetching &&
+                                        this.state.announcements.map((announcement, index) => (
+                                          <GroupAnnouncement
+                                            key={index}
+                                            canDelete={this.state.isAdmin || announcement.name === `${this.context.userInfo.name} ${this.context.userInfo.surname}`}
+                                            handleDelete={() => this.deleteAnnouncement(index)}
+                                            name={announcement.name}
+                                            date={announcement.date}
+                                            content={announcement.content}
+                                          />
+                                        ))
+                                    }
+                                </Container>
+                            </Grid>
+                        </Grid>
+                        <Grid container item xs={3}>
+                            <Grid container item direction="column" spacing={2}>
+                                <Grid item>
+                                    <Button
+                                        fullWidth
+                                        id="invite-button"
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => this.copyInvitationLinkToClipboard()}
+                                    >
+                                        <LinkIcon id="invite-icon"/>
+                                        INVITAR AL GRUPO
+                                    </Button>
+                                    <SimpleSnackbar
+                                      open={this.state.openInvitationLinkSnack}
+                                      handleClose={() => this.setState({openInvitationLinkSnack: false})}
+                                      message="Link de invitación copiado al portapapeles"
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    {!this.state.isFetching && (
+                                        <GroupMembersAccordion
+                                            memberContacts={this.state.userContacts}
+                                            creatorId={this.state.creatorId}
+                                            isAdmin={this.state.isAdmin}
+                                        />
+                                    )}
+                                </Grid>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                  </Paper>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid container item xs={6}>
-              <Grid container direction="column">
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  id="inner-mid-container"
-                  spacing={2}
-                >
-                  <Grid item xs={7}>
-                    <TextField
-                      id="new-announcement-textfield"
-                      fullWidth
-                      label="Nuevo anuncio"
-                      variant="outlined"
-                      onChange={(e) => this.setState({ newAnnouncementContent: e.target.value })}
-                      value={this.state.newAnnouncementContent}
+                    <SimpleSnackbar
+                      open={this.state.openAbandonGroupSnack}
+                      handleClose={() => this.setState({openAbandonGroupSnack: false})}
+                      message={`Hubo un error al ${this.state.isAdmin ? 'eliminar' : 'abandonar'} el grupo`}
                     />
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Button
-                      fullWidth
-                      id="new-announcement-button"
-                      variant="contained"
-                      color="primary"
-                      onClick={() => this.addAnnouncement()}
-                    >
-                      AGREGAR ANUNCIO
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Container id="announcement">
-                  {!this.state.isFetching &&
-                  this.state.announcements.map((announcement, index) => (
-                    <GroupAnnouncement
-                      key={index}
-                      canDelete={this.state.isAdmin || announcement.name === `${this.context.userInfo.name} ${this.context.userInfo.surname}`}
-                      handleDelete={() => this.deleteAnnouncement(index)}
-                      name={announcement.name}
-                      date={announcement.date}
-                      content={announcement.content}
+                    <SimpleSnackbar
+                      open={this.state.openAnnouncementCreationErrorSnack}
+                      handleClose={() => this.setState({openAnnouncementCreationErrorSnack: false})}
+                      message="Hubo un error al crear el anuncio"
                     />
-                  ))
-                  }
                 </Container>
-              </Grid>
-            </Grid>
-            <Grid container item xs={3}>
-              <Grid container item direction="column" spacing={2}>
-                <Grid item>
-                  <Button
-                    fullWidth
-                    id="invite-button"
-                    variant="contained"
-                    color="primary"
-                    onClick={() => this.copyInvitationLinkToClipboard()}
-                  >
-                    <LinkIcon id="invite-icon" />
-                    INVITAR AL GRUPO
-                  </Button>
-                  <SimpleSnackbar
-                    open={this.state.openInvitationLinkSnack}
-                    handleClose={() => this.setState({ openInvitationLinkSnack: false })}
-                    message="Link de invitación copiado al portapapeles"
-                  />
-                </Grid>
-                <Grid item>
-                  {!this.state.isFetching && (
-                    <GroupMembersAccordion
-                      memberContacts={this.state.userContacts}
-                      creatorId={this.state.creatorId}
-                      isAdmin={this.state.isAdmin}
-                    />
-                  )}
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-          <SimpleSnackbar
-            open={this.state.openAbandonGroupSnack}
-            handleClose={() => this.setState({ openAbandonGroupSnack: false })}
-            message={`Hubo un error al ${this.state.isAdmin ? "eliminar" : "abandonar"} el grupo`}
-          />
-        </Container>
-      </div>
-    );
-  }
+            </div>
+        );
+    }
 }
 
 Group.contextType = UserContext;

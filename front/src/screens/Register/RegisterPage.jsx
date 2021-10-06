@@ -380,8 +380,7 @@ export default class RegisterPage extends Component {
 
             <button
               className="CreateAccountButton"
-              onClick={() => this.handleCreateAccountClick()}
-            >
+              onClick={() => this.handleCreateAccountClick()}>
               Crear mi Cuenta
             </button>
           </div>

@@ -1,17 +1,15 @@
 import { Component } from "react";
 import {
   AppBar,
-  Chip,
   Container,
   Grid,
   IconButton,
   Toolbar,
-  Typography,
 } from "@material-ui/core";
 import "./Navbar.css";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { UserContext } from "../../user-context";
+import ProfileButton from "./ProfileButton";
 
 class Navbar extends Component {
   constructor(props) {
@@ -55,17 +53,9 @@ class Navbar extends Component {
                     </Grid>
                     <Grid item xs={10}>
                       <Container>
-                        <Chip
-                          id="chip"
-                          avatar={<AccountCircleIcon />}
-                          label={
-                            <Typography id="name">
-                              {this.context.userInfo.name +
-                                " " +
-                                this.context.userInfo.surname}
-                            </Typography>
-                          }
-                          clickable
+                        <ProfileButton
+                          name={this.context.userInfo.name}
+                          surname={this.context.userInfo.surname}
                         />
                       </Container>
                     </Grid>
