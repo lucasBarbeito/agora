@@ -1,5 +1,6 @@
 package com.agora.agora.controller;
 
+import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.StudyGroupLabel;
@@ -92,6 +93,12 @@ public class StudyGroupController {
         return ResponseEntity.created(URI.create("/studyGroup/" + studyGroupId + "/forum/" + postId)).build();
     }
 
+    @DeleteMapping(value = "/{id}/forum/{postId}")
+    public ResponseEntity deletePost(@PathVariable("id") int groupId, @PathVariable("postId") int postId) {
+        groupService.deletePost(groupId, postId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(value = "/{id}/forum")
     public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId){
         List<Post> groupPosts = groupService.getStudyGroupPosts(studyGroupId);
@@ -110,5 +117,11 @@ public class StudyGroupController {
         Optional<Post> post = groupService.getStudyGroupPostById(studyGroupId, postId);
         Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateAndTime()));
         return postDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping(value = "/{id}/me")
+    public ResponseEntity addCurrentUserToGroup(@PathVariable("id") int studyGroupId){
+        groupService.addCurrentUserToStudyGroup(studyGroupId);
+        return ResponseEntity.ok().build();
     }
 }

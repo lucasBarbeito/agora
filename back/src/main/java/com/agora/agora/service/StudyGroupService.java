@@ -7,6 +7,10 @@ import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
+import com.agora.agora.repository.PostRepository;
+import com.agora.agora.repository.StudyGroupRepository;
+import com.agora.agora.repository.StudyGroupUsersRepository;
+import com.agora.agora.repository.UserRepository;
 import com.agora.agora.repository.*;
 import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +37,17 @@ public class StudyGroupService {
     private StudyGroupUsersRepository studyGroupUsersRepository;
     private StudyGroupLabelRepository studyGroupLabelRepository;
     private LabelRepository labelRepository;
+    private UserService userService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
         this.studyGroupLabelRepository = studyGroupLabelRepository;
         this.labelRepository = labelRepository;
+        this.userService = userService;
     }
 
     public int create(StudyGroupForm studyGroup) {
@@ -182,7 +188,7 @@ public class StudyGroupService {
     }
 
     public String getInviteLink(int id) {
-        return "http://localhost:3000/studyGroup/"+id;
+        return "http://localhost:3000/group/"+id;
     }
 
     public int createPost(int studyGroupId, PostForm postForm) {
@@ -292,6 +298,25 @@ public class StudyGroupService {
             throw new NoSuchElementException("Group does not exist");
         }
         throw new NoSuchElementException("User does not exist");
+    }
+    public void addCurrentUserToStudyGroup(int studyGroupId) {
+        int currentUserId = userService.findCurrentUser().orElseThrow(NoSuchElementException::new).getId();
+        addUserToStudyGroup(studyGroupId, currentUserId);
+    }
+
+    public void deletePost(int groupId, int postId) {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findById(groupId);
+        if (!studyGroupOptional.isPresent()) throw new NoSuchElementException("Group does not exist");
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (!postOptional.isPresent()) throw new NoSuchElementException("Post does not exist");
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByEmail(email).get();
+        if (user.getId() == studyGroupOptional.get().getCreator().getId() || user.getId() == postOptional.get().getCreator().getId()) {
+            postRepository.delete(postOptional.get());
+            return;
+        }
+        throw new ForbiddenElementException("User cannot delete post.");
     }
 
     public List<StudyGroupLabel> findStudyGroupLabelsById(int studyGroupId){

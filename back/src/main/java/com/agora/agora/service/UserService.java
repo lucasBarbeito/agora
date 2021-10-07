@@ -35,17 +35,23 @@ public class UserService {
 
 
     public int save(UserForm user) {
+        return saveCustom(user, false, true);
+    }
+
+    public int saveCustom(UserForm user, boolean isVerified, boolean sendMail){
         User u = new User(user.getName(),
                 user.getSurname(),
                 user.getEmail(),
                 BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()),
-                false,
+                isVerified,
                 UserType.USER);
         u.setUserVerificationToken(UUID.randomUUID().toString());
         userRepository.save(u);
         String url = "http://localhost:3000/user/verify-user/" + u.getUserVerificationToken();
         String body = "Verifica tu usuario: \n" + url;
-        emailService.sendSimpleMessage(user.getEmail(), "Verificar usuario", body);
+        if(sendMail){
+            emailService.sendSimpleMessage(user.getEmail(), "Verificar usuario", body);
+        }
         return u.getId();
     }
 
@@ -77,5 +83,13 @@ public class UserService {
             return user.getName();
         }
         throw new NoSuchElementException();
+    }
+
+    public List<User> findUsers(Optional<String> name) {
+        if (name.isPresent()) {
+            return userRepository.findByNameAndOrSurname(name.get());
+        } else {
+            return userRepository.findAll();
+        }
     }
 }

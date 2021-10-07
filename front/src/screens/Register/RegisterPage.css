@@ -75,7 +75,7 @@
 }
 .CreateAccountButton {
   position: absolute;
-  left: 70%;
+  left: 65%;
   top: 95%;
   text-align: center;
   font-family: "Roboto";
@@ -95,4 +95,19 @@
   width: 32.4vw;
   margin-top: 5.17vw;
   margin-left: 60.41vw;
+}
+
+@media (min-width: 1300px) and (max-width: 1600px) {
+  .CreateAccountButton {
+  font-size: 13px;
+  left: 70%;
+  top: 95%;
+  } 
+}
+@media (min-width: 1601px) and (max-width: 2000px) {
+  .CreateAccountButton {
+    left: 73%;
+    top: 95%;
+    font-size: 15px;
+  } 
 }

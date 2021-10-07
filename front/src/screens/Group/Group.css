@@ -108,6 +108,16 @@
   margin-left: 1.1%;
 }
 
+#new-announcement-button.Mui-disabled {
+  background-color: #0000001F;
+  color: #00000052;
+  margin-left: 0  .1%;
+}
+
+#new-announcement-button.Mui-disabled:hover {
+  cursor: not-allowed;
+}
+
 #announcement {
   margin-top: 10px;
   padding: 0 5px 0 5px;

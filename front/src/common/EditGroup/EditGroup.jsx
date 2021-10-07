@@ -36,7 +36,16 @@ export default function CustomizedDialogs(props) {
     setEditUnsuccessfully(false)
     setWarningMsg("")
 
-    try{
+    if (!name) {
+        setEditUnsuccessfully(true) 
+        setWarningMsg("Por favor ingrese un nombre de grupo")
+        setWaitingResponse(false)
+    } else if (!description) {
+        setEditUnsuccessfully(true) 
+        setWarningMsg("Por favor ingrese una descripción")
+        setWaitingResponse(false)
+    }else{
+      try{
       const response = await fetch(`${baseUrl}/studyGroup/${props.groupId}`,{
       method: "PUT",
       body: JSON.stringify({
@@ -59,6 +68,7 @@ export default function CustomizedDialogs(props) {
   } catch (e){
     alert("Error, no es posible conectarse al back-end");
   }
+}
   
 } 
 
@@ -153,5 +163,6 @@ export default function CustomizedDialogs(props) {
     </div>
   );
 }
+
 
 
