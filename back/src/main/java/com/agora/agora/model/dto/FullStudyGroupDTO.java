@@ -7,8 +7,8 @@ public class FullStudyGroupDTO extends StudyGroupDTO{
 
     private List<UserContactDTO> userContacts;
 
-    public FullStudyGroupDTO(int id, String name, String description, int creatorId, LocalDate creationDate, List<UserContactDTO> userContacts) {
-        super(id, name, description, creatorId, creationDate);
+    public FullStudyGroupDTO(int id, String name, String description, int creatorId, LocalDate creationDate, List<UserContactDTO> userContacts, List<LabelDTO> labels) {
+        super(id, name, description, creatorId, creationDate, labels);
         this.userContacts = userContacts;
     }
 

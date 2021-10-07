@@ -2,6 +2,7 @@ package com.agora.agora.controller;
 
 import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.StudyGroupLabel;
 import com.agora.agora.model.StudyGroupUser;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
@@ -44,7 +45,11 @@ public class StudyGroupController {
     @GetMapping(value = "/me")
     public List<StudyGroupDTO> getCurrentUserGroups(){
         final List<StudyGroup> groups = groupService.findCurrentUserGroups();
-        List<StudyGroupDTO> groupDTOs = groups.stream().map(group -> new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate())).collect(Collectors.toList());
+        List<StudyGroupDTO> groupDTOs = groups.stream().map(group ->
+                new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(),
+                        group.getLabels().stream().map(label ->
+                                new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
+        ).collect(Collectors.toList());
         return groupDTOs;
     }
 
@@ -53,7 +58,9 @@ public class StudyGroupController {
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
         final List<StudyGroupUser> studyGroupUsers = groupService.findUsersInStudyGroup(id);
         final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
-        final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs));
+        final List<StudyGroupLabel> studyGroupLabels = groupService.findStudyGroupLabelsById(id);
+        final List<LabelDTO> labelDTOs = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
+        final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs, labelDTOs));
         return studyGroupDTOOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

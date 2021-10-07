@@ -1,12 +1,8 @@
 package com.agora.agora;
 
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
+import com.agora.agora.model.*;
 import com.agora.agora.model.type.UserType;
-import com.agora.agora.repository.StudyGroupRepository;
-import com.agora.agora.repository.StudyGroupUsersRepository;
-import com.agora.agora.repository.UserRepository;
+import com.agora.agora.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -20,12 +16,16 @@ public class StartUpDatabase {
     private UserRepository userRepository;
     private StudyGroupRepository studyGroupRepository;
     private StudyGroupUsersRepository studyGroupUsersRepository;
+    private LabelRepository labelRepository;
+    private StudyGroupLabelRepository studyGroupLabelRepository;
 
     @Autowired
-    public StartUpDatabase(UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository) {
+    public StartUpDatabase(UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, LabelRepository labelRepository, StudyGroupLabelRepository studyGroupLabelRepository) {
         this.userRepository = userRepository;
         this.studyGroupRepository = studyGroupRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
+        this.labelRepository = labelRepository;
+        this.studyGroupLabelRepository = studyGroupLabelRepository;
     }
 
     @EventListener
@@ -49,6 +49,30 @@ public class StartUpDatabase {
                 userRepository.save(user5);
                 userRepository.save(user6);
 
+                //Labels
+                Label label1 = new Label("SciFi");
+                Label label2 = new Label("History");
+                Label label3 = new Label("Science");
+                Label label4 = new Label("Math");
+                Label label5 = new Label("Programming");
+                Label label6 = new Label("Design");
+                Label label7 = new Label("Statistics");
+                Label label8 = new Label("Physics");
+                Label label9 = new Label("Algebra");
+                Label label10 = new Label("Religion");
+
+                labelRepository.save(label1);
+                labelRepository.save(label2);
+                labelRepository.save(label3);
+                labelRepository.save(label4);
+                labelRepository.save(label5);
+                labelRepository.save(label6);
+                labelRepository.save(label7);
+                labelRepository.save(label8);
+                labelRepository.save(label9);
+                labelRepository.save(label10);
+
+
                 //Study Groups
                 StudyGroup group1 = new StudyGroup("Teologia", "Estudios de Dios", user1, LocalDate.of(2016, 7, 1));
                 StudyGroup group2 = new StudyGroup("Platon", "Estudios de Platon", user3, LocalDate.of(2020, 10, 25));
@@ -66,6 +90,15 @@ public class StartUpDatabase {
                 studyGroupUsersRepository.save(group1User1);
                 studyGroupUsersRepository.save(group2User3);
                 studyGroupUsersRepository.save(group3User4);
+
+                //Labels in studyGroups
+                StudyGroupLabel g1l10 = new StudyGroupLabel(label10, group1);
+                StudyGroupLabel g2l10 = new StudyGroupLabel(label10, group2);
+                StudyGroupLabel g3l10 = new StudyGroupLabel(label10, group3);
+
+                studyGroupLabelRepository.save(g1l10);
+                studyGroupLabelRepository.save(g2l10);
+                studyGroupLabelRepository.save(g3l10);
 
             } catch (Exception ignored){}
         }
