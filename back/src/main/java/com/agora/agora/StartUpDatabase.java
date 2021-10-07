@@ -1,9 +1,10 @@
 package com.agora.agora;
 
+import com.agora.agora.model.dto.LabelDTO;
+import com.agora.agora.model.form.LabelForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.form.UserForm;
-import com.agora.agora.service.StudyGroupService;
-import com.agora.agora.service.UserService;
+import com.agora.agora.service.*;
 import com.agora.agora.model.*;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.*;
@@ -22,24 +23,16 @@ import java.util.List;
 
 @Component
 public class StartUpDatabase {
-    private UserRepository userRepository;
-    private StudyGroupRepository studyGroupRepository;
-    private StudyGroupUsersRepository studyGroupUsersRepository;
-    private LabelRepository labelRepository;
-    private StudyGroupLabelRepository studyGroupLabelRepository;
     private final UserService userService;
     private final StudyGroupService studyGroupService;
+    private final LabelRepository labelRepository;
 
     @Autowired
-    public StartUpDatabase(UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, LabelRepository labelRepository, StudyGroupLabelRepository studyGroupLabelRepository) {
-        this.userRepository = userRepository;
-        this.studyGroupRepository = studyGroupRepository;
-        this.studyGroupUsersRepository = studyGroupUsersRepository;
-        this.labelRepository = labelRepository;
-        this.studyGroupLabelRepository = studyGroupLabelRepository;
+
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
-
+        this.labelRepository = labelRepository;
     }
 
     private void addManyToGroup(int groupId, List<Integer> userId){
@@ -82,14 +75,24 @@ public class StartUpDatabase {
                 //Labels
                 Label label1 = new Label("SciFi");
                 Label label2 = new Label("History");
-                Label label3 = new Label("Science");
-                Label label4 = new Label("Math");
+                Label label3 = new Label("Sports");
+                Label label4 = new Label("Mathematics");
                 Label label5 = new Label("Programming");
                 Label label6 = new Label("Design");
                 Label label7 = new Label("Statistics");
                 Label label8 = new Label("Physics");
                 Label label9 = new Label("Algebra");
-                Label label10 = new Label("Religion");
+                Label label10 = new Label("Philosophy");
+                Label label11 = new Label("Garden");
+                Label label12 = new Label("Music");
+                Label label13 = new Label("Geography");
+                Label label14 = new Label("Languages");
+                Label label15 = new Label("Politics");
+                Label label16 = new Label("Biology");
+                Label label17 = new Label("Computing");
+                Label label18 = new Label("Arts");
+                Label label19 = new Label("Legal");
+                Label label20 = new Label("Handcraft");
 
                 labelRepository.save(label1);
                 labelRepository.save(label2);
@@ -101,30 +104,72 @@ public class StartUpDatabase {
                 labelRepository.save(label8);
                 labelRepository.save(label9);
                 labelRepository.save(label10);
+                labelRepository.save(label11);
+                labelRepository.save(label12);
+                labelRepository.save(label13);
+                labelRepository.save(label14);
+                labelRepository.save(label15);
+                labelRepository.save(label16);
+                labelRepository.save(label17);
+                labelRepository.save(label18);
+                labelRepository.save(label19);
+                labelRepository.save(label20);
+
+                List<LabelDTO> philosophy = new ArrayList<>();
+                philosophy.add(new LabelDTO(label10.getId(), label10.getName()));
+                List<LabelDTO> math = new ArrayList<>();
+                math.add(new LabelDTO(label4.getId(), label4.getName()));
+                List<LabelDTO> geography = new ArrayList<>();
+                geography.add(new LabelDTO(label13.getId(), label13.getName()));
+                List<LabelDTO> history = new ArrayList<>();
+                history.add(new LabelDTO(label2.getId(), label2.getName()));
+                List<LabelDTO> music = new ArrayList<>();
+                music.add(new LabelDTO(label12.getId(), label12.getName()));
+                List<LabelDTO> garden = new ArrayList<>();
+                garden.add(new LabelDTO(label11.getId(), label11.getName()));
+                List<LabelDTO> biology = new ArrayList<>();
+                biology.add(new LabelDTO(label16.getId(), label16.getName()));
+                List<LabelDTO> programming = new ArrayList<>();
+                programming.add(new LabelDTO(label5.getId(), label5.getName()));
+                programming.add(new LabelDTO(label17.getId(), label17.getName()));
+                List<LabelDTO> languages = new ArrayList<>();
+                languages.add(new LabelDTO(label14.getId(), label14.getName()));
+                List<LabelDTO> legal = new ArrayList<>();
+                legal.add(new LabelDTO(label19.getId(), label19.getName()));
+                List<LabelDTO> handcraft = new ArrayList<>();
+                handcraft.add(new LabelDTO(label20.getId(), label20.getName()));
+                List<LabelDTO> algebra = new ArrayList<>();
+                algebra.add(new LabelDTO(label9.getId(), label9.getName()));
+                List<LabelDTO> arts = new ArrayList<>();
+                arts.add(new LabelDTO(label18.getId(), label18.getName()));
+                List<LabelDTO> sports = new ArrayList<>();
+                sports.add(new LabelDTO(label3.getId(), label3.getName()));
+                List<LabelDTO> design = new ArrayList<>();
+                design.add(new LabelDTO(label6.getId(), label6.getName()));
 
 
                 //Study Groups
-                StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId4,LocalDate.of(2020, 10, 25));
-                StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId5, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group3 = new StudyGroupForm("Aristoteles", "Estudios de Aristoteles", userId6, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group4 = new StudyGroupForm("Analisis matematico", "Estudios de matematicas", userId7, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group5 = new StudyGroupForm("Geometria", "Estudios de las formas", userId8, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group6 = new StudyGroupForm("Geografia", "Estudios de la tierra", userId9, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group7 = new StudyGroupForm("Historia romana", "Estudios de la historia romana", userId10, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group8 = new StudyGroupForm("Legales", "Estudios de leyes", userId11, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group9 = new StudyGroupForm("Composicion musical", "Estudios de la musica", userId12, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group10 = new StudyGroupForm("Jardineria", "Estudios del cuidado de las plantas", userId1, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group11 = new StudyGroupForm("Biologia", "Estudios de los seres vivos", userId2, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group12 = new StudyGroupForm("Cartografia", "Estudios de los mapas", userId3, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group13 = new StudyGroupForm("Lenguajes", "Estudios de lenguajes de programacion", userId4, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group14 = new StudyGroupForm("Analisis sintactico", "Estudio y analisis de la composicion del lenguaje", userId5, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group15 = new StudyGroupForm("Deportes", "Estudios de los deportes", userId6, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group16 = new StudyGroupForm("Diseño grafico", "Estudios de diseño de imagen y sonido", userId7, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group17 = new StudyGroupForm("Corte y confeccion", "Estudios de las telas", userId8, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group18 = new StudyGroupForm("Teatro", "Estudios de obras teatrales", userId9, LocalDate.of(2019, 3, 6));
-                StudyGroupForm group19 = new StudyGroupForm("Algebra", "Estudios de algebra tradicional", userId10, LocalDate.of(2016, 7, 1));
-                StudyGroupForm group20 = new StudyGroupForm("IntroCom", "Estudios de introduccion a la computacion", userId11, LocalDate.of(2020, 10, 25));
-                StudyGroupForm group21 = new StudyGroupForm("AYED", "Estudio de algoritmos y estructura de datos", userId12, LocalDate.of(2019, 3, 6));
+                StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId4,LocalDate.of(2020, 10, 25), philosophy);
+                StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId5, LocalDate.of(2020, 10, 25), philosophy);
+                StudyGroupForm group3 = new StudyGroupForm("Aristoteles", "Estudios de Aristoteles", userId6, LocalDate.of(2019, 3, 6), philosophy);
+                StudyGroupForm group4 = new StudyGroupForm("Analisis matematico", "Estudios de matematicas", userId7, LocalDate.of(2016, 7, 1), math);
+                StudyGroupForm group5 = new StudyGroupForm("Geometria", "Estudios de las formas", userId8, LocalDate.of(2020, 10, 25), math);
+                StudyGroupForm group6 = new StudyGroupForm("Geografia", "Estudios de la tierra", userId9, LocalDate.of(2019, 3, 6), geography);
+                StudyGroupForm group7 = new StudyGroupForm("Historia romana", "Estudios de la historia romana", userId10, LocalDate.of(2016, 7, 1), history);
+                StudyGroupForm group8 = new StudyGroupForm("Legales", "Estudios de leyes", userId11, LocalDate.of(2020, 10, 25), legal);
+                StudyGroupForm group9 = new StudyGroupForm("Composicion musical", "Estudios de la musica", userId12, LocalDate.of(2019, 3, 6), music);
+                StudyGroupForm group10 = new StudyGroupForm("Jardineria", "Estudios del cuidado de las plantas", userId1, LocalDate.of(2016, 7, 1), garden);
+                StudyGroupForm group11 = new StudyGroupForm("Biologia", "Estudios de los seres vivos", userId2, LocalDate.of(2020, 10, 25), biology);
+                StudyGroupForm group12 = new StudyGroupForm("Cartografia", "Estudios de los mapas", userId3, LocalDate.of(2019, 3, 6), geography);
+                StudyGroupForm group13 = new StudyGroupForm("Lenguajes", "Estudios de lenguajes de programacion", userId4, LocalDate.of(2016, 7, 1), programming);
+                StudyGroupForm group14 = new StudyGroupForm("Analisis sintactico", "Estudio y analisis de la composicion del lenguaje", userId5, LocalDate.of(2020, 10, 25), languages);
+                StudyGroupForm group15 = new StudyGroupForm("Deportes", "Estudios de los deportes", userId6, LocalDate.of(2019, 3, 6), sports);
+                StudyGroupForm group16 = new StudyGroupForm("Diseño grafico", "Estudios de diseño de imagen y sonido", userId7, LocalDate.of(2016, 7, 1), design);
+                StudyGroupForm group17 = new StudyGroupForm("Corte y confeccion", "Estudios de las telas", userId8, LocalDate.of(2020, 10, 25), handcraft);
+                StudyGroupForm group18 = new StudyGroupForm("Teatro", "Estudios de obras teatrales", userId9, LocalDate.of(2019, 3, 6), arts);
+                StudyGroupForm group19 = new StudyGroupForm("Algebra", "Estudios de algebra tradicional", userId10, LocalDate.of(2016, 7, 1), algebra);
+                StudyGroupForm group20 = new StudyGroupForm("IntroCom", "Estudios de introduccion a la computacion", userId11, LocalDate.of(2020, 10, 25), programming);
+                StudyGroupForm group21 = new StudyGroupForm("AYED", "Estudio de algoritmos y estructura de datos", userId12, LocalDate.of(2019, 3, 6), programming);
 
                 ArrayList<Integer> groupIds = new ArrayList<>();
                 int groupId1 = studyGroupService.create(group1);
@@ -170,15 +215,6 @@ public class StartUpDatabase {
                 addManyToGroup(groupId19, Arrays.asList(userId3, userId8, userId9));
                 addManyToGroup(groupId20, Arrays.asList(userId3, userId9, userId10));
                 addManyToGroup(groupId21, Arrays.asList(userId3, userId10, userId11));
-
-                //Labels in studyGroups
-                StudyGroupLabel g1l10 = new StudyGroupLabel(label10, group1);
-                StudyGroupLabel g2l10 = new StudyGroupLabel(label10, group2);
-                StudyGroupLabel g3l10 = new StudyGroupLabel(label10, group3);
-
-                studyGroupLabelRepository.save(g1l10);
-                studyGroupLabelRepository.save(g2l10);
-                studyGroupLabelRepository.save(g3l10);
 
             } catch (Exception ignored){}
         }
