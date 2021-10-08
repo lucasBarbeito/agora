@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import "./Navbar.css";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import { UserContext } from "../../user-context";
+import { AppContext } from "../../app-context";
 import ProfileButton from "./ProfileButton";
 import history from "../../history";
 import SimpleSnackbar from "../SimpleSnackbar/SimpleSnackbar";
@@ -92,6 +92,6 @@ class Navbar extends Component {
   }
 }
 
-Navbar.contextType = UserContext;
+Navbar.contextType = AppContext;
 
 export default Navbar;

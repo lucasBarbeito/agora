@@ -21,7 +21,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import "./Group.css";
 import EditGroup from "../../common/EditGroup/EditGroup.jsx";
 import GroupMembersAccordion from "../../common/GroupMembersAccordion/GroupMembersAccordion.js";
-import { UserContext } from "../../user-context";
+import { AppContext } from "../../app-context";
 import { withRouter } from "react-router-dom";
 import baseUrl from "../../baseUrl";
 import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
@@ -34,6 +34,7 @@ class Group extends Component {
       editGroupFormVisible: false,
       groupName: "",
       description: "",
+      labels: [],
       confirmationDialogIsOpen: false,
       isFetching: true,
       creationDate: "",
@@ -196,6 +197,7 @@ class Group extends Component {
         groupName: res.name,
         creationDate: res.creationDate,
         description: res.description,
+        labels: res.labels,
         userContacts: res.userContacts,
         isFetching: false,
         creatorName: creator.name,
@@ -242,6 +244,7 @@ class Group extends Component {
         Authorization: `Bearer ${this.context.token}`,
       },
     });
+
     return response.json();
   }
 
@@ -326,6 +329,8 @@ class Group extends Component {
                             onClose={() => this.handleEditGroupClick()}
                             initialGroupName={this.state.groupName}
                             initialDescription={this.state.description}
+                            tags={this.context.labels}
+                            groupLabel={this.state.labels.map(index => index.name)}
                             onChange={(newGroupName, newDescription) =>
                               this.handleOnChange(newGroupName, newDescription)
                             }
@@ -347,6 +352,11 @@ class Group extends Component {
                     <Typography id="group-description">
                       {!this.state.isFetching && this.state.description}
                     </Typography>
+                    {this.state.labels.map(index =>
+                      <Typography id="group-description">
+                       - {index.name}
+                      </Typography>
+                    )}
                     <Grid container justifyContent="flex-end">
                       <Button
                         id="action-group-button"
@@ -519,6 +529,6 @@ class Group extends Component {
   }
 }
 
-Group.contextType = UserContext;
+Group.contextType = AppContext;
 
 export default withRouter(Group);

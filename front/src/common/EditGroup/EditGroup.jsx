@@ -15,23 +15,14 @@ export default function CustomizedDialogs(props) {
   const [waitingResponse, setWaitingResponse] = useState(false);
   const [editUnsuccessfully,setEditUnsuccessfully] = useState(false);
   const [label, setLabel] = useState([]);
-  const labels = ["Etiqueta1", "Etiqueta2", "Etiqueta3"];
 
   const handleSaveChanges = () => {
     props.onChange(name, description);
     props.onClose();
   };
 
- 
-  const waitABit = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 1000);
-    });
-  }
-
   const requestBackChanges = async () =>{
 
-  
     setWaitingResponse(true)
     setEditUnsuccessfully(false)
     setWarningMsg("")
@@ -50,7 +41,8 @@ export default function CustomizedDialogs(props) {
       method: "PUT",
       body: JSON.stringify({
         "description": description,
-        "name": name
+        "name": name,
+        //labels: label
       }),
       headers: {
         "Content-type": "application/json; charset=UTF-8",
@@ -71,7 +63,6 @@ export default function CustomizedDialogs(props) {
 }
   
 } 
-
   return (
     <div>
       <Dialog onClose={props.onClose} open={props.visible} fullWidth>
@@ -99,13 +90,14 @@ export default function CustomizedDialogs(props) {
           <Autocomplete
             multiple
             id="creategroup-tags-outlined"
-            options={labels}
+            options={props.tags.map(index => index.name)}
             filterSelectedOptions
+            defaultValue={props.groupLabel}
             fullWidth
             autoFocus
             margin="normal"
-            onChange={(newValue) => {
-              setLabel({ newValue });
+            onChange={(event, newValue) => {
+              setLabel(props.tags.filter(item => newValue.includes(item.name)));
             }}
             renderInput={(params) => (
               <TextField
