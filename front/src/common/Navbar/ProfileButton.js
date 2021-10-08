@@ -35,14 +35,13 @@ export const ProfileButton = (props) => {
         },
       })
       if(response.ok){
-        props.setToken(null)
+        props.setToken(null,"/")
       }else{ 
         props.handleLoginError(true)
       }
     }catch (e){
       alert("Error, no es posible conectarse al back-end");
     }
-    //TODO
   };
 
   return (

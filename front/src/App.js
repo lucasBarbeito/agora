@@ -49,6 +49,7 @@ class App extends Component {
         this.getUserInfo(newToken, redirectTo);
       } else {
         localStorage.removeItem("token");
+        history.push("/")
       }
     };
 
