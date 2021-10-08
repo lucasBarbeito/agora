@@ -1,0 +1,54 @@
+name: Bump version on master push
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: '0'
+    - name: Check tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+        DRY_RUN: true
+        DEFAULT_BUMP: 'minor'
+      id: next-version
+    - name: 'Get current cycle'
+      run: echo "::set-output name=CURRENT_CYCLE::"`expr $(date +"%U") - 31`
+      id: current-cycle-getter
+    - name: 'Get next major'
+      run: echo "::set-output name=NUMBER::"`echo ${{ steps.next-version.outputs.new_tag}} | sed 's/v\([0-9]\+\).*/\1/'`
+      id: next-major
+    - name: 'Compare versions'
+      run: echo "::set-output name=COMP::"`
+        if [ ${{steps.next-major.outputs.NUMBER}} -eq ${{steps.current-cycle-getter.outputs.CURRENT_CYCLE}} ];
+        then echo "equal"; 
+        elif [ ${{steps.next-major.outputs.NUMBER}} -gt ${{steps.current-cycle-getter.outputs.CURRENT_CYCLE}} ]; 
+        then echo "greater"; 
+        else echo "lower"; 
+        fi`
+      id: compare-versions
+    - name: 'Debug print'
+      run: echo "The next major is ${{ steps.next-major.outputs.NUMBER }}, the current cycle is ${{ steps.current-cycle-getter.outputs.CURRENT_CYCLE }}, they are ${{ steps.compare-versions.outputs.COMP }}."
+    - if: steps.compare-versions.outputs.COMP == 'equal'
+      name: Bump minor and push tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+        DEFAULT_BUMP: 'minor'
+    - if: steps.compare-versions.outputs.COMP == 'lower'
+      name: Bump major and push tag
+      uses: anothrNick/github-tag-action@1.36.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
+        DEFAULT_BUMP: 'major'
+    - if: steps.compare-versions.outputs.COMP == 'greater'
+      name: Major ahead of cycle
+      run: exit 1
