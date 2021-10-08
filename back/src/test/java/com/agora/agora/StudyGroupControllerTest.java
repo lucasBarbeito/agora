@@ -1,20 +1,14 @@
 package com.agora.agora;
 
 import com.agora.agora.controller.StudyGroupController;
-import com.agora.agora.model.Post;
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
+import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.LoginForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
-import com.agora.agora.repository.PostRepository;
-import com.agora.agora.repository.StudyGroupRepository;
-import com.agora.agora.repository.StudyGroupUsersRepository;
-import com.agora.agora.repository.UserRepository;
+import com.agora.agora.repository.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,9 +38,13 @@ public class StudyGroupControllerTest extends AbstractTest{
     private StudyGroupRepository groupRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LabelRepository labelRepository;
 
     @Autowired
     private StudyGroupUsersRepository studyGroupUsersRepository;
+    @Autowired
+    private StudyGroupLabelRepository studyGroupLabelRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -63,6 +61,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         Post post;
         Post post1;
         Post post2;
+        Label label1;
+        Label label2;
 
         void setup() {
             user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
@@ -72,10 +72,20 @@ public class StudyGroupControllerTest extends AbstractTest{
             userRepository.save(user2);
             userRepository.save(user3);
 
+            label1 = new Label("SciFi");
+            label2 = new Label("History");
+            labelRepository.save(label1);
+            labelRepository.save(label2);
+
             group1 = new StudyGroup("Lord of the rings", "...", user1, LocalDate.of(2021, 8, 17));
             group2 = new StudyGroup("Dune", "....", user2, LocalDate.of(2021, 8, 16));
             groupRepository.save(group1);
             groupRepository.save(group2);
+
+            StudyGroupLabel l1g1 = new StudyGroupLabel(label1, group1);
+            StudyGroupLabel l2g2 = new StudyGroupLabel(label2, group2);
+            studyGroupLabelRepository.save(l1g1);
+            studyGroupLabelRepository.save(l2g2);
 
             StudyGroupUser group1User1 = new StudyGroupUser(user1, group1);
             StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
@@ -93,7 +103,9 @@ public class StudyGroupControllerTest extends AbstractTest{
 
         void rollback() {
             postRepository.deleteAll();
+            studyGroupLabelRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
+            labelRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
         }
@@ -115,7 +127,9 @@ public class StudyGroupControllerTest extends AbstractTest{
     @WithMockUser("USER")
     public void createNewStudyGroupShouldReturnCreated() throws Exception {
         String uri = "/studyGroup";
-        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        List<LabelDTO> label = new ArrayList<>();
+        label.add(new LabelDTO(data.label1.getId(), data.label1.getName()));
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -129,7 +143,9 @@ public class StudyGroupControllerTest extends AbstractTest{
     @WithMockUser("USER")
     public void createStudyGroupAlreadyExistingShouldReturnError() throws Exception {
         String uri = "/studyGroup";
-        StudyGroupForm groupForm = new StudyGroupForm("Dune", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        List<LabelDTO> label = new ArrayList<>();
+        label.add(new LabelDTO(data.label1.getId(), data.label1.getName()));
+        StudyGroupForm groupForm = new StudyGroupForm("Dune", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -141,9 +157,43 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("USER")
+    public void createStudyGroupWithNoLabelShouldReturnBadRequest() throws Exception {
+        String uri = "/studyGroup";
+        List<LabelDTO> label = new ArrayList<>();
+
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(400, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void createStudyGroupWithNonExistingLabelShouldReturnNotFound() throws Exception {
+        String uri = "/studyGroup";
+        List<LabelDTO> label = new ArrayList<>();
+        label.add(new LabelDTO(-1, "NonExistent"));
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("USER")
     public void createNewStudyGroupShouldReturnCreatedAndItsUserListShouldHaveCreatorInIt() throws Exception {
         String uri = "/studyGroup";
-        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        List<LabelDTO> label = new ArrayList<>();
+        label.add(new LabelDTO(data.label1.getId(), data.label1.getName()));
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -172,6 +222,10 @@ public class StudyGroupControllerTest extends AbstractTest{
         //User in StudyGroup Check
         assertEquals(gottenStudyGroup.getUserContacts().get(0).getId(), data.user1.getId());
         assertEquals(gottenStudyGroup.getUserContacts().get(0).getEmail(), data.user1.getEmail());
+
+        //Label in StudyGroup Check
+        assertEquals(gottenStudyGroup.getLabels().get(0).getId(), data.label1.getId());
+        assertEquals(gottenStudyGroup.getLabels().get(0).getName(), data.label1.getName());
     }
 
     @Test
@@ -388,7 +442,9 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     public void createNewStudyGroupWithoutTokenShouldReturnUnauthorized() throws Exception {
         String uri = "/studyGroup";
-        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        List<LabelDTO> label = new ArrayList<>();
+        label.add(new LabelDTO(data.label1.getId(), data.label1.getName()));
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -693,9 +749,10 @@ public class StudyGroupControllerTest extends AbstractTest{
         int statusPut = mvcResult.getResponse().getStatus();
         assertEquals(404, statusPut);
     }
+
     @Test
     @WithMockUser("USER")
-    public void gettingLinkToStudyGrouPageShouldReturnLink() throws Exception {
+    public void gettingLinkToStudyGroupPageShouldReturnLink() throws Exception {
         int groupId = data.group1.getId();
         String uri = "/studyGroup/" + groupId + "/inviteLink";
         String expectedLink = "http://localhost:3000/group/" + groupId;
@@ -708,11 +765,14 @@ public class StudyGroupControllerTest extends AbstractTest{
 
         assertEquals(link, expectedLink);
     }
+
     @Test
     @WithMockUser("USER")
     public void creatingGroupShouldReturnId() throws Exception {
         String uri = "/studyGroup";
-        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17));
+        List<LabelDTO> label = new ArrayList<>();
+        label.add(new LabelDTO(data.label1.getId(), data.label1.getName()));
+        StudyGroupForm groupForm = new StudyGroupForm("Testgroup", "....", data.user1.getId(), LocalDate.of(2021, 8, 17), label);
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -737,6 +797,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(groupForm.getDescription(), groupDTOId.getDescription());
         assertEquals(groupForm.getCreationDate(), groupDTOId.getCreationDate());
         assertEquals(groupForm.getCreatorId(), groupDTOId.getCreatorId());
+        assertEquals(groupForm.getLabels().get(0).getId(), groupDTOId.getLabels().get(0).getId());
     }
 
     @Test

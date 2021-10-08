@@ -1,10 +1,8 @@
 package com.agora.agora.service;
 
 import com.agora.agora.exceptions.ForbiddenElementException;
-import com.agora.agora.model.Post;
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
+import com.agora.agora.model.*;
+import com.agora.agora.model.dto.LabelDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
@@ -13,15 +11,22 @@ import com.agora.agora.repository.PostRepository;
 import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
+import com.agora.agora.repository.*;
+import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudyGroupService {
@@ -30,18 +35,22 @@ public class StudyGroupService {
     private UserRepository userRepository;
     private PostRepository postRepository;
     private StudyGroupUsersRepository studyGroupUsersRepository;
+    private StudyGroupLabelRepository studyGroupLabelRepository;
+    private LabelRepository labelRepository;
     private UserService userService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, UserService userService) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
+        this.studyGroupLabelRepository = studyGroupLabelRepository;
+        this.labelRepository = labelRepository;
         this.userService = userService;
     }
 
-    public int create(StudyGroupForm studyGroup){
+    public int create(StudyGroupForm studyGroup) {
         Optional<User> userOptional = userRepository.findById(studyGroup.getCreatorId());
         User studyGroupCreator = userOptional.orElseThrow(() -> new NoSuchElementException(String.format("User: %d does not exist.", studyGroup.getCreatorId())));
 
@@ -49,10 +58,28 @@ public class StudyGroupService {
         if(studyGroupOptional.isPresent()){
             throw new DataIntegrityViolationException(String.format("Group name: %s already exists.", studyGroup.getName()));
         }
-        //TODO: find by label
+        //Label Check
+        List<LabelDTO> labels = studyGroup.getLabels();
+        if(labels.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        List<Label> groupLabels = new ArrayList<>();
+        for(LabelDTO label : labels) {
+            Optional<Label> labelOptional = labelRepository.findById(label.getId());
+            if (!labelOptional.isPresent()) {
+                throw new NoSuchElementException("Label does not exist.");
+            }else{
+                groupLabels.add(labelOptional.get());
+            }
+        }
 
         StudyGroup group = new StudyGroup(studyGroup.getName(), studyGroup.getDescription(), studyGroupCreator, studyGroup.getCreationDate());
         groupRepository.save(group);
+
+        for (Label groupLabel : groupLabels) {
+            StudyGroupLabel studyGroupLabel = new StudyGroupLabel(groupLabel, group);
+            studyGroupLabelRepository.save(studyGroupLabel);
+        }
 
         StudyGroupUser studyGroupUser = new StudyGroupUser(studyGroupCreator, group);
         studyGroupUsersRepository.save(studyGroupUser);
@@ -80,11 +107,15 @@ public class StudyGroupService {
             }
             for (StudyGroup studyGroup : studyGroups) {
                 if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
-                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+                    List<StudyGroupLabel> studyGroupLabels = studyGroupLabelRepository.findByStudyGroupId(studyGroup.getId());
+                    List<LabelDTO> labels = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
+                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), labels);
                     studyGroupDTO.setCurrentUserIsMember(true);
                     studyGroupDTOS.add(studyGroupDTO);
                 }else{
-                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+                    List<StudyGroupLabel> studyGroupLabels = studyGroupLabelRepository.findByStudyGroupId(studyGroup.getId());
+                    List<LabelDTO> labels = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
+                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), labels);
                     studyGroupDTO.setCurrentUserIsMember(false);
                     studyGroupDTOS.add(studyGroupDTO);
                 }
@@ -235,6 +266,7 @@ public class StudyGroupService {
                 StudyGroup studyGroup = groupOptional.get();
                 if(studyGroup.getCreator().getId() == user.getId()){
                     postRepository.deleteAll(postRepository.findAllByStudyGroupId(studyGroupId));
+                    studyGroupLabelRepository.deleteAll(studyGroupLabelRepository.findByStudyGroupId(studyGroupId));
                     studyGroupUsersRepository.deleteAll(studyGroupUsersRepository.findStudyGroupUserByStudyGroupId(studyGroupId));
                     groupRepository.deleteById(studyGroupId);
                 }else{
@@ -272,8 +304,6 @@ public class StudyGroupService {
         addUserToStudyGroup(studyGroupId, currentUserId);
     }
 
-
-
     public void deletePost(int groupId, int postId) {
         Optional<StudyGroup> studyGroupOptional = groupRepository.findById(groupId);
         if (!studyGroupOptional.isPresent()) throw new NoSuchElementException("Group does not exist");
@@ -287,5 +317,16 @@ public class StudyGroupService {
             return;
         }
         throw new ForbiddenElementException("User cannot delete post.");
+    }
+
+    public List<StudyGroupLabel> findStudyGroupLabelsById(int studyGroupId){
+        Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
+
+        if(groupOptional.isPresent()){
+            return studyGroupLabelRepository.findByStudyGroupId(studyGroupId);
+        }
+        else{
+            throw new NoSuchElementException("Group does not exist");
+        }
     }
 }

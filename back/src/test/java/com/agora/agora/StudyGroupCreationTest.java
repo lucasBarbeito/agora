@@ -1,9 +1,8 @@
 package com.agora.agora;
 
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
+import com.agora.agora.model.*;
 import com.agora.agora.model.dto.FullStudyGroupDTO;
+import com.agora.agora.model.dto.LabelDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.dto.UserContactDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
@@ -42,17 +41,21 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testStudyGroupFormSerialization() throws Exception {
-        StudyGroupForm form = new StudyGroupForm("Lord of the rings", "...", 1,LocalDate.of(2021, 8, 17));
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        StudyGroupForm form = new StudyGroupForm("Lord of the rings", "...", 1,LocalDate.of(2021, 8, 17), labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
 
         assertEquals(expectedJson,json.write(form).getJson());
     }
 
     @Test
     public void testStudyGroupFormDeserialization() throws Exception{
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
-        StudyGroupForm form = new StudyGroupForm("Lord of the rings", "...", 1,LocalDate.of(2021, 8, 17));
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        StudyGroupForm form = new StudyGroupForm("Lord of the rings", "...", 1,LocalDate.of(2021, 8, 17), labels);
 
 
         StudyGroupForm userFormObtained = json.parse(expectedJson).getObject();
@@ -61,32 +64,40 @@ public class StudyGroupCreationTest {
         assertEquals(form.getDescription(),userFormObtained.getDescription());
         assertEquals(form.getCreatorId(),userFormObtained.getCreatorId());
         assertEquals(form.getCreationDate(),userFormObtained.getCreationDate());
+        assertEquals(form.getLabels().get(0).getId(), userFormObtained.getLabels().get(0).getId());
     }
 
     @Test
     public void testStudyGroupFormSetInSerialization() throws Exception{
-        StudyGroupForm form = new StudyGroupForm("yes", "yes", 12,LocalDate.of(1989, 4, 15));
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        StudyGroupForm form = new StudyGroupForm();
         form.setName("Lord of the rings");
         form.setDescription("...");
         form.setCreatorId(1);
         form.setCreationDate(LocalDate.of(2021, 8, 17));
+        form.setLabels(labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
 
         assertEquals(expectedJson,json.write(form).getJson());
     }
 
     @Test
     public void testStudyGroupDTOSerialization() throws Exception {
-        StudyGroupDTO studyGroup = new StudyGroupDTO(0,"Lord of the rings", "...", 1 ,LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        StudyGroupDTO studyGroup = new StudyGroupDTO(0,"Lord of the rings", "...", 1 ,LocalDate.of(2021, 8, 17), labels);
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
         assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
     }
 
     @Test
     public void testStudyGroupDTODeserialization() throws Exception{
-        StudyGroupDTO studyGroup = new StudyGroupDTO(0,"Lord of the rings", "...", 1 ,LocalDate.of(2021, 8, 17));
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        StudyGroupDTO studyGroup = new StudyGroupDTO(0,"Lord of the rings", "...", 1 ,LocalDate.of(2021, 8, 17), labels);
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
         StudyGroupDTO studyGroupObtained = jsonU.parse(expectedJson).getObject();
         assertEquals(studyGroup.getId(),studyGroupObtained.getId());
         assertEquals(studyGroup.getName(),studyGroupObtained.getName());
@@ -94,25 +105,31 @@ public class StudyGroupCreationTest {
         assertEquals(studyGroup.getCreatorId(),studyGroupObtained.getCreatorId());
         assertEquals(studyGroup.getDescription(),studyGroupObtained.getDescription());
         assertEquals(studyGroup.isCurrentUserIsMember(), studyGroupObtained.isCurrentUserIsMember());
+        assertEquals(studyGroup.getLabels().get(0).getId(), studyGroupObtained.getLabels().get(0).getId());
     }
 
     @Test
     public void testStudyGroupDTOSetInSerialization() throws Exception{
-        StudyGroupDTO studyGroup = new StudyGroupDTO(1,"Lord of the rings haters", "We have 0 taste", 2,LocalDate.of(1989, 4, 15));
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        StudyGroupDTO studyGroup = new StudyGroupDTO();
         studyGroup.setId(0);
         studyGroup.setName("Lord of the rings");
         studyGroup.setDescription("...");
         studyGroup.setCreatorId(1);
         studyGroup.setCreationDate(LocalDate.of(2021, 8, 17));
         studyGroup.setCurrentUserIsMember(false);
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
+        studyGroup.setLabels(labels);
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false}";
         assertEquals(expectedJson,jsonU.write(studyGroup).getJson());
     }
 
     @Test
     public void testFullStudyGroupDTOSerialization() throws IOException {
+        Label label = new Label("SciFi");
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
+        studyGroup.getLabels().add(new StudyGroupLabel(label, studyGroup));
         User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
         studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
 
@@ -120,28 +137,33 @@ public class StudyGroupCreationTest {
         List<UserContactDTO> users = new ArrayList<>();
         users.add(userDTO);
 
-        FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users);
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users, labels);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }
 
     @Test
     public void testFullStudyGroupDTODeserialization() throws IOException {
+        Label label = new Label("SciFi");
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
         User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
         studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
+        studyGroup.getLabels().add(new StudyGroupLabel(label, studyGroup));
 
         UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getEmail());
         List<UserContactDTO> users = new ArrayList<>();
         users.add(userDTO);
 
-        FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users);
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+        FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users, labels);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
-
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
         FullStudyGroupDTO obtained = jsonFullDTO.parse(expectedJson).getObject();
 
         assertEquals(dto.getId(), obtained.getId());
@@ -161,6 +183,9 @@ public class StudyGroupCreationTest {
         List<UserContactDTO> users = new ArrayList<>();
         users.add(userDTO);
 
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "SciFi"));
+
         FullStudyGroupDTO dto = new FullStudyGroupDTO();
         dto.setCreationDate(studyGroup.getCreationDate());
         dto.setCreatorId(user.getId());
@@ -169,8 +194,9 @@ public class StudyGroupCreationTest {
         dto.setId(0);
         dto.setUserContacts(users);
         dto.setName(studyGroup.getName());
+        dto.setLabels(labels);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\"}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }
