@@ -3,6 +3,7 @@ package com.agora.agora.service;
 import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.*;
 import com.agora.agora.model.dto.LabelDTO;
+import com.agora.agora.model.dto.LabelIdDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
@@ -59,12 +60,12 @@ public class StudyGroupService {
             throw new DataIntegrityViolationException(String.format("Group name: %s already exists.", studyGroup.getName()));
         }
         //Label Check
-        List<LabelDTO> labels = studyGroup.getLabels();
+        List<LabelIdDTO> labels = studyGroup.getLabels();
         if(labels.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         List<Label> groupLabels = new ArrayList<>();
-        for(LabelDTO label : labels) {
+        for(LabelIdDTO label : labels) {
             Optional<Label> labelOptional = labelRepository.findById(label.getId());
             if (!labelOptional.isPresent()) {
                 throw new NoSuchElementException("Label does not exist.");
@@ -327,6 +328,15 @@ public class StudyGroupService {
         }
         else{
             throw new NoSuchElementException("Group does not exist");
+        }
+    }
+
+    public List<Label> findAllLabelsInSystem(){
+        List<Label> labels = labelRepository.findAll();
+        if(labels.isEmpty()){
+            throw new NoSuchElementException("There are no Labels available");
+        }else {
+            return labels;
         }
     }
 }

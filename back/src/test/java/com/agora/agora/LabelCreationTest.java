@@ -2,6 +2,7 @@ package com.agora.agora;
 
 import com.agora.agora.model.Label;
 import com.agora.agora.model.dto.LabelDTO;
+import com.agora.agora.model.dto.LabelIdDTO;
 import com.agora.agora.model.form.LabelForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import org.junit.Test;
@@ -29,7 +30,8 @@ public class LabelCreationTest {
     JacksonTester<LabelDTO> json;
     @Autowired
     JacksonTester<LabelForm> jsonForm;
-
+    @Autowired
+    JacksonTester<LabelIdDTO> jsonIdDTo;
 
     @Test
     public void testLabelDTOSerialization() throws Exception {
@@ -61,6 +63,35 @@ public class LabelCreationTest {
         String expectedJson = "{\"id\":1,\"name\":\"SciFi\"}";
 
         assertEquals(expectedJson,json.write(label).getJson());
+    }
+
+    @Test
+    public void testLabelIdDTOSerialization() throws Exception {
+        LabelIdDTO label = new LabelIdDTO(1);
+
+        String expectedJson = "{\"id\":1}";
+
+        assertEquals(expectedJson,jsonIdDTo.write(label).getJson());
+    }
+
+    @Test
+    public void testLabelIdDTODeserialization() throws Exception {
+        LabelIdDTO label = new LabelIdDTO(1);
+        String expectedJson = "{\"id\":1}";
+
+        LabelIdDTO labelObtained = jsonIdDTo.parse(expectedJson).getObject();
+
+        assertEquals(label.getId(), labelObtained.getId());
+    }
+
+    @Test
+    public void testLabelIdDTOSetSerialization() throws Exception {
+        LabelIdDTO label = new LabelIdDTO();
+        label.setId(1);
+
+        String expectedJson = "{\"id\":1}";
+
+        assertEquals(expectedJson,jsonIdDTo.write(label).getJson());
     }
 
     @Test
