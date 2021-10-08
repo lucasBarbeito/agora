@@ -99,7 +99,7 @@ class App extends Component {
           <UserContext.Provider value={this.state}>
             <Router history={history}>
               <div>
-                <Navbar history={history} />
+                <Navbar history={history}  />
                 <Switch>
                   <Route exact path="/">
                     <LandingPage

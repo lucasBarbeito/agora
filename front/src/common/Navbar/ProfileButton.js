@@ -4,8 +4,10 @@ import Menu from "@material-ui/core/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import history from "../../history";
+import baseUrl from "../../baseUrl";
 
-export const ProfileButton = ({ name, surname }) => {
+
+export const ProfileButton = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
@@ -21,9 +23,25 @@ export const ProfileButton = ({ name, surname }) => {
     history.push("/profile");
   };
 
-  const handleLogOutClick = () => {
+  const handleLogOutClick = async () => {
     setAnchorEl(null);
-    alert("Cerrando sesión");
+
+    try{
+      const response = await fetch(`${baseUrl}/auth`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      if(response.ok){
+        props.setToken(null)
+      }else{ 
+        props.handleLoginError(true)
+      }
+    }catch (e){
+      alert("Error, no es posible conectarse al back-end");
+    }
     //TODO
   };
 
@@ -32,7 +50,7 @@ export const ProfileButton = ({ name, surname }) => {
       <Chip
         id="chip"
         avatar={<AccountCircleIcon />}
-        label={<Typography id="name">{name + " " + surname}</Typography>}
+        label={<Typography id="name">{props.name + " " + props.surname}</Typography>}
         clickable
         onClick={handleClick}
       />
