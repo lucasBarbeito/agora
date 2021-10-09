@@ -15,10 +15,7 @@ import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +52,6 @@ public class StudyGroupService {
 
         StudyGroup group = new StudyGroup(studyGroup.getName(), studyGroup.getDescription(), studyGroupCreator, studyGroup.getCreationDate());
         groupRepository.save(group);
-
         StudyGroupUser studyGroupUser = new StudyGroupUser(studyGroupCreator, group);
         studyGroupUsersRepository.save(studyGroupUser);
 
@@ -74,27 +70,26 @@ public class StudyGroupService {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             Page<StudyGroup> studyGroups;
-            List<StudyGroupDTO> studyGroupDTOS = new ArrayList<>();
             if (text.isPresent()) {
-                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get(),Sort.by("creationDate"));
+                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get(),PageRequest.of(0,3,Sort.by("creationDate")));
             }else {
-                studyGroups = groupRepository.findAll(Sort.by("creationDate"));
+                studyGroups = groupRepository.findAll(PageRequest.of(0,3,Sort.by("creationDate")));
             }
-            for (StudyGroup studyGroup : studyGroups.getContent()) {
-                if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
-                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
-                    studyGroupDTO.setCurrentUserIsMember(true);
-                    studyGroupDTOS.add(studyGroupDTO);
-                }else{
-                    StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
-                    studyGroupDTO.setCurrentUserIsMember(false);
-                    studyGroupDTOS.add(studyGroupDTO);
-                }
-            }
-            Page<StudyGroupDTO> pageDTO = new PageImpl<StudyGroupDTO>(studyGroupDTOS, PageRequest.of(0,3,Sort.by("creationDate")), studyGroupDTOS.size());
-            return pageDTO;
+            return studyGroups.map((studyGroup -> convertToDto(studyGroup, user)));
         }else{
             throw new NoSuchElementException("User does not exist.");
+        }
+    }
+
+    private StudyGroupDTO convertToDto(final StudyGroup studyGroup, User user){
+        if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
+            StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+            studyGroupDTO.setCurrentUserIsMember(true);
+            return studyGroupDTO;
+        }else{
+            StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+            studyGroupDTO.setCurrentUserIsMember(false);
+            return studyGroupDTO;
         }
     }
 

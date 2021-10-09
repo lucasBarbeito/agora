@@ -12,5 +12,5 @@ import java.util.Optional;
 
 public interface StudyGroupRepository extends PagingAndSortingRepository<StudyGroup, Integer> {
     Optional<StudyGroup> findByName(String name);
-    Page<StudyGroup> findAll(Sort sort);
+    Page<StudyGroup> findAll(Pageable pageable);
 }

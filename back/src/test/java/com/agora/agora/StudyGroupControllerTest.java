@@ -20,9 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -262,7 +266,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(200, status);
 
         String gottenStatus = mvcResult.getResponse().getContentAsString();
-        List<StudyGroupDTO> gottenStudyGroup = super.mapFromJson(gottenStatus, new TypeReference<List<StudyGroupDTO>>(){});
+        Page<StudyGroupDTO> gottenStudyGroupPage = super.mapFromJson(gottenStatus, new TypeReference<Page<StudyGroupDTO>>(){});
+        List<StudyGroupDTO> gottenStudyGroup = gottenStudyGroupPage.getContent();
 
         assertTrue(gottenStudyGroup.get(0).isCurrentUserIsMember());
         assertFalse(gottenStudyGroup.get(1).isCurrentUserIsMember());

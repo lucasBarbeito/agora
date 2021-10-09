@@ -22,7 +22,7 @@ public interface StudyGroupUsersRepository extends PagingAndSortingRepository<St
     @Query(value = "select sg from StudyGroup sg " +
                         "where (lower(sg.name) like lower(:text)) " +
                             "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))")
-    Page<StudyGroup> findByNameOrDescription(@Param("text")String text, Sort sort);
+    Page<StudyGroup> findByNameOrDescription(@Param("text")String text, Pageable pageable);
 
     void deleteAllByStudyGroupId(int studyGroupId);
 }
