@@ -21,7 +21,7 @@ class GroupCard extends Component {
           <Typography id="name" noWrap>
             {this.props.name}
           </Typography>
-          {/*<Typography id='tags' noWrap>{this.props.tags.join(', ')}</Typography>*/}
+          <Typography id='tags' noWrap>{this.props.labels.join(', ')}</Typography>
           <Typography id="description">{this.props.description}</Typography>
         </CardContent>
         <CardActions>

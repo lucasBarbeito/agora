@@ -5,10 +5,8 @@ import SearchIcon from "@material-ui/icons/Search";
 import "./GroupsPage.css";
 import GroupCard from "../../common/GroupCard/GroupCard";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
-import { UserContext } from "../../user-context";
+import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
-
-const tags = ["Etiqueta 1", "Etiqueta con mucho texto", "Etiqueta 3"];
 
 class GroupsPage extends Component {
   constructor(props) {
@@ -118,10 +116,10 @@ class GroupsPage extends Component {
               <div id="group-label-field">
                 <Autocomplete
                   multiple
-                  options={tags}
+                  options={this.context.labels.map(index => index.name)}
                   filterSelectedOptions
                   onChange={(event, newValue) => {
-                    this.setState({ tags: newValue });
+                    this.setState({ tags: this.context.labels.filter(item => newValue.includes(item.name))});
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -154,7 +152,7 @@ class GroupsPage extends Component {
             >
               <GroupCard
                 name={group.name}
-                //tags={group.groupTags}
+                labels={group.labels.map(index => index.name)}
                 description={group.description}
                 buttonAction={() => this.joinGroup(group.id)}
                 buttonLabel={
@@ -169,6 +167,6 @@ class GroupsPage extends Component {
   }
 }
 
-GroupsPage.contextType = UserContext;
+GroupsPage.contextType = AppContext;
 
 export default GroupsPage;
