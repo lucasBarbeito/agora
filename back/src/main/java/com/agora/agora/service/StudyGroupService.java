@@ -102,7 +102,7 @@ public class StudyGroupService {
             User user = optionalUser.get();
             Page<StudyGroup> studyGroups;
             if (text.isPresent()) {
-                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get(),PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
+                studyGroups = groupRepository.findStudyGroupByNameOrDescription(text.get(),PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
             }else {
                 studyGroups = groupRepository.findAll(PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
             }
@@ -116,13 +116,13 @@ public class StudyGroupService {
         if (studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroup.getId(), user.getId()).isPresent()) {
             List<StudyGroupLabel> studyGroupLabels = studyGroupLabelRepository.findByStudyGroupId(studyGroup.getId());
             List<LabelDTO> labels = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
-            StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+            StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), labels);
             studyGroupDTO.setCurrentUserIsMember(true);
             return studyGroupDTO;
         }else{
             List<StudyGroupLabel> studyGroupLabels = studyGroupLabelRepository.findByStudyGroupId(studyGroup.getId());
             List<LabelDTO> labels = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
-            StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate());
+            StudyGroupDTO studyGroupDTO = new StudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), labels);
             studyGroupDTO.setCurrentUserIsMember(false);
             return studyGroupDTO;
         }

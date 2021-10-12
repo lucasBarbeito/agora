@@ -14,15 +14,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface StudyGroupUsersRepository extends PagingAndSortingRepository<StudyGroupUser, Integer> {
+public interface StudyGroupUsersRepository extends CrudRepository<StudyGroupUser, Integer> {
     List<StudyGroupUser> findStudyGroupUserByStudyGroupId(int studyGroupId);
     Optional<StudyGroupUser> findStudyGroupUserByStudyGroupIdAndAndUserId(int studyGroupId, int userId);
     List<StudyGroupUser> findStudyGroupUserByUserId(int userId);
-
-    @Query(value = "select sg from StudyGroup sg " +
-                        "where (lower(sg.name) like lower(concat('%',concat(:text, '%')))) " +
-                            "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))")
-    Page<StudyGroup> findByNameOrDescription(@Param("text")String text, Pageable pageable);
 
     void deleteAllByStudyGroupId(int studyGroupId);
 }

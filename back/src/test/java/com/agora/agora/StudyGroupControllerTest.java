@@ -30,6 +30,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -115,6 +117,11 @@ public class StudyGroupControllerTest extends AbstractTest{
             groupRepository.deleteAll();
             userRepository.deleteAll();
         }
+    }
+
+    private List<StudyGroupDTO> pageToList(String studyGroupPageJson) throws IOException {
+        Page<StudyGroupDTO> gottenStudyGroupPage = super.mapFromJson(studyGroupPageJson, new TypeReference<CustomPageImpl<StudyGroupDTO>>(){});
+        return gottenStudyGroupPage.getContent();
     }
 
     // Executed before each test
@@ -292,19 +299,33 @@ public class StudyGroupControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("tolkien@gmail.com")
-    public void findAllStudyGroupsReturnsReturnsAmountExpected() {
-        Page<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.empty(),0);
-        assertEquals(2,allStudyGroups.getContent().size());
+    public void findAllStudyGroupsReturnsReturnsAmountExpected() throws Exception {
+        String uri = "/studyGroup/?page=0";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String gottenStatus = mvcResult.getResponse().getContentAsString();
+        List<StudyGroupDTO> gottenStudyGroup = pageToList(gottenStatus);
+
+        assertEquals(2,gottenStudyGroup.size());
     }
 
     @Test
     @WithMockUser("tolkien@gmail.com")
-    public void findAllStudyGroupsHasExpectedValues() {
-        Page<StudyGroupDTO> allStudyGroups = studyGroupController.getAllStudyGroups(Optional.empty(),0);
+    public void findAllStudyGroupsHasExpectedValues() throws Exception {
+        String uri = "/studyGroup/?page=0";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String gottenStatus = mvcResult.getResponse().getContentAsString();
+        List<StudyGroupDTO> gottenStudyGroup = pageToList(gottenStatus);
+
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group1.getName());
         expectedStudyGroupsNames.add(data.group2.getName());
-        for (StudyGroupDTO studyGroup : allStudyGroups.getContent()) {
+        for (StudyGroupDTO studyGroup : gottenStudyGroup) {
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
     }
@@ -321,8 +342,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(200, status);
 
         String gottenStatus = mvcResult.getResponse().getContentAsString();
-        Page<StudyGroupDTO> gottenStudyGroupPage = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<StudyGroupDTO>>(){});
-        List<StudyGroupDTO> gottenStudyGroup = gottenStudyGroupPage.getContent();
+        List<StudyGroupDTO> gottenStudyGroup = pageToList(gottenStatus);
 
         assertTrue(gottenStudyGroup.get(0).isCurrentUserIsMember());
         assertFalse(gottenStudyGroup.get(1).isCurrentUserIsMember());
@@ -471,8 +491,7 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        StudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, StudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         assertEquals(1,allStudyGroups.size());
     }
 
@@ -486,8 +505,7 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         assertEquals(2,allStudyGroups.size());
     }
 
@@ -501,8 +519,7 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         assertEquals(0,allStudyGroups.size());
     }
 
@@ -516,12 +533,11 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group1.getName());
         expectedStudyGroupsNames.add(data.group2.getName());
-        for (StudyGroupDTO studyGroup : allStudyGroups.getContent()) {
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
     }
@@ -536,11 +552,10 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group2.getName());
-        for (StudyGroupDTO studyGroup : allStudyGroups.getContent()) {
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
     }
@@ -548,15 +563,14 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByPartialNameHasExpectedValue() throws Exception {
-        String uri = "/studyGroup";
+        String uri = "/studyGroup/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
-                        .param("text", "Du")
+                        .param("text", "du")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group2.getName());
         for (StudyGroupDTO studyGroup : allStudyGroups) {
