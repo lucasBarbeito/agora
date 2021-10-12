@@ -1,6 +1,7 @@
 package com.agora.agora.model.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class StudyGroupDTO {
 
@@ -10,10 +11,7 @@ public class StudyGroupDTO {
 
     private String description;
 
-/* TODO
-    private List<Label> labels = new ArrayList<>();
-
- */
+    private List<LabelDTO> labels;
 
     private int creatorId;
 
@@ -24,12 +22,13 @@ public class StudyGroupDTO {
     public StudyGroupDTO() {
     }
 
-    public StudyGroupDTO(int id, String name, String description, int creatorId, LocalDate creationDate) {
+    public StudyGroupDTO(int id, String name, String description, int creatorId, LocalDate creationDate, List<LabelDTO>  labels) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.creatorId = creatorId;
         this.creationDate = creationDate;
+        this.labels = labels;
     }
 
     public int getId() {
@@ -78,5 +77,13 @@ public class StudyGroupDTO {
 
     public void setCurrentUserIsMember(boolean currentUserIsMember) {
         this.currentUserIsMember = currentUserIsMember;
+    }
+
+    public List<LabelDTO> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<LabelDTO> labels) {
+        this.labels = labels;
     }
 }

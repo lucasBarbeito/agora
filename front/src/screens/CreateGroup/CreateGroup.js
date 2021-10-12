@@ -6,7 +6,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-import { UserContext } from "../../user-context";
+import { AppContext } from "../../app-context";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import baseUrl from "../../baseUrl";
 
@@ -23,7 +23,7 @@ class CreateGroup extends Component {
   }
 
   render() {
-    const labels = ["Etiqueta1", "Etiqueta2", "Etiqueta3"];
+
 
     const createGroup = async () => {
       if (!this.state.groupName) {
@@ -53,7 +53,7 @@ class CreateGroup extends Component {
               creatorId: this.context.userInfo.id, //
               description: this.state.description,
               name: this.state.groupName,
-              //labels
+              labels: this.state.label
             }),
             headers: {
               "Content-type": "application/json; charset=UTF-8",
@@ -131,11 +131,11 @@ class CreateGroup extends Component {
                 <Autocomplete
                   multiple
                   id="creategroup-tags-outlined"
-                  options={labels}
+                  options={this.context.labels.map(index => index.name)}
                   filterSelectedOptions
                   fullWidth
                   onChange={(event, newValue) => {
-                    this.setState({ label: newValue });
+                    this.setState({ label: this.context.labels.filter(item => newValue.includes(item.name))});
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -187,6 +187,6 @@ class CreateGroup extends Component {
     );
   }
 }
-CreateGroup.contextType = UserContext;
+CreateGroup.contextType = AppContext;
 
 export default CreateGroup;

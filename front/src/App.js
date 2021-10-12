@@ -2,7 +2,7 @@ import "./App.css";
 import React, { Component } from "react";
 import { Router, Switch, Route, Redirect } from "react-router-dom";
 import history from "./history";
-import { UserContext } from "./user-context";
+import { AppContext } from "./app-context";
 import Navbar from "./common/Navbar/Navbar";
 import RegisterPage from "./screens/Register/RegisterPage";
 import LoginPage from "./screens/LoginPage/LoginPage";
@@ -17,7 +17,7 @@ import baseUrl from "./baseUrl.js";
 import { CircularProgress } from "@material-ui/core";
 
 const AuthRoute = ({ children, ...rest }) => (
-  <UserContext.Consumer>
+  <AppContext.Consumer>
     {({ token }) => (
       <Route
         {...rest}
@@ -35,7 +35,7 @@ const AuthRoute = ({ children, ...rest }) => (
         }
       />
     )}
-  </UserContext.Consumer>
+  </AppContext.Consumer>
 );
 
 class App extends Component {
@@ -47,8 +47,10 @@ class App extends Component {
       if (newToken !== null) {
         localStorage.setItem("token", newToken);
         this.getUserInfo(newToken, redirectTo);
+        this.getLabels(newToken)
       } else {
         localStorage.removeItem("token");
+        history.push("/")
       }
     };
 
@@ -56,6 +58,7 @@ class App extends Component {
       token: null,
       userInfo: null,
       logingIn: true,
+      labels: [],
       setToken: this.setToken,
     };
   }
@@ -84,6 +87,21 @@ class App extends Component {
     }
   }
 
+  async getLabels(newToken) {
+    try {
+      const response = await fetch(`${baseUrl}/studyGroup/label`, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${newToken}`,
+         }
+      })
+      this.setState({labels: await response.json()})
+      } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  }
+
   componentDidMount() {
     console.log(history.location.pathname);
     this.setToken(localStorage.getItem("token"), history.location.pathname);
@@ -96,10 +114,10 @@ class App extends Component {
         {this.state.logingIn ? (
           <CircularProgress />
         ) : (
-          <UserContext.Provider value={this.state}>
+          <AppContext.Provider value={this.state}>
             <Router history={history}>
               <div>
-                <Navbar history={history} />
+                <Navbar history={history}  />
                 <Switch>
                   <Route exact path="/">
                     <LandingPage
@@ -140,7 +158,7 @@ class App extends Component {
                 </Switch>
               </div>
             </Router>
-          </UserContext.Provider>
+          </AppContext.Provider>
         )}
       </>
     );

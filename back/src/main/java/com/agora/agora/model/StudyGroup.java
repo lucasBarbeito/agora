@@ -40,8 +40,15 @@ public class StudyGroup implements Identifiable{
     @JsonIgnore
     private List<StudyGroupUser> users;
 
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "studyGroup",
+            targetEntity = StudyGroupLabel.class)
+    @JsonIgnore
+    private List<StudyGroupLabel> labels;
+
     public StudyGroup(){
         users = new ArrayList<>();
+        labels = new ArrayList<>();
     }
 
     public StudyGroup(String name, String description, User creator, LocalDate creationDate) {
@@ -49,6 +56,7 @@ public class StudyGroup implements Identifiable{
         this.description = description;
         this.creator = creator;
         this.creationDate = creationDate;
+        labels = new ArrayList<>();
         users = new ArrayList<>();
     }
 
@@ -100,4 +108,15 @@ public class StudyGroup implements Identifiable{
         return users;
     }
 
+    public void setUsers(List<StudyGroupUser> users) {
+        this.users = users;
+    }
+
+    public List<StudyGroupLabel> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<StudyGroupLabel> labels) {
+        this.labels = labels;
+    }
 }

@@ -1,8 +1,7 @@
 package com.agora.agora.controller;
 
-import com.agora.agora.model.Post;
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
+import com.agora.agora.exceptions.ForbiddenElementException;
+import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
@@ -49,7 +48,11 @@ public class StudyGroupController {
     @GetMapping(value = "/me")
     public List<StudyGroupDTO> getCurrentUserGroups(){
         final List<StudyGroup> groups = groupService.findCurrentUserGroups();
-        List<StudyGroupDTO> groupDTOs = groups.stream().map(group -> new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate())).collect(Collectors.toList());
+        List<StudyGroupDTO> groupDTOs = groups.stream().map(group ->
+                new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(),
+                        group.getLabels().stream().map(label ->
+                                new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
+        ).collect(Collectors.toList());
         return groupDTOs;
     }
 
@@ -58,7 +61,9 @@ public class StudyGroupController {
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
         final List<StudyGroupUser> studyGroupUsers = groupService.findUsersInStudyGroup(id);
         final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
-        final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs));
+        final List<StudyGroupLabel> studyGroupLabels = groupService.findStudyGroupLabelsById(id);
+        final List<LabelDTO> labelDTOs = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
+        final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs, labelDTOs));
         return studyGroupDTOOptional.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -90,6 +95,12 @@ public class StudyGroupController {
         return ResponseEntity.created(URI.create("/studyGroup/" + studyGroupId + "/forum/" + postId)).build();
     }
 
+    @DeleteMapping(value = "/{id}/forum/{postId}")
+    public ResponseEntity deletePost(@PathVariable("id") int groupId, @PathVariable("postId") int postId) {
+        groupService.deletePost(groupId, postId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping(value = "/{id}/forum")
     public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId){
         List<Post> groupPosts = groupService.getStudyGroupPosts(studyGroupId);
@@ -108,5 +119,18 @@ public class StudyGroupController {
         Optional<Post> post = groupService.getStudyGroupPostById(studyGroupId, postId);
         Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateAndTime()));
         return postDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping(value = "/{id}/me")
+    public ResponseEntity addCurrentUserToGroup(@PathVariable("id") int studyGroupId){
+        groupService.addCurrentUserToStudyGroup(studyGroupId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/label")
+    public List<LabelDTO> getAllLabelsAvailable(){
+        List<Label> labels = groupService.findAllLabelsInSystem();
+        List<LabelDTO> labelDTO = labels.stream().map(label -> new LabelDTO(label.getId(), label.getName())).collect(Collectors.toList());
+        return labelDTO;
     }
 }

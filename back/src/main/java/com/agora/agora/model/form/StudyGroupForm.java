@@ -1,7 +1,11 @@
 package com.agora.agora.model.form;
 
+import com.agora.agora.model.dto.LabelDTO;
+import com.agora.agora.model.dto.LabelIdDTO;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 
 public class StudyGroupForm {
 
@@ -10,11 +14,8 @@ public class StudyGroupForm {
 
     private String description;
 
-/* TODO
     @NotNull
-    private List<Label> labels = new ArrayList<>();
-
- */
+    private List<LabelIdDTO> labels;
 
     @NotNull
     private int creatorId;
@@ -22,11 +23,12 @@ public class StudyGroupForm {
     @NotNull
     private LocalDate creationDate;
 
-    public StudyGroupForm(@NotNull String name, String description, @NotNull int creatorId, @NotNull LocalDate creationDate) {
+    public StudyGroupForm(@NotNull String name, String description, @NotNull int creatorId, @NotNull LocalDate creationDate, @NotNull List<LabelIdDTO>  labels) {
         this.name = name;
         this.description = description;
         this.creatorId = creatorId;
         this.creationDate = creationDate;
+        this.labels = labels;
     }
 
     public StudyGroupForm() {
@@ -62,5 +64,13 @@ public class StudyGroupForm {
 
     public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public List<LabelIdDTO> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<LabelIdDTO> labels) {
+        this.labels = labels;
     }
 }

@@ -1,21 +1,25 @@
 import { Component } from "react";
 import {
   AppBar,
-  Chip,
   Container,
   Grid,
   IconButton,
   Toolbar,
-  Typography,
 } from "@material-ui/core";
 import "./Navbar.css";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import { UserContext } from "../../user-context";
+import { AppContext } from "../../app-context";
+import ProfileButton from "./ProfileButton";
+import history from "../../history";
+import SimpleSnackbar from "../SimpleSnackbar/SimpleSnackbar";
 
 class Navbar extends Component {
   constructor(props) {
     super(props);
+    
+    this.state ={
+      snackBarVisible: false,
+    }
   }
 
   isLoggedIn() {
@@ -25,6 +29,12 @@ class Navbar extends Component {
   goHome = () => {
     this.props.history.push(this.isLoggedIn() ? "/home" : "/");
   };
+
+  handleLoginError = (newVisibility) => {
+    this.setState({
+      snackBarVisible: newVisibility
+    })
+  }
 
   render() {
     return (
@@ -45,6 +55,11 @@ class Navbar extends Component {
                   onClick={this.goHome}
                 />
               </Grid>
+              <SimpleSnackbar 
+                open={this.state.snackBarVisible}
+                handleClose={() => this.setState({snackBarVisible: false})}
+                message="Error al cerrar sesión" 
+                />
               {this.isLoggedIn() && (
                 <Grid item>
                   <Grid container direction="row" alignItems="center">
@@ -55,17 +70,13 @@ class Navbar extends Component {
                     </Grid>
                     <Grid item xs={10}>
                       <Container>
-                        <Chip
-                          id="chip"
-                          avatar={<AccountCircleIcon />}
-                          label={
-                            <Typography id="name">
-                              {this.context.userInfo.name +
-                                " " +
-                                this.context.userInfo.surname}
-                            </Typography>
-                          }
-                          clickable
+                        <ProfileButton
+                          name={this.context.userInfo.name}
+                          surname={this.context.userInfo.surname}
+                          token = {this.context.token}
+                          setToken = {this.context.setToken}
+                          handleLoginError = {(newVisibility) => this.handleLoginError(newVisibility)}
+                          history = {history}
                         />
                       </Container>
                     </Grid>
@@ -81,6 +92,6 @@ class Navbar extends Component {
   }
 }
 
-Navbar.contextType = UserContext;
+Navbar.contextType = AppContext;
 
 export default Navbar;
