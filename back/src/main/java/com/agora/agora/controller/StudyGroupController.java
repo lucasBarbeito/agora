@@ -1,10 +1,7 @@
 package com.agora.agora.controller;
 
 import com.agora.agora.exceptions.ForbiddenElementException;
-import com.agora.agora.model.Post;
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupLabel;
-import com.agora.agora.model.StudyGroupUser;
+import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
@@ -123,5 +120,12 @@ public class StudyGroupController {
     public ResponseEntity addCurrentUserToGroup(@PathVariable("id") int studyGroupId){
         groupService.addCurrentUserToStudyGroup(studyGroupId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/label")
+    public List<LabelDTO> getAllLabelsAvailable(){
+        List<Label> labels = groupService.findAllLabelsInSystem();
+        List<LabelDTO> labelDTO = labels.stream().map(label -> new LabelDTO(label.getId(), label.getName())).collect(Collectors.toList());
+        return labelDTO;
     }
 }

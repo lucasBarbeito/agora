@@ -49,6 +49,7 @@ class App extends Component {
         this.getUserInfo(newToken, redirectTo);
       } else {
         localStorage.removeItem("token");
+        history.push("/")
       }
     };
 
@@ -99,7 +100,7 @@ class App extends Component {
           <UserContext.Provider value={this.state}>
             <Router history={history}>
               <div>
-                <Navbar history={history} />
+                <Navbar history={history}  />
                 <Switch>
                   <Route exact path="/">
                     <LandingPage

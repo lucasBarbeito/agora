@@ -1,10 +1,7 @@
 package com.agora.agora;
 
 import com.agora.agora.model.*;
-import com.agora.agora.model.dto.FullStudyGroupDTO;
-import com.agora.agora.model.dto.LabelDTO;
-import com.agora.agora.model.dto.StudyGroupDTO;
-import com.agora.agora.model.dto.UserContactDTO;
+import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
@@ -41,20 +38,20 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testStudyGroupFormSerialization() throws Exception {
-        List<LabelDTO> labels = new ArrayList<>();
-        labels.add(new LabelDTO(12, "SciFi"));
+        List<LabelIdDTO> labels = new ArrayList<>();
+        labels.add(new LabelIdDTO(12));
         StudyGroupForm form = new StudyGroupForm("Lord of the rings", "...", 1,LocalDate.of(2021, 8, 17), labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
 
         assertEquals(expectedJson,json.write(form).getJson());
     }
 
     @Test
     public void testStudyGroupFormDeserialization() throws Exception{
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
-        List<LabelDTO> labels = new ArrayList<>();
-        labels.add(new LabelDTO(12, "SciFi"));
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        List<LabelIdDTO> labels = new ArrayList<>();
+        labels.add(new LabelIdDTO(12));
         StudyGroupForm form = new StudyGroupForm("Lord of the rings", "...", 1,LocalDate.of(2021, 8, 17), labels);
 
 
@@ -69,8 +66,8 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testStudyGroupFormSetInSerialization() throws Exception{
-        List<LabelDTO> labels = new ArrayList<>();
-        labels.add(new LabelDTO(12, "SciFi"));
+        List<LabelIdDTO> labels = new ArrayList<>();
+        labels.add(new LabelIdDTO(12));
         StudyGroupForm form = new StudyGroupForm();
         form.setName("Lord of the rings");
         form.setDescription("...");
@@ -78,7 +75,7 @@ public class StudyGroupCreationTest {
         form.setCreationDate(LocalDate.of(2021, 8, 17));
         form.setLabels(labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12}],\"creatorId\":1,\"creationDate\":\"2021-08-17\"}";
 
         assertEquals(expectedJson,json.write(form).getJson());
     }
