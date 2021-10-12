@@ -12,14 +12,11 @@ import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import com.agora.agora.repository.*;
-import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -91,7 +88,7 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public List<StudyGroupDTO> findStudyGroups(Optional<String> text) {
+    public List<StudyGroupDTO> findStudyGroups(Optional<String> text, List<Integer> labelIds) {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -100,7 +97,12 @@ public class StudyGroupService {
             User user = optionalUser.get();
             List<StudyGroup> studyGroups;
             List<StudyGroupDTO> studyGroupDTOS = new ArrayList<>();
-            if (text.isPresent()) {
+            if (text.isPresent() && labelIds.size() > 0) {
+                studyGroups = findByLabelIdsAndText(text.get(), labelIds);
+            } else if (labelIds.size() > 0){
+                studyGroups = findByLabelIds(labelIds);
+            }else
+                if (text.isPresent()) {
                 studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get());
             }else {
                 studyGroups = groupRepository.findAll();
@@ -327,6 +329,22 @@ public class StudyGroupService {
         }
         else{
             throw new NoSuchElementException("Group does not exist");
+        }
+    }
+
+    private List<StudyGroup> findByLabelIds(List<Integer> labelIds) {
+        if (labelIds.size() == 1) {
+            return groupRepository.findByLabelId(labelIds.get(0));
+        } else {
+            return groupRepository.findByLabelIdIn(labelIds);
+        }
+    }
+
+    private List<StudyGroup> findByLabelIdsAndText(String text, List<Integer> labelIds) {
+        if (labelIds.size() == 1) {
+            return groupRepository.findByLabelIdAndText(labelIds.get(0), text);
+        } else {
+            return groupRepository.findByLabelIdInAndText(labelIds, text);
         }
     }
 }
