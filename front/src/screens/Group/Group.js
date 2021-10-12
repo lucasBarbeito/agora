@@ -42,6 +42,8 @@ class Group extends Component {
       requestLoading: false,
       openAbandonGroupSnack: false,
       openInvitationLinkSnack: false,
+      announcementsIdsBeingRemoved: [],
+      openAnnouncementDeletionErrorSnack: false,
       newAnnouncementContent: "",
       creatingAnnouncement: false,
       openAnnouncementCreationErrorSnack: false,
@@ -71,7 +73,7 @@ class Group extends Component {
 
   componentDidMount() {
     this.fetchGroupInformation();
-  };
+  }
 
   getAnnouncements = async (contacts) => {
     const groupId = this.props.match.params.id;
@@ -92,13 +94,17 @@ class Group extends Component {
         const announcementFormat = res.map((item) => {
           const id = item.creatorId;
           return {
-            name: contacts.find(user => user.id === id).name,
-            date: new Date(item.creationDateAndTime).toLocaleDateString("es-AR"),
+            name: contacts.find((user) => user.id === id).name,
+            date: new Date(item.creationDateAndTime).toLocaleDateString(
+              "es-AR"
+            ),
             content: item.content,
+            id: item.id,
+            creatorId: item.creatorId,
           };
         });
 
-        this.setState({ announcements: announcementFormat });
+        this.setState({ announcements: announcementFormat.reverse() });
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -163,7 +169,7 @@ class Group extends Component {
           "Content-type": "application/json; charset=UTF-8",
           Authorization: `Bearer ${this.context.token}`,
         },
-      },
+      }
     );
     return await response.text();
   }
@@ -184,7 +190,7 @@ class Group extends Component {
       let res = await this.getGroupData(groupId);
 
       const userInGroup = res.userContacts.find(
-        (item) => item.id === this.context.userInfo.id,
+        (item) => item.id === this.context.userInfo.id
       );
       if (!userInGroup) {
         await this.addUserToGroup(groupId);
@@ -271,14 +277,7 @@ class Group extends Component {
       if (!response.ok) {
         this.setState({ openAnnouncementCreationErrorSnack: true });
       } else {
-        const newAnnouncements = this.state.announcements;
-        const newAnnouncement = {
-          name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
-          date: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-          content: this.state.newAnnouncementContent,
-        };
-        newAnnouncements.unshift(newAnnouncement);
-        this.setState({ announcements: newAnnouncements });
+        await this.getAnnouncements(this.state.userContacts);
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -287,10 +286,39 @@ class Group extends Component {
     this.setState({ newAnnouncementContent: "" });
   }
 
-  deleteAnnouncement(id) {
-    const newAnnouncements = this.state.announcements;
-    newAnnouncements.splice(id, 1);
-    this.setState({ announcements: newAnnouncements });
+  async deleteAnnouncement(announcementId) {
+    const groupId = this.props.match.params.id;
+    let announcementsIdsBeingRemoved = this.state.announcementsIdsBeingRemoved;
+    announcementsIdsBeingRemoved.push(announcementId);
+    this.setState({ announcementsBeingRemoved: announcementsIdsBeingRemoved });
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/studyGroup/${groupId}/forum/${announcementId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
+        }
+      );
+
+      announcementsIdsBeingRemoved = announcementsIdsBeingRemoved.filter(
+        (id) => id === announcementId
+      );
+      this.setState({
+        announcementsBeingRemoved: announcementsIdsBeingRemoved,
+      });
+
+      if (!response.ok) {
+        this.setState({ openAnnouncementDeletionErrorSnack: true });
+      } else {
+        await this.getAnnouncements(this.state.userContacts);
+      }
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
   }
 
   render() {
@@ -330,7 +358,9 @@ class Group extends Component {
                             initialGroupName={this.state.groupName}
                             initialDescription={this.state.description}
                             tags={this.context.labels}
-                            groupLabel={this.state.labels.map(index => index.name)}
+                            groupLabel={this.state.labels.map(
+                              (index) => index.name
+                            )}
                             onChange={(newGroupName, newDescription) =>
                               this.handleOnChange(newGroupName, newDescription)
                             }
@@ -352,11 +382,11 @@ class Group extends Component {
                     <Typography id="group-description">
                       {!this.state.isFetching && this.state.description}
                     </Typography>
-                    {this.state.labels.map(index =>
+                    {this.state.labels.map((index) => (
                       <Typography id="group-description">
-                       - {index.name}
+                        - {index.name}
                       </Typography>
-                    )}
+                    ))}
                     <Grid container justifyContent="flex-end">
                       <Button
                         id="action-group-button"
@@ -389,7 +419,6 @@ class Group extends Component {
                               this.state.isAdmin ? "eliminar" : "abandonar"
                             } este grupo?`}
                           </DialogContentText>
-
                         </DialogContent>
                         <DialogActions>
                           <Button
@@ -409,9 +438,11 @@ class Group extends Component {
                                 : () => this.abandonGroup()
                             }
                             disabled={this.state.requestLoading}
-                            autoFocus>
-                            {this.state.requestLoading ?
-                              <CircularProgress size={20} /> : null}
+                            autoFocus
+                          >
+                            {this.state.requestLoading ? (
+                              <CircularProgress size={20} />
+                            ) : null}
                             {this.state.isAdmin ? "Eliminar" : "Abandonar"}
                           </Button>
                         </DialogActions>
@@ -436,17 +467,26 @@ class Group extends Component {
                       fullWidth
                       label="Nuevo anuncio"
                       variant="outlined"
-                      onChange={(e) => this.setState({ newAnnouncementContent: e.target.value })}
+                      onChange={(e) =>
+                        this.setState({
+                          newAnnouncementContent: e.target.value,
+                        })
+                      }
                       value={this.state.newAnnouncementContent}
                     />
                   </Grid>
-                  <Grid container item xs={5} justifyContent="space-between" alignItems="center">
-                    {
-                      this.state.creatingAnnouncement &&
+                  <Grid
+                    container
+                    item
+                    xs={5}
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    {this.state.creatingAnnouncement && (
                       <Grid item xs={2}>
                         <CircularProgress size={30} />
                       </Grid>
-                    }
+                    )}
                     <Grid item xs={this.state.creatingAnnouncement ? 10 : 12}>
                       <Button
                         fullWidth
@@ -454,7 +494,10 @@ class Group extends Component {
                         variant="contained"
                         color="primary"
                         onClick={() => this.addAnnouncement()}
-                        disabled={this.state.creatingAnnouncement || this.state.newAnnouncementContent === ""}
+                        disabled={
+                          this.state.creatingAnnouncement ||
+                          this.state.newAnnouncementContent === ""
+                        }
                       >
                         AGREGAR ANUNCIO
                       </Button>
@@ -463,17 +506,28 @@ class Group extends Component {
                 </Grid>
                 <Container id="announcement">
                   {!this.state.isFetching &&
-                  this.state.announcements.map((announcement, index) => (
-                    <GroupAnnouncement
-                      key={index}
-                      canDelete={this.state.isAdmin || announcement.name === `${this.context.userInfo.name} ${this.context.userInfo.surname}`}
-                      handleDelete={() => this.deleteAnnouncement(index)}
-                      name={announcement.name}
-                      date={announcement.date}
-                      content={announcement.content}
-                    />
-                  ))
-                  }
+                    this.state.announcements.map((announcement, index) => (
+                      <GroupAnnouncement
+                        key={index}
+                        canDelete={
+                          this.state.isAdmin ||
+                          announcement.creatorId === this.context.userInfo.id
+                        }
+                        handleDelete={() =>
+                          this.deleteAnnouncement(announcement.id)
+                        }
+                        isBeingRemoved={this.state.announcementsIdsBeingRemoved.includes(
+                          announcement.id
+                        )}
+                        name={
+                          this.state.userContacts.find(
+                            (user) => user.id === announcement.creatorId
+                          ).name
+                        }
+                        date={announcement.date}
+                        content={announcement.content}
+                      />
+                    ))}
                 </Container>
               </Grid>
             </Grid>
@@ -492,7 +546,9 @@ class Group extends Component {
                   </Button>
                   <SimpleSnackbar
                     open={this.state.openInvitationLinkSnack}
-                    handleClose={() => this.setState({ openInvitationLinkSnack: false })}
+                    handleClose={() =>
+                      this.setState({ openInvitationLinkSnack: false })
+                    }
                     message="Link de invitación copiado al portapapeles"
                   />
                 </Grid>
@@ -511,16 +567,29 @@ class Group extends Component {
           <SimpleSnackbar
             open={this.state.openAbandonGroupSnack}
             handleClose={() => this.setState({ openAbandonGroupSnack: false })}
-            message={`Hubo un error al ${this.state.isAdmin ? "eliminar" : "abandonar"} el grupo`}
+            message={`Hubo un error al ${
+              this.state.isAdmin ? "eliminar" : "abandonar"
+            } el grupo`}
           />
           <SimpleSnackbar
             open={this.state.openAnnouncementCreationErrorSnack}
-            handleClose={() => this.setState({ openAnnouncementCreationErrorSnack: false })}
+            handleClose={() =>
+              this.setState({ openAnnouncementCreationErrorSnack: false })
+            }
             message="Hubo un error al crear el anuncio"
           />
           <SimpleSnackbar
+            open={this.state.openAnnouncementDeletionErrorSnack}
+            handleClose={() =>
+              this.setState({ openAnnouncementDeletionErrorSnack: false })
+            }
+            message={`Hubo un error al eliminar el anuncio`}
+          />
+          <SimpleSnackbar
             open={this.state.getAnnouncementErrorSnack}
-            handleClose={() => this.setState({ getAnnouncementErrorSnack: false })}
+            handleClose={() =>
+              this.setState({ getAnnouncementErrorSnack: false })
+            }
             message="Hubo un error al pedir los anuncios del grupo"
           />
         </Container>

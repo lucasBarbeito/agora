@@ -22,9 +22,15 @@
 }
 
 #delete-button {
-  color: #E8A5A5;
+  color: #e8a5a5;
   padding: 0;
   margin-right: 15px;
+}
+
+#delete-progress {
+  color: #e8a5a5;
+  padding: 0;
+  margin-right: 30px;
 }
 
 #delete-icon {
@@ -38,7 +44,7 @@
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-} 
+}
 
 #announcement-date {
   display: flex;
