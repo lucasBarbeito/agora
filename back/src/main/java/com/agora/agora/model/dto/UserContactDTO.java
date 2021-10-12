@@ -13,9 +13,12 @@ public class UserContactDTO {
 
     private String email;
 
-    public UserContactDTO(int id, String name, String email) {
+    private String surname;
+
+    public UserContactDTO(int id, String name, String surname, String email) {
         this.id = id;
         this.name = name;
+        this.surname = surname;
         this.email = email;
     }
 
@@ -36,6 +39,14 @@ public class UserContactDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public String getEmail() {
