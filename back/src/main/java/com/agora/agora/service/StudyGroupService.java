@@ -62,7 +62,7 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public Page<StudyGroupDTO> findStudyGroups(Optional<String> text) {
+    public Page<StudyGroupDTO> findStudyGroups(Optional<String> text, int page) {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -71,12 +71,12 @@ public class StudyGroupService {
             User user = optionalUser.get();
             Page<StudyGroup> studyGroups;
             if (text.isPresent()) {
-                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get(),PageRequest.of(0,3,Sort.by("creationDate")));
+                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get(),PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
             }else {
-                studyGroups = groupRepository.findAll(PageRequest.of(0,3,Sort.by("creationDate")));
+                studyGroups = groupRepository.findAll(PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
             }
             return studyGroups.map((studyGroup -> convertToDto(studyGroup, user)));
-        }else{
+        } else{
             throw new NoSuchElementException("User does not exist.");
         }
     }
