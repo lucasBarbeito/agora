@@ -1,7 +1,10 @@
 package com.agora.agora.model.form;
 
+import com.agora.agora.model.dto.LabelIdDTO;
+
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 
 public class EditStudyGroupForm {
 
@@ -10,15 +13,12 @@ public class EditStudyGroupForm {
 
     private String description;
 
-/* TODO
-    @NotNull
-    private List<Label> labels = new ArrayList<>();
+    private List<LabelIdDTO> labels;
 
- */
-
-    public EditStudyGroupForm(String name, String description) {
+    public EditStudyGroupForm(String name, String description, List<LabelIdDTO> labels) {
         this.name = name;
         this.description = description;
+        this.labels = labels;
     }
 
     public EditStudyGroupForm() {
@@ -39,4 +39,13 @@ public class EditStudyGroupForm {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public List<LabelIdDTO> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<LabelIdDTO> labels) {
+        this.labels = labels;
+    }
+
 }
