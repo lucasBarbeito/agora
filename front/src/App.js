@@ -12,6 +12,7 @@ import CreateGroup from "./screens/CreateGroup/CreateGroup";
 import EmailConfirmation from "./screens/EmailConfirmation/EmailConfirmation";
 import LandingPage from "./screens/LandingPage/LandingPage";
 import GroupsPage from "./screens/GroupsPage/GroupsPage";
+import UserPage from "./screens/UserPage/UserPage";
 import CheckYourEmailPage from "./screens/CheckYourEmail/CheckYourEmailPage";
 import baseUrl from "./baseUrl.js";
 import { CircularProgress } from "@material-ui/core";
@@ -47,10 +48,10 @@ class App extends Component {
       if (newToken !== null) {
         localStorage.setItem("token", newToken);
         this.getUserInfo(newToken, redirectTo);
-        this.getLabels(newToken)
+        this.getLabels(newToken);
       } else {
         localStorage.removeItem("token");
-        history.push("/")
+        history.push("/");
       }
     };
 
@@ -94,10 +95,10 @@ class App extends Component {
         headers: {
           "Content-type": "application/json; charset=UTF-8",
           Authorization: `Bearer ${newToken}`,
-         }
-      })
-      this.setState({labels: await response.json()})
-      } catch (e) {
+        },
+      });
+      this.setState({ labels: await response.json() });
+    } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
   }
@@ -117,7 +118,7 @@ class App extends Component {
           <AppContext.Provider value={this.state}>
             <Router history={history}>
               <div>
-                <Navbar history={history}  />
+                <Navbar history={history} />
                 <Switch>
                   <Route exact path="/">
                     <LandingPage
@@ -151,6 +152,9 @@ class App extends Component {
                   </AuthRoute>
                   <AuthRoute path="/group/:id">
                     <Group />
+                  </AuthRoute>
+                  <AuthRoute path="/user/:id">
+                    <UserPage />
                   </AuthRoute>
                   <Route>
                     <ErrorNotFound history={history} />
