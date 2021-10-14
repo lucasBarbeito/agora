@@ -36,7 +36,7 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @RequestParam List<Integer> label) {
+    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label) {
         return groupService.findStudyGroups(text, label);
     }
 

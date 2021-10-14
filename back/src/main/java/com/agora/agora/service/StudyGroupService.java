@@ -89,7 +89,7 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public List<StudyGroupDTO> findStudyGroups(Optional<String> text, List<Integer> labelIds) {
+    public List<StudyGroupDTO> findStudyGroups(Optional<String> text, Optional<List<Integer>> labelIds) {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -98,10 +98,10 @@ public class StudyGroupService {
             User user = optionalUser.get();
             List<StudyGroup> studyGroups;
             List<StudyGroupDTO> studyGroupDTOS = new ArrayList<>();
-            if (text.isPresent() && labelIds.size() > 0) {
-                studyGroups = findByLabelIdsAndText(text.get(), labelIds);
-            } else if (labelIds.size() > 0){
-                studyGroups = findByLabelIds(labelIds);
+            if (text.isPresent() && labelIds.isPresent() && labelIds.get().size() > 0) {
+                studyGroups = findByLabelIdsAndText(text.get(), labelIds.get());
+            } else if (labelIds.isPresent() && labelIds.get().size() > 0){
+                studyGroups = findByLabelIds(labelIds.get());
             }else
                 if (text.isPresent()) {
                 studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get());
