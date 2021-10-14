@@ -111,7 +111,7 @@
 #new-announcement-button.Mui-disabled {
   background-color: #0000001F;
   color: #00000052;
-  margin-left: 0  .1%;
+  margin-left: 0.1%;
 }
 
 #new-announcement-button.Mui-disabled:hover {
@@ -159,4 +159,92 @@
   opacity: 1;
   font-size: 14px;
   margin-left: 11px;
+}
+
+#invitation-description-message {
+  font-family: "Roboto";
+  width: 410px;
+  letter-spacing: 0.23px;
+  font-size: 13px;
+  color: #00000099;
+  opacity: 1;
+}
+
+.search-user {
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+  align-items: center;
+  width: 550px;
+}
+
+#invitation-no-result-message{
+  display: flex;
+  align-self: center;
+  align-items: center;
+  width: 350px;
+  text-align: center;
+  letter-spacing: 0.23px;
+  color: #00000099;
+  opacity: 1;
+  font-size: 13px;
+  margin-top: 50px;
+}
+
+#invitation-search-button {
+  margin-left: 10px;
+  background-color: #c5b2a5;
+  box-shadow: 0px 4px 5px #00000024;
+  border-radius: 4px;
+  color: #ffffff;
+  width: 76px;
+  max-height: 56px;
+}
+
+.invite-link-button {
+  align-self: center;
+  align-items: center;
+}
+
+#copy-link-button{
+  height: 7ch;
+  font-size: 1.5ch;
+  width: 350px;
+  letter-spacing: 0.15ch;
+  font-weight: 400;
+  font-family: "Roboto";
+  background-color: #C5B2A5;
+  margin-top: 70px;
+}
+
+.dialog-submit-button{
+  margin-top: 50px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#cancel-invitation{
+  color: #E8A5A5;
+  margin-left: 10px;
+  letter-spacing: 1.25px;
+  text-align: right;
+  font-family: Roboto, serif;
+}
+
+#submit-invitation {
+  margin-right: 10px;
+  text-align: right;
+  letter-spacing: 1.25px;
+  color: #C5B2A5;
+  font-family: Roboto, serif;
+
+}
+#submit-invitation.Mui-disabled {
+  color: #C5B2A5;
+  opacity: 0.5;
+}
+
+#submit-invitation.Mui-disabled:hover {
+  cursor: not-allowed;
 }

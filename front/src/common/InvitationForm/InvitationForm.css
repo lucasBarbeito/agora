@@ -1,0 +1,31 @@
+#user-name-typography {
+    color: #000000de;
+    font-family: Roboto, serif;
+    font-size: 2ch;
+    letter-spacing: 0.08ch;
+    text-align: left;
+    opacity: 1;
+}
+
+#user-information-typography {
+    font-size: 14px
+}
+
+#user-invitation-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#selection-member-accordion {
+    background-color: #c5b2a529;
+    box-shadow: none;
+}
+
+.invitation-accordion{
+    align-self: center;
+    align-items: center;
+    height: 250px;
+    overflow: scroll;
+    width: 560px;
+    margin-top: 50px;
+}
