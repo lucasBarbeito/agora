@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Grid, IconButton, TextField } from "@material-ui/core";
+import {Box, Grid, IconButton, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
 import "./GroupsPage.css";
@@ -7,6 +7,8 @@ import GroupCard from "../../common/GroupCard/GroupCard";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
+import Pagination from '@material-ui/lab/Pagination';
+
 
 class GroupsPage extends Component {
   constructor(props) {
@@ -15,8 +17,12 @@ class GroupsPage extends Component {
       groupName: "",
       tags: [],
       studyGroups: [],
+      currentPage: 1,
+      postPerPage: 12,
     };
   }
+
+
 
   getGroups = async () => {
     const { token } = this.context;
@@ -96,7 +102,17 @@ class GroupsPage extends Component {
     this.props.history.push(`/group/${id}`);
   }
 
+  handleChange = (_,page) =>{
+    this.setState({
+      currentPage: page
+    })
+  }
+
   render() {
+    const indexOfLastPost = this.state.currentPage * this.state.postPerPage;
+    const indexOfFirstPost = indexOfLastPost - this.state.postPerPage;
+    const currentPost = this.state.studyGroups.slice(indexOfFirstPost, indexOfLastPost);
+
     return (
       <HomeStructure history={this.props.history}>
         <Grid container spacing={3}>
@@ -138,7 +154,7 @@ class GroupsPage extends Component {
               </IconButton>
             </div>
           </Grid>
-          {this.state.studyGroups.map((group, index) => (
+          {currentPost.map((group, index) => (
             <Grid
               item
               xs={12}
@@ -162,6 +178,9 @@ class GroupsPage extends Component {
             </Grid>
           ))}
         </Grid>
+        <Box display="flex" height={80} alignItems="center" justifyContent="center">
+           <Pagination id="group-page-pagination" count={Math.ceil((this.state.studyGroups.length)/this.state.postPerPage)} variant='outlined' onChange={this.handleChange} />
+        </Box>
       </HomeStructure>
     );
   }
