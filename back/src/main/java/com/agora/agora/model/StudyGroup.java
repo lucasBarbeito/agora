@@ -22,12 +22,6 @@ public class StudyGroup implements Identifiable{
     @Column
     private String description;
 
-/* TODO
-    @Column
-    private List<Label> labels = new ArrayList<>();
-
-
- */
     @ManyToOne
     private User creator;
 

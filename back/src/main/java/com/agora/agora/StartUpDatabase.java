@@ -3,6 +3,7 @@ package com.agora.agora;
 import com.agora.agora.model.dto.LabelDTO;
 import com.agora.agora.model.dto.LabelIdDTO;
 import com.agora.agora.model.form.LabelForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.service.*;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,13 +29,15 @@ public class StartUpDatabase {
     private final UserService userService;
     private final StudyGroupService studyGroupService;
     private final LabelRepository labelRepository;
+    private final PostRepository postRepository;
 
     @Autowired
 
-    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository) {
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
         this.labelRepository = labelRepository;
+        this.postRepository = postRepository;
     }
 
     private void addManyToGroup(int groupId, List<Integer> userId){
@@ -148,7 +152,6 @@ public class StartUpDatabase {
                 List<LabelIdDTO> design = new ArrayList<>();
                 design.add(new LabelIdDTO(label6.getId()));
 
-
                 //Study Groups
                 StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId4,LocalDate.of(2020, 10, 25), philosophy);
                 StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId5, LocalDate.of(2020, 10, 25), philosophy);
@@ -216,6 +219,142 @@ public class StartUpDatabase {
                 addManyToGroup(groupId19, Arrays.asList(userId3, userId8, userId9));
                 addManyToGroup(groupId20, Arrays.asList(userId3, userId9, userId10));
                 addManyToGroup(groupId21, Arrays.asList(userId3, userId10, userId11));
+
+                User u1 = userService.findById(userId1).get();
+                User u2 = userService.findById(userId2).get();
+                User u3 = userService.findById(userId3).get();
+                User u4 = userService.findById(userId4).get();
+                User u5 = userService.findById(userId5).get();
+                User u6 = userService.findById(userId6).get();
+                User u7 = userService.findById(userId7).get();
+                User u8 = userService.findById(userId8).get();
+                User u9 = userService.findById(userId9).get();
+                User u10 = userService.findById(userId10).get();
+                User u11 = userService.findById(userId11).get();
+                User u12 = userService.findById(userId12).get();
+
+                StudyGroup sg1 = studyGroupService.findStudyGroupById(groupId1).get();
+                StudyGroup sg2 = studyGroupService.findStudyGroupById(groupId2).get();
+                StudyGroup sg3 = studyGroupService.findStudyGroupById(groupId3).get();
+                StudyGroup sg4 = studyGroupService.findStudyGroupById(groupId4).get();
+                StudyGroup sg5 = studyGroupService.findStudyGroupById(groupId5).get();
+                StudyGroup sg6 = studyGroupService.findStudyGroupById(groupId6).get();
+                StudyGroup sg7 = studyGroupService.findStudyGroupById(groupId7).get();
+                StudyGroup sg8 = studyGroupService.findStudyGroupById(groupId8).get();
+                StudyGroup sg9 = studyGroupService.findStudyGroupById(groupId9).get();
+                StudyGroup sg10 = studyGroupService.findStudyGroupById(groupId10).get();
+                StudyGroup sg11 = studyGroupService.findStudyGroupById(groupId11).get();
+                StudyGroup sg12 = studyGroupService.findStudyGroupById(groupId12).get();
+                StudyGroup sg13 = studyGroupService.findStudyGroupById(groupId13).get();
+                StudyGroup sg14 = studyGroupService.findStudyGroupById(groupId14).get();
+                StudyGroup sg15 = studyGroupService.findStudyGroupById(groupId15).get();
+                StudyGroup sg16 = studyGroupService.findStudyGroupById(groupId16).get();
+                StudyGroup sg17 = studyGroupService.findStudyGroupById(groupId17).get();
+                StudyGroup sg18 = studyGroupService.findStudyGroupById(groupId18).get();
+                StudyGroup sg19 = studyGroupService.findStudyGroupById(groupId19).get();
+                StudyGroup sg20 = studyGroupService.findStudyGroupById(groupId20).get();
+                StudyGroup sg21 = studyGroupService.findStudyGroupById(groupId21).get();
+
+                //Posts
+                //PostForm post1 = new PostForm("Dios es bueno", LocalDateTime.of(2019, 2,18, 0, 0));
+                //studyGroupService.createPost(groupId1, post1);
+                Post post1 = new Post("Dios es bueno", sg1, u1, LocalDateTime.of(2019, 2,18, 0, 0));
+                //PostForm post2 = new PostForm("Platon era Crack", LocalDateTime.of(2021, 5,18, 0, 0));
+                //studyGroupService.createPost(groupId2, post2);
+                Post post2 = new Post("Platon era Crack", sg2, u2, LocalDateTime.of(2021, 5,18, 0, 0));
+                //PostForm post3 = new PostForm("Aristoteles era un ^%*^**^#", LocalDateTime.of(2020, 1,2, 0, 0));
+                //studyGroupService.createPost(groupId3, post3);
+                Post post3 = new Post("Aristoteles era un ^%*^**^#", sg3, u3, LocalDateTime.of(2020, 1,2, 0, 0));
+                //PostForm post4 = new PostForm("Como odio estas integrales del #*&%&", LocalDateTime.of(2017, 4,9, 0, 0));
+                //studyGroupService.createPost(groupId4, post4);
+                Post post4 = new Post("Como odio estas integrales del #*&%&", sg4, u4, LocalDateTime.of(2017, 4,9, 0, 0));
+                //PostForm post5 = new PostForm("Argentina queda en America", LocalDateTime.of(2021, 4,23, 0, 0));
+                //studyGroupService.createPost(groupId6, post5);
+                Post post5 = new Post("Argentina queda en America", sg6, u6, LocalDateTime.of(2021, 4,23, 0, 0));
+                //PostForm post6 = new PostForm("La ley 27546 claramente dice que esta mal", LocalDateTime.of(2019, 4,15, 0, 0));
+                //studyGroupService.createPost(groupId8, post6);
+                Post post6 = new Post("La ley 27546 claramente dice que esta mal", sg8, u8, LocalDateTime.of(2019, 4,15, 0, 0));
+                //PostForm post7 = new PostForm("Cuando ocurre la Fotosintesis?", LocalDateTime.of(2021, 7,2, 0, 0));
+                //studyGroupService.createPost(groupId11, post7);
+                Post post7 = new Post("Cuando ocurre la Fotosintesis?", sg11, u11, LocalDateTime.of(2021, 7,2, 0, 0));
+                //PostForm post8 = new PostForm("Para mañana aprendase la letra de Persiana Americana de Soda Stereo", LocalDateTime.of(2021, 3,18, 0, 0));
+                //studyGroupService.createPost(groupId9, post8);
+                Post post8 = new Post("Para mañana aprendase la letra de Persiana Americana de Soda Stereo", sg9, u9, LocalDateTime.of(2021, 3,18, 0, 0));
+                //PostForm post9 = new PostForm("Cual era la diferencia entre lenguaje Funcional y OO?", LocalDateTime.of(2021, 6,20, 0, 0));
+                //studyGroupService.createPost(groupId13, post9);
+                Post post9 = new Post("Cual era la diferencia entre lenguaje Funcional y OO?", sg13, u1,  LocalDateTime.of(2021, 6,20, 0, 0));
+                //PostForm post10 = new PostForm("Ser o no ser, esa es la cuestion", LocalDateTime.of(2020, 11,6, 0, 0));
+                //studyGroupService.createPost(groupId18, post10);
+                Post post10 = new Post("Ser o no ser, esa es la cuestion.", sg18, u7, LocalDateTime.of(2020, 11,6, 0, 0));
+                //PostForm post11 = new PostForm("Acuerdense de la tarea d Photoshop", LocalDateTime.of(2019, 7,28, 0, 0));
+                //studyGroupService.createPost(groupId16, post11);
+                Post post11 = new Post("Acuerdense de la tarea d Photoshop", sg16, u4, LocalDateTime.of(2019, 7,28, 0, 0));
+                //PostForm post12 = new PostForm("La matriz por su identidad es igual a la matriz.", LocalDateTime.of(2021, 12,18, 0, 0));
+                //studyGroupService.createPost(groupId19, post12);
+                Post post12 = new Post("La matriz por su identidad es igual a la matriz.", sg19, u8, LocalDateTime.of(2021, 12,18, 0, 0));
+                //PostForm post13 = new PostForm("Acuerdense de descargar Ubuntu 20.04", LocalDateTime.of(2021, 7,3, 0, 0));
+                //studyGroupService.createPost(groupId20, post13);
+                Post post13 = new Post("Acuerdense de descargar Ubuntu 20.04", sg20, u10, LocalDateTime.of(2021, 7,3, 0, 0));
+                //PostForm post14 = new PostForm("Acuerdense de la tarea de Alicia", LocalDateTime.of(2020, 5,19, 0, 0));
+                //studyGroupService.createPost(groupId21, post14);
+                Post post14 = new Post("Acuerdense de la tarea de Alicia", sg21, u3, LocalDateTime.of(2020, 5,19, 0, 0));
+                //PostForm post15 = new PostForm("En que año se fundo Roma?", LocalDateTime.of(2021, 1,24, 0, 0));
+                //studyGroupService.createPost(groupId7, post15);
+                Post post15 = new Post("En que año se fundo Roma?", sg7, u7, LocalDateTime.of(2021, 1,24, 0, 0));
+                //PostForm post16 = new PostForm("Alguno tiene tela para el lunes?", LocalDateTime.of(2020, 4,29, 0, 0));
+                //studyGroupService.createPost(groupId17, post16);
+                Post post16 = new Post("Alguno tiene tela para el lunes?", sg17, u3, LocalDateTime.of(2020, 4,29, 0, 0));
+                //PostForm post17 = new PostForm("Las rosas tienen espinas, cuidado!", LocalDateTime.of(2021, 5,30, 0, 0));
+                //studyGroupService.createPost(groupId10, post17);
+                Post post17 = new Post("Las rosas tienen espinas, cuidado!", sg10, u10, LocalDateTime.of(2021, 5,30, 0, 0));
+                //PostForm post18 = new PostForm("El area de un circulo es pi*r^2", LocalDateTime.of(2021, 2,2, 0, 0));
+                //studyGroupService.createPost(groupId5, post18);
+                Post post18 = new Post("El area de un circulo es pi*r^2", sg5, u5, LocalDateTime.of(2021, 2,2, 0, 0));
+                //PostForm post19 = new PostForm("Podemos ver que la corriente fluye hacia el norte", LocalDateTime.of(2020, 6,12, 0, 0));
+                //studyGroupService.createPost(groupId12, post19);
+                Post post19 = new Post("Podemos ver que la corriente fluye hacia el norte", sg12, u12, LocalDateTime.of(2020, 6,12, 0, 0));
+                //PostForm post20 = new PostForm("Pablito clavo un clavito. Cual es. Cual es el sujeto y el predicado?", LocalDateTime.of(2020, 10,18, 0, 0));
+                //studyGroupService.createPost(groupId14, post20);
+                Post post20 = new Post("Pablito clavo un clavito. Cual es. Cual es el sujeto y el predicado?", sg14, u2, LocalDateTime.of(2020, 10,18, 0, 0));
+                //PostForm post21 = new PostForm("Elixir es funcional y Java OO, saca conclusiones...", LocalDateTime.of(2021, 6,21, 0, 0));
+                //studyGroupService.createPost(groupId13, post21);
+                Post post21 = new Post("Elixir es funcional y Java OO, saca conclusiones...", sg13, u3, LocalDateTime.of(2021, 6,21, 0, 0));
+                //PostForm post22 = new PostForm("Por algo pregunto imbecil!", LocalDateTime.of(2021, 6,22, 0, 0));
+                //studyGroupService.createPost(groupId13, post22);
+                Post post22 = new Post("Por algo pregunto imbecil!", sg13, u1, LocalDateTime.of(2021, 6,22, 0, 0));
+                //PostForm post23 = new PostForm("El primer mundial de futbol fue en el año 1930", LocalDateTime.of(2021, 7,7, 0, 0));
+                //studyGroupService.createPost(groupId15, post23);
+                Post post23 = new Post("El primer mundial de futbol fue en el año 1930", sg15, u5, LocalDateTime.of(2021, 7,7, 0, 0));
+                //PostForm post24 = new PostForm("El primer mundial de rugby fue en el año 1987", LocalDateTime.of(2021, 4,19, 0, 0));
+                //studyGroupService.createPost(groupId15, post24);
+                Post post24 = new Post("El primer mundial de rugby fue en el año 1987", sg15, u4, LocalDateTime.of(2021, 4,19, 0, 0));
+
+                postRepository.save(post1);
+                postRepository.save(post2);
+                postRepository.save(post3);
+                postRepository.save(post4);
+                postRepository.save(post5);
+                postRepository.save(post6);
+                postRepository.save(post7);
+                postRepository.save(post8);
+                postRepository.save(post9);
+                postRepository.save(post10);
+                postRepository.save(post11);
+                postRepository.save(post12);
+                postRepository.save(post13);
+                postRepository.save(post14);
+                postRepository.save(post15);
+                postRepository.save(post16);
+                postRepository.save(post17);
+                postRepository.save(post18);
+                postRepository.save(post19);
+                postRepository.save(post20);
+                postRepository.save(post21);
+                postRepository.save(post22);
+                postRepository.save(post23);
+                postRepository.save(post24);
+
+
 
             } catch (Exception ignored){}
         }
