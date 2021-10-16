@@ -1271,4 +1271,76 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(data.label1.getId(), labelDTO.get(0).getId());
         assertEquals(data.label2.getName(), labelDTO.get(1).getName());
     }
+
+    @Test
+    @WithMockUser(username = "tolkien@gmail.com")
+    public void getUserGroupsWithNameShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri).param("text", "Dune")
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String status = mvcResult.getResponse().getContentAsString();
+        List<StudyGroupDTO> groupsDTOs = super.mapFromJson(status, new TypeReference<List<StudyGroupDTO>>(){});
+
+        assertEquals(data.group2.getName(), groupsDTOs.get(0).getName());
+    }
+
+    @Test
+    @WithMockUser(username = "tolkien@gmail.com")
+    public void getUserGroupsWithPartialNameShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri).param("text", "Du")
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String status = mvcResult.getResponse().getContentAsString();
+        List<StudyGroupDTO> groupsDTOs = super.mapFromJson(status, new TypeReference<List<StudyGroupDTO>>(){});
+
+        assertEquals(data.group2.getName(), groupsDTOs.get(0).getName());
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void getUserGroupsWithDescriptionShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "...")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        expectedStudyGroupsNames.add(data.group2.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void getUserGroupsWithPartialDescriptionShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", ".")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        expectedStudyGroupsNames.add(data.group2.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
 }
