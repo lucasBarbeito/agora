@@ -154,7 +154,38 @@ public class StudyGroupService {
             StudyGroup studyGroup = groupId.get();
             studyGroup.setName(editGroupForm.getName());
             studyGroup.setDescription(editGroupForm.getDescription());
-            // TODO: Agregar la modificacion de Labels cuando esten diponibles!!
+
+            //If the list provided is empty, it should not change the existent Labels.
+            if (!editGroupForm.getLabels().isEmpty()) {
+                List<LabelIdDTO> labels = editGroupForm.getLabels();
+                List<Label> groupLabels = new ArrayList<>();
+                for (LabelIdDTO label : labels) {
+                    Optional<Label> labelOptional = labelRepository.findById(label.getId());
+                    if (!labelOptional.isPresent()) {
+                        throw new NoSuchElementException("Label does not exist.");
+                    } else {
+                        groupLabels.add(labelOptional.get());
+                    }
+                }
+
+                //If given form does not contain existent group labels, this should be deleted.
+                for (int i = 0; i < studyGroup.getLabels().size(); i++) {
+                    if(!groupLabels.contains(studyGroup.getLabels().get(i).getLabel())){
+                        studyGroupLabelRepository.delete(studyGroup.getLabels().get(i));
+                    }
+                }
+
+
+                List<StudyGroupLabel> newLabels = new ArrayList<>();
+                for (Label groupLabel : groupLabels) {
+                    if(!studyGroupLabelRepository.findByStudyGroupIdAndAndLabelId(id, groupLabel.getId()).isPresent()) {
+                        StudyGroupLabel studyGroupLabel = new StudyGroupLabel(groupLabel, studyGroup);
+                        studyGroupLabelRepository.save(studyGroupLabel);
+                        newLabels.add(studyGroupLabel);
+                    }
+                }
+                studyGroup.setLabels(newLabels);
+            }
             groupRepository.save(studyGroup);
             return true;
         }

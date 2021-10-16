@@ -700,11 +700,16 @@ public class StudyGroupControllerTest extends AbstractTest{
 
         String uri = "/studyGroup";
 
+        List<LabelIdDTO> labels = new ArrayList<>();
+        LabelIdDTO label = new LabelIdDTO(data.label1.getId());
+        labels.add(label);
+
         EditStudyGroupForm groupForm = new EditStudyGroupForm();
         String descriptionModify = "...2";
         String nameModify = "Dune 2";
         groupForm.setDescription(descriptionModify);
         groupForm.setName(nameModify);
+        groupForm.setLabels(labels);
 
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.put(uri + "/" + studyGroupOptional.get().getId())
@@ -726,6 +731,79 @@ public class StudyGroupControllerTest extends AbstractTest{
 
         assertEquals(descriptionModify, gottenStudyGroup.getDescription());
         assertEquals(nameModify, gottenStudyGroup.getName());
+        assertEquals(data.label1.getId(), gottenStudyGroup.getLabels().get(0).getId());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void modifyStudyGroupWithPreviousAndNewLabelShouldHaveBoth() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+
+        String uri = "/studyGroup";
+
+        List<LabelIdDTO> labels = new ArrayList<>();
+        LabelIdDTO label = new LabelIdDTO(data.label1.getId());
+        LabelIdDTO label2 = new LabelIdDTO(data.label2.getId());
+        labels.add(label);
+        labels.add(label2);
+
+        EditStudyGroupForm groupForm = new EditStudyGroupForm();
+        String descriptionModify = "...2";
+        String nameModify = "Dune 2";
+        groupForm.setDescription(descriptionModify);
+        groupForm.setName(nameModify);
+        groupForm.setLabels(labels);
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.put(uri + "/" + studyGroupOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+
+        int statusPut = mvcResult.getResponse().getStatus();
+        assertEquals(204, statusPut);
+
+        MvcResult modifiedResult = mvc.perform(MockMvcRequestBuilders.get(uri + "/" + studyGroupOptional.get().getId())
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = modifiedResult.getResponse().getStatus();
+        assertEquals(200, status);
+
+        String modifiedStatus = modifiedResult.getResponse().getContentAsString();
+        FullStudyGroupDTO gottenStudyGroup = super.mapFromJson(modifiedStatus, FullStudyGroupDTO.class);
+
+        assertEquals(descriptionModify, gottenStudyGroup.getDescription());
+        assertEquals(nameModify, gottenStudyGroup.getName());
+        assertEquals(data.label2.getId(), gottenStudyGroup.getLabels().get(0).getId());
+        assertEquals(data.label1.getId(), gottenStudyGroup.getLabels().get(1).getId());
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void modifyStudyGroupWithNonExistentLabelShouldThrowNotFound() throws Exception {
+        Optional<StudyGroup> studyGroupOptional = groupRepository.findByName("Dune");
+
+        String uri = "/studyGroup";
+
+        List<LabelIdDTO> labels = new ArrayList<>();
+        LabelIdDTO label = new LabelIdDTO(-1);
+        labels.add(label);
+
+        EditStudyGroupForm groupForm = new EditStudyGroupForm();
+        String descriptionModify = "...2";
+        String nameModify = "Dune 2";
+        groupForm.setDescription(descriptionModify);
+        groupForm.setName(nameModify);
+        groupForm.setLabels(labels);
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.put(uri + "/" + studyGroupOptional.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+
+        int statusPut = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusPut);
     }
 
     @Test

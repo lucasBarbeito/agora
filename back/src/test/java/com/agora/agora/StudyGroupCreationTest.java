@@ -200,32 +200,40 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testEditStudyGroupFormSerialization() throws IOException {
-        EditStudyGroupForm form = new EditStudyGroupForm("Lord of the rings", "...");
+        List<LabelIdDTO> labels = new ArrayList<>();
+        labels.add(new LabelIdDTO(12));
+        EditStudyGroupForm form = new EditStudyGroupForm("Lord of the rings", "...", labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12}]}";
 
         assertEquals(expectedJson, jsonEditForm.write(form).getJson());
     }
 
     @Test
     public void testEditStudyGroupFormDeserialization() throws Exception {
-        EditStudyGroupForm form = new EditStudyGroupForm("Lord of the rings", "...");
+        List<LabelIdDTO> labels = new ArrayList<>();
+        labels.add(new LabelIdDTO(12));
+        EditStudyGroupForm form = new EditStudyGroupForm("Lord of the rings", "...", labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12}]}";
 
         EditStudyGroupForm userFormObtained = jsonEditForm.parse(expectedJson).getObject();
 
         assertEquals(form.getName(),userFormObtained.getName());
         assertEquals(form.getDescription(),userFormObtained.getDescription());
+        assertEquals(form.getLabels().get(0).getId(), userFormObtained.getLabels().get(0).getId());
     }
 
     @Test
     public void testEditStudyGroupFormSetSerialization() throws IOException {
+        List<LabelIdDTO> labels = new ArrayList<>();
+        labels.add(new LabelIdDTO(12));
         EditStudyGroupForm form = new EditStudyGroupForm();
         form.setName("Lord of the rings");
         form.setDescription("...");
+        form.setLabels(labels);
 
-        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\"}";
+        String expectedJson = "{\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12}]}";
 
         assertEquals(expectedJson, jsonEditForm.write(form).getJson());
     }
