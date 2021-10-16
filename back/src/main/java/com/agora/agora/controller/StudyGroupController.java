@@ -36,8 +36,8 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
-        return groupService.findStudyGroups(text);
+    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label) {
+        return groupService.findStudyGroups(text, label);
     }
 
     @GetMapping(value = "/me")
