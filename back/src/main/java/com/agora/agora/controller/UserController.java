@@ -3,6 +3,7 @@ package com.agora.agora.controller;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.NotificationDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
@@ -64,5 +65,10 @@ public class UserController {
             responseUsers.add(new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
         }
         return responseUsers;
+    }
+
+    @GetMapping(value = "/notification/me")
+    public List<NotificationDTO> getCurrentUserNotifications(){
+        return userService.getCurrentUserNotifications();
     }
 }

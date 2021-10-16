@@ -1,11 +1,11 @@
 #creategroup-box-grid {
-  padding: 16px 10px 10px 16px;
+  padding: 5px 10px 10px 16px;
 }
 
 .creategroup-form-box {
   background: #ffffff;
   width: 444px;
-  height: 550px;
+  height: 525px;
 }
 
 .creategroup-title {
@@ -41,6 +41,12 @@
   background: #e8a5a5;
   height: 54px;
 }
+
+#creategroup-warning {
+  height: 54px;
+
+}
+
 
 #creategroup-warning-message {
   padding-top: 15px;

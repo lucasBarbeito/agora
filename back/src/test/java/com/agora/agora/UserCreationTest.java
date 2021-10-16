@@ -142,8 +142,8 @@ public class UserCreationTest{
     @Test
     public void testUserContactDTOSerialization() throws IOException {
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
-        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getEmail());
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\"}";
+        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail());
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\"}";
 
         assertEquals(expectedJson,jsonContact.write(userDTO).getJson());
     }
@@ -155,8 +155,9 @@ public class UserCreationTest{
         userDTO.setId(user.getId());
         userDTO.setName(user.getName());
         userDTO.setEmail(user.getEmail());
+        userDTO.setSurname(user.getSurname());
 
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\"}";
 
         assertEquals(expectedJson,jsonContact.write(userDTO).getJson());
     }
@@ -164,14 +165,15 @@ public class UserCreationTest{
     @Test
     public void testUserContactDTODeserialization() throws IOException {
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
-        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getEmail());
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\"}";
+        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail());
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\"}";
 
         UserContactDTO obtained = jsonContact.parse(expectedJson).getObject();
 
         assertEquals(userDTO.getId(), obtained.getId());
         assertEquals(userDTO.getEmail(), obtained.getEmail());
         assertEquals(userDTO.getName(), obtained.getName());
+        assertEquals(userDTO.getSurname(), obtained.getSurname());
     }
 
     @Test

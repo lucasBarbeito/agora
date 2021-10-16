@@ -2,8 +2,15 @@ import React, { Component } from "react";
 import { Grid } from "@material-ui/core";
 import "./ErrorNotFound.css";
 import GoBackButton from "../../common/GoBackButton/GoBackButton.jsx";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
-export default class ErrorNotFound extends Component {
+ class ErrorNotFound extends Component {
+
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
+
   render() {
     return (
       <div className="Agorabackground">
@@ -27,7 +34,7 @@ export default class ErrorNotFound extends Component {
               <Grid item xs={12}>
                 <Grid container spacing={3} id="error-not-found-buttons-grid">
                   <Grid item xs={3}>
-                    <GoBackButton history={this.props.history}></GoBackButton>
+                    <GoBackButton ></GoBackButton>
                   </Grid>
                 </Grid>
               </Grid>
@@ -45,3 +52,4 @@ export default class ErrorNotFound extends Component {
     );
   }
 }
+export default withRouter(ErrorNotFound);

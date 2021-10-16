@@ -36,8 +36,8 @@ public class StudyGroupController {
     }
 
     @GetMapping
-    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text) {
-        return groupService.findStudyGroups(text);
+    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label) {
+        return groupService.findStudyGroups(text, label);
     }
 
     @GetMapping(value = "/me")
@@ -58,7 +58,7 @@ public class StudyGroupController {
     public ResponseEntity getStudyGroupInfoById(@PathVariable("id") int id){
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
         final List<StudyGroupUser> studyGroupUsers = groupService.findUsersInStudyGroup(id);
-        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
+        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getSurname(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
         final List<StudyGroupLabel> studyGroupLabels = groupService.findStudyGroupLabelsById(id);
         final List<LabelDTO> labelDTOs = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
         final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs, labelDTOs));
