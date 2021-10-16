@@ -172,7 +172,7 @@ class CreateGroup extends Component {
                     {this.state.errorMsg}
                   </div>
                 </Box>
-              ) : null}
+              ) : <Box id={'creategroup-warning'} />}
             </Grid>
             <Grid item container direction="row" justifyContent="flex-end">
               <Grid item>
