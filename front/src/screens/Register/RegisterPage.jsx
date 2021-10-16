@@ -9,8 +9,10 @@ import FormControl from "@material-ui/core/FormControl";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import baseUrl from "../../baseUrl";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
-export default class RegisterPage extends Component {
+ class RegisterPage extends Component {
   constructor(props) {
     super(props);
 
@@ -33,6 +35,9 @@ export default class RegisterPage extends Component {
       showErrorMsg: false,
     };
   }
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   handleCreateAccountClick = () => {
     this.validatePassword();
@@ -390,3 +395,4 @@ export default class RegisterPage extends Component {
     );
   }
 }
+export default withRouter(RegisterPage)

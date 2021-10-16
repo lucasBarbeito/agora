@@ -10,8 +10,10 @@ import "./Navbar.css";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import { AppContext } from "../../app-context";
 import ProfileButton from "./ProfileButton";
-import history from "../../history";
 import SimpleSnackbar from "../SimpleSnackbar/SimpleSnackbar";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
+
 
 class Navbar extends Component {
   constructor(props) {
@@ -21,6 +23,9 @@ class Navbar extends Component {
       snackBarVisible: false,
     }
   }
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   isLoggedIn() {
     return !!this.context.token && this.context.userInfo;
@@ -76,7 +81,6 @@ class Navbar extends Component {
                           token = {this.context.token}
                           setToken = {this.context.setToken}
                           handleLoginError = {(newVisibility) => this.handleLoginError(newVisibility)}
-                          history = {history}
                         />
                       </Container>
                     </Grid>
@@ -94,4 +98,4 @@ class Navbar extends Component {
 
 Navbar.contextType = AppContext;
 
-export default Navbar;
+export default withRouter(Navbar);
