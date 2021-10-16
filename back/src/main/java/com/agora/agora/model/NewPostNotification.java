@@ -21,4 +21,20 @@ public class NewPostNotification extends Notification{
         this.newPost = newPost;
         this.group = group;
     }
+
+    public Post getNewPost() {
+        return newPost;
+    }
+
+    public void setNewPost(Post newPost) {
+        this.newPost = newPost;
+    }
+
+    public StudyGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(StudyGroup group) {
+        this.group = group;
+    }
 }

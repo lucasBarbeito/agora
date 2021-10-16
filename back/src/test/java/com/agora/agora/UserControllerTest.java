@@ -1,18 +1,15 @@
 package com.agora.agora;
 
 import com.agora.agora.controller.StudyGroupController;
-import com.agora.agora.model.StudyGroup;
-import com.agora.agora.model.StudyGroupUser;
-import com.agora.agora.model.User;
+import com.agora.agora.model.*;
 import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.NotificationDTO;
+import com.agora.agora.model.dto.PostDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.model.type.UserType;
-import com.agora.agora.repository.PostRepository;
-import com.agora.agora.repository.StudyGroupRepository;
-import com.agora.agora.repository.StudyGroupUsersRepository;
-import com.agora.agora.repository.UserRepository;
+import com.agora.agora.repository.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.After;
 import org.junit.Before;
@@ -25,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.swing.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +47,15 @@ public class UserControllerTest extends AbstractTest{
     @Autowired
     private StudyGroupController studyGroupController;
 
+    @Autowired
+    private StudyGroupLabelRepository studyGroupLabelRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
+    private NewPostNotificationRepository newPostNotificationRepository;
+
     private Data data = new Data();
 
     // Storing all the info we'll load into the DB here.
@@ -59,6 +66,12 @@ public class UserControllerTest extends AbstractTest{
         User user4;
         StudyGroup group1;
         StudyGroup group2;
+        Post post;
+        Post post1;
+        Post post2;
+        Label label1;
+        Label label2;
+        NewPostNotification notification1;
 
         void setup() {
             user1 = new User("Carlos", "Gimenez", "carlos@mail.com", "Carlos123", false, UserType.USER);
@@ -70,19 +83,42 @@ public class UserControllerTest extends AbstractTest{
             userRepository.save(user3);
             userRepository.save(user4);
 
+            label1 = new Label("SciFi");
+            label2 = new Label("History");
+            labelRepository.save(label1);
+            labelRepository.save(label2);
+
             group1 = new StudyGroup("Lord of the rings", "...", user1, LocalDate.of(2021, 8, 17));
             group2 = new StudyGroup("Dune", "....", user2, LocalDate.of(2021, 8, 16));
             groupRepository.save(group1);
             groupRepository.save(group2);
 
+            StudyGroupLabel l1g1 = new StudyGroupLabel(label1, group1);
+            StudyGroupLabel l2g2 = new StudyGroupLabel(label2, group2);
+            studyGroupLabelRepository.save(l1g1);
+            studyGroupLabelRepository.save(l2g2);
+
             StudyGroupUser group1User1 = new StudyGroupUser(user1, group1);
             StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
+
+            post = new Post("...", group1, user2, LocalDateTime.now());
+            postRepository.save(post);
+
+            post1 = new Post("LOTR 2 is out", group1, user1, LocalDateTime.of(2021, 9, 23, 3, 15));
+            post2 = new Post("LOTR 2 is great", group1, user1, LocalDateTime.of(2021, 9, 24, 12, 3));
+            postRepository.save(post1);
+            postRepository.save(post2);
+
+            notification1 = new NewPostNotification(0, user1, false, LocalDate.of(2021, 9, 23), post1, group1);
+            newPostNotificationRepository.save(notification1);
         }
 
         void rollback() {
+            newPostNotificationRepository.deleteAll();
             postRepository.deleteAll();
+            studyGroupLabelRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
@@ -350,9 +386,49 @@ public class UserControllerTest extends AbstractTest{
         }
     }
 
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void getUserNotificationsShouldReturnOk() throws Exception {
+        String uri = "/user/notification/me";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+    }
 
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void getUserNotificationsShouldReturnNotifications() throws Exception {
+        String uri = "/user/notification/me";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
 
+        String status = mvcResult.getResponse().getContentAsString();
+        List<NotificationDTO> notificationDTO = super.mapFromJson(status, new TypeReference<List<NotificationDTO>>(){});
 
+        assertEquals(data.notification1.getUser().getId(), notificationDTO.get(0).getUserRecipientId());
+        assertEquals(data.notification1.getGroup().getId(), notificationDTO.get(0).getStudyGroupId());
+    }
 
+    @Test
+    @WithMockUser("carl@mail.com")
+    public void getNonExistentUserNotificationsShouldReturnNotFound() throws Exception {
+        String uri = "/user/notification/me";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
+    }
 
+    @Test
+    @WithMockUser("tolkien@mail.com")
+    public void getUserWithNoNotificationsShouldReturnNotFound() throws Exception {
+        String uri = "/user/notification/me";
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
+    }
 }
