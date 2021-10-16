@@ -21,4 +21,14 @@ public interface StudyGroupUsersRepository extends CrudRepository<StudyGroupUser
     List<StudyGroup> findByNameOrDescription(@Param("text")String text);
 
     void deleteAllByStudyGroupId(int studyGroupId);
+
+    @Query(value = "select DISTINCT users from StudyGroup sg " +
+            "join sg.creator creator " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+                "where lower(sg.name) like lower(concat('%',concat(:text, '%')))" +
+                    "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))" +
+                "and (creator.id = :id or sg_user.id = :id)")
+    List<StudyGroupUser> findStudyGroupUserByUserIdAndText(@Param("id")int id, @Param("text")String text);
+
 }

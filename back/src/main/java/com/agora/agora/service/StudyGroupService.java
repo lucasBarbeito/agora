@@ -216,14 +216,19 @@ public class StudyGroupService {
 
     }
 
-    public List<StudyGroup> findCurrentUserGroups(){
+    public List<StudyGroup> findCurrentUserGroups(Optional<String> text){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
-            List<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId());
+            List<StudyGroupUser> userGroups;
+            if (text.isPresent()) {
+                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get());
+            } else {
+                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId());
+            }
             List<StudyGroup> myGroups = new ArrayList<>();
             for (StudyGroupUser userGroup : userGroups) {
                 myGroups.add(userGroup.getStudyGroup());
