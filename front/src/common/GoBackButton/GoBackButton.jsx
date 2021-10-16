@@ -1,7 +1,14 @@
 import React from "react";
 import { Button } from "@material-ui/core";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
-export default function GoBackButton(props) {
+ function GoBackButton(props) {
+
+  const propTypes = {
+    history: PropTypes.object.isRequired
+  };
+  
   return (
     <Button
       id="button"
@@ -13,3 +20,4 @@ export default function GoBackButton(props) {
     </Button>
   );
 }
+export default withRouter(GoBackButton);

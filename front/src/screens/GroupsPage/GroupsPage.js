@@ -8,6 +8,8 @@ import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
 import Pagination from '@material-ui/lab/Pagination';
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
 
 class GroupsPage extends Component {
@@ -22,7 +24,9 @@ class GroupsPage extends Component {
     };
   }
 
-
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   getGroups = async () => {
     const { token } = this.context;
@@ -114,7 +118,7 @@ class GroupsPage extends Component {
     const currentPost = this.state.studyGroups.slice(indexOfFirstPost, indexOfLastPost);
 
     return (
-      <HomeStructure history={this.props.history}>
+      <HomeStructure>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <div className="search-content">
@@ -188,4 +192,4 @@ class GroupsPage extends Component {
 
 GroupsPage.contextType = AppContext;
 
-export default GroupsPage;
+export default withRouter(GroupsPage);

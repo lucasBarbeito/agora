@@ -118,7 +118,7 @@ class App extends Component {
           <AppContext.Provider value={this.state}>
             <Router history={history}>
               <div>
-                <Navbar history={history} />
+                <Navbar />
                 <Switch>
                   <Route exact path="/">
                     <LandingPage
@@ -127,28 +127,28 @@ class App extends Component {
                     />
                   </Route>
                   <Route path="/login">
-                    <LoginPage history={history} />
+                    <LoginPage/>
                   </Route>
                   <Route path="/register">
-                    <RegisterPage history={history} />
+                    <RegisterPage/>
                   </Route>
                   <Route
                     path="/user/verify-user/:id"
                     render={(props) => (
-                      <EmailConfirmation history={history} {...props} />
+                      <EmailConfirmation {...props} />
                     )}
                   />
                   <Route exact path="/check-email">
-                    <CheckYourEmailPage history={history} />
+                    <CheckYourEmailPage />
                   </Route>
                   <AuthRoute path="/home">
-                    <GroupsPage history={history} onlyMyGroups={false} />
+                    <GroupsPage onlyMyGroups={false} />
                   </AuthRoute>
                   <AuthRoute path="/my-groups">
-                    <GroupsPage history={history} onlyMyGroups={true} />
+                    <GroupsPage onlyMyGroups={true} />
                   </AuthRoute>
                   <AuthRoute path="/create-group">
-                    <CreateGroup history={history} />
+                    <CreateGroup  />
                   </AuthRoute>
                   <AuthRoute path="/group/:id">
                     <Group />
@@ -157,7 +157,7 @@ class App extends Component {
                     <UserPage />
                   </AuthRoute>
                   <Route>
-                    <ErrorNotFound history={history} />
+                    <ErrorNotFound/>
                   </Route>
                 </Switch>
               </div>

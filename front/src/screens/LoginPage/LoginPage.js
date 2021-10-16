@@ -10,6 +10,8 @@ import IconButton from "@material-ui/core/IconButton";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
 class LoginPage extends Component {
   constructor(props) {
@@ -23,6 +25,10 @@ class LoginPage extends Component {
       errorMsg: "",
     };
   }
+
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   handleLogin = async () => {
     this.setState({
@@ -191,4 +197,4 @@ class LoginPage extends Component {
 
 LoginPage.contextType = AppContext;
 
-export default LoginPage;
+export default withRouter(LoginPage);

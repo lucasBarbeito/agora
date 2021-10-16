@@ -1,8 +1,15 @@
 import React, { Component } from "react";
 import { Button, Grid } from "@material-ui/core";
 import "./CheckYourEmailPage.css";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
-export default class CheckYourEmailPage extends Component {
+ class CheckYourEmailPage extends Component {
+
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
+
   render() {
     return (
       <div className="Agorabackground">
@@ -43,3 +50,4 @@ export default class CheckYourEmailPage extends Component {
     );
   }
 }
+export default withRouter(CheckYourEmailPage);
