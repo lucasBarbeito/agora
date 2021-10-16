@@ -102,7 +102,7 @@ export default function InvitationForm(props) {
 
   return (
     <div>
-      <Dialog open={props.visible} onClose={props.onClose} fullWidth>
+      <Dialog open={props.visible} onClose={props.onClose} fullWidth id='dialog'>
         <DialogTitle
           id="edit-group-customized-dialog-title"
           onClose={props.onClose}>
@@ -117,7 +117,7 @@ export default function InvitationForm(props) {
         <div className="search-user">
           <TextField
             fullWidth
-            label="Buscar usuario"
+            label="Buscar usuarios"
             variant="outlined"
             onChange={(text) => setSearchMsg(text.target.value)}
           />
@@ -154,7 +154,7 @@ export default function InvitationForm(props) {
                       label={<Typography id='user-name-typography'>{member.name} {member.lastname}</Typography>}
                     />
                   </AccordionSummary>
-                  <AccordionDetails>
+                  <AccordionDetails id='accordion-detail'>
                     <MenuList>
                       {Object.keys(member)
                         .slice(2)

@@ -178,19 +178,6 @@
   width: 550px;
 }
 
-#invitation-no-result-message{
-  display: flex;
-  align-self: center;
-  align-items: center;
-  width: 350px;
-  text-align: center;
-  letter-spacing: 0.23px;
-  color: #00000099;
-  opacity: 1;
-  font-size: 13px;
-  margin-top: 50px;
-}
-
 #invitation-search-button {
   margin-left: 10px;
   background-color: #c5b2a5;
@@ -199,11 +186,6 @@
   color: #ffffff;
   width: 76px;
   max-height: 56px;
-}
-
-.invite-link-button {
-  align-self: center;
-  align-items: center;
 }
 
 #copy-link-button{
