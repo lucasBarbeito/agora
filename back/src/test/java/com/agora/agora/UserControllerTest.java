@@ -111,7 +111,7 @@ public class UserControllerTest extends AbstractTest{
             postRepository.save(post1);
             postRepository.save(post2);
 
-            notification1 = new NewPostNotification(0, user1, false, LocalDate.of(2021, 9, 23), post1, group1);
+            notification1 = new NewPostNotification(user1, false, LocalDate.of(2021, 9, 23), post1, group1);
             newPostNotificationRepository.save(notification1);
         }
 

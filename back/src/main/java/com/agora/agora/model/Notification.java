@@ -23,8 +23,7 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(int id, User user, boolean isRead, LocalDate creationDate) {
-        this.id = id;
+    public Notification(User user, boolean isRead, LocalDate creationDate) {
         this.user = user;
         this.isRead = isRead;
         this.creationDate = creationDate;

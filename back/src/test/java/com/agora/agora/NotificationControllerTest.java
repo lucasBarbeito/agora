@@ -1,0 +1,118 @@
+package com.agora.agora;
+
+import com.agora.agora.model.*;
+import com.agora.agora.model.type.UserType;
+import com.agora.agora.repository.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.assertEquals;
+
+public class NotificationControllerTest extends AbstractTest{
+
+    @Autowired
+    private NewMemberNotificationRepository newMemberNotificationRepository;
+
+    @Autowired
+    private NewPostNotificationRepository newPostNotificationRepository;
+
+    @Autowired
+    private GroupInviteNotificationRepository groupInviteNotificationRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private StudyGroupRepository studyGroupRepository;
+
+    @Autowired
+    private PostRepository postRepository;
+
+    private Data data = new Data();
+
+    private class Data{
+        User user1;
+        User user2;
+        NewMemberNotification newMemberNotification1;
+        NewMemberNotification newMemberNotification2;
+        NewPostNotification newPostNotification1;
+        NewPostNotification newPostNotification2;
+        GroupInviteNotification groupInviteNotification1;
+        GroupInviteNotification groupInviteNotification2;
+        StudyGroup group1;
+        Post post;
+        Post post1;
+
+        void setup(){
+            user1 = new User("Carlos", "Gimenez", "carlos@mail.com", "Carlos123", false, UserType.USER);
+            user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false, UserType.USER);
+            userRepository.save(user1);
+            userRepository.save(user2);
+
+            group1 = new StudyGroup("Lord of the rings", "...", user1, LocalDate.of(2021, 8, 17));
+            studyGroupRepository.save(group1);
+
+            post = new Post("...", group1, user2, LocalDateTime.now());
+            post1 = new Post("LOTR 2 is out", group1, user1, LocalDateTime.of(2021, 9, 23, 3, 15));
+            postRepository.save(post);
+            postRepository.save(post1);
+
+            newMemberNotification1 = new NewMemberNotification(user1,false, LocalDate.of(2021, 8, 16),user2,group1);
+            newMemberNotification2 = new NewMemberNotification(user2,false, LocalDate.of(2020, 6, 4),user1,group1);
+            newMemberNotificationRepository.save(newMemberNotification1);
+            newMemberNotificationRepository.save(newMemberNotification2);
+
+            newPostNotification1 = new NewPostNotification(user1,false,LocalDate.of(2021, 8, 16),post,group1);
+            newPostNotification2 = new NewPostNotification(user2, false, LocalDate.of(2021, 8, 14),post1,group1);
+            newPostNotificationRepository.save(newPostNotification1);
+            newPostNotificationRepository.save(newPostNotification2);
+
+            groupInviteNotification1 = new GroupInviteNotification(user1,false,LocalDate.of(2021, 8, 14),group1);
+            groupInviteNotification2 = new GroupInviteNotification(user2,false,LocalDate.of(2021, 8, 14),group1);
+            groupInviteNotificationRepository.save(groupInviteNotification1);
+            groupInviteNotificationRepository.save(groupInviteNotification2);
+        }
+
+        void rollback() {
+            postRepository.deleteAll();
+            studyGroupRepository.deleteAll();
+            userRepository.deleteAll();
+            newMemberNotificationRepository.deleteAll();
+            newPostNotificationRepository.deleteAll();
+            groupInviteNotificationRepository.deleteAll();
+        }
+    }
+
+    // Executed before each test
+    @Before
+    public void setUpDB() {
+        data.setup();
+    }
+
+    // Executed after each test
+    @After
+    public void rollBackDB() {
+        data.rollback();
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void whenReadingNotificationForCorrectUserShouldRead() throws Exception {
+        String uri = "/notification/" + data.newMemberNotification1.getId() + "/read";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200,status);
+
+    }
+}
