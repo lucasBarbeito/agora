@@ -26,14 +26,12 @@ import { withRouter } from "react-router-dom";
 import baseUrl from "../../baseUrl";
 import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js";
-import InvitationForm from "../../common/InvitationForm/InvitationForm";
 
 class Group extends Component {
   constructor(props) {
     super(props);
     this.state = {
       editGroupFormVisible: false,
-      invitationGroupFormVisible: false,
       groupName: "",
       description: "",
       labels: [],
@@ -44,8 +42,6 @@ class Group extends Component {
       requestLoading: false,
       openAbandonGroupSnack: false,
       openInvitationLinkSnack: false,
-      announcementsIdsBeingRemoved: [],
-      openAnnouncementDeletionErrorSnack: false,
       newAnnouncementContent: "",
       creatingAnnouncement: false,
       openAnnouncementCreationErrorSnack: false,
@@ -60,23 +56,9 @@ class Group extends Component {
     }));
   };
 
-  handleInvitationClick = () => {
-    this.setState((state) => ({
-      invitationGroupFormVisible: !state.invitationGroupFormVisible,
-    }));
-  };
-
-  handleOnChange = (newGroupName, newDescription) => {
-    if (newGroupName) {
-      this.setState({
-        groupName: newGroupName,
-      });
-    }
-    if (newDescription) {
-      this.setState({
-        description: newDescription,
-      });
-    }
+  handleOnChange = () => {
+    this.setState({ isFetching: true });
+    this.fetchGroupInformation();
   };
 
   componentDidMount() {
@@ -107,12 +89,10 @@ class Group extends Component {
               "es-AR"
             ),
             content: item.content,
-            id: item.id,
-            creatorId: item.creatorId,
           };
         });
 
-        this.setState({ announcements: announcementFormat.reverse() });
+        this.setState({ announcements: announcementFormat });
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -166,6 +146,31 @@ class Group extends Component {
       alert("Error, no es posible conectarse al back-end");
     }
   };
+
+  async getInvitationLink() {
+    const groupId = this.props.match.params.id;
+    const response = await fetch(
+      `${baseUrl}/studyGroup/${groupId}/inviteLink`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        },
+      }
+    );
+    return await response.text();
+  }
+
+  async copyInvitationLinkToClipboard() {
+    try {
+      let res = await this.getInvitationLink();
+      navigator.clipboard.writeText(res);
+      this.setState({ openInvitationLinkSnack: true });
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  }
 
   async fetchGroupInformation() {
     const groupId = this.props.match.params.id;
@@ -260,7 +265,16 @@ class Group extends Component {
       if (!response.ok) {
         this.setState({ openAnnouncementCreationErrorSnack: true });
       } else {
-        await this.getAnnouncements(this.state.userContacts);
+        const newAnnouncements = this.state.announcements;
+        const newAnnouncement = {
+          name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
+          date: `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`,
+          content: this.state.newAnnouncementContent,
+        };
+        newAnnouncements.unshift(newAnnouncement);
+        this.setState({ announcements: newAnnouncements });
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -269,39 +283,10 @@ class Group extends Component {
     this.setState({ newAnnouncementContent: "" });
   }
 
-  async deleteAnnouncement(announcementId) {
-    const groupId = this.props.match.params.id;
-    let announcementsIdsBeingRemoved = this.state.announcementsIdsBeingRemoved;
-    announcementsIdsBeingRemoved.push(announcementId);
-    this.setState({ announcementsBeingRemoved: announcementsIdsBeingRemoved });
-
-    try {
-      const response = await fetch(
-        `${baseUrl}/studyGroup/${groupId}/forum/${announcementId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${this.context.token}`,
-          },
-        }
-      );
-
-      announcementsIdsBeingRemoved = announcementsIdsBeingRemoved.filter(
-        (id) => id === announcementId
-      );
-      this.setState({
-        announcementsBeingRemoved: announcementsIdsBeingRemoved,
-      });
-
-      if (!response.ok) {
-        this.setState({ openAnnouncementDeletionErrorSnack: true });
-      } else {
-        await this.getAnnouncements(this.state.userContacts);
-      }
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
+  deleteAnnouncement(id) {
+    const newAnnouncements = this.state.announcements;
+    newAnnouncements.splice(id, 1);
+    this.setState({ announcements: newAnnouncements });
   }
 
   render() {
@@ -344,9 +329,7 @@ class Group extends Component {
                             groupLabel={this.state.labels.map(
                               (index) => index.name
                             )}
-                            onChange={(newGroupName, newDescription) =>
-                              this.handleOnChange(newGroupName, newDescription)
-                            }
+                            onChange={() => this.handleOnChange()}
                           />
                         </Grid>
                       )}
@@ -494,19 +477,11 @@ class Group extends Component {
                         key={index}
                         canDelete={
                           this.state.isAdmin ||
-                          announcement.creatorId === this.context.userInfo.id
+                          announcement.name ===
+                            `${this.context.userInfo.name} ${this.context.userInfo.surname}`
                         }
-                        handleDelete={() =>
-                          this.deleteAnnouncement(announcement.id)
-                        }
-                        isBeingRemoved={this.state.announcementsIdsBeingRemoved.includes(
-                          announcement.id
-                        )}
-                        name={
-                          this.state.userContacts.find(
-                            (user) => user.id === announcement.creatorId
-                          ).name
-                        }
+                        handleDelete={() => this.deleteAnnouncement(index)}
+                        name={announcement.name}
                         date={announcement.date}
                         content={announcement.content}
                       />
@@ -522,31 +497,11 @@ class Group extends Component {
                     id="invite-button"
                     variant="contained"
                     color="primary"
-                    onClick={() => this.handleInvitationClick()}
+                    onClick={() => this.copyInvitationLinkToClipboard()}
                   >
                     <LinkIcon id="invite-icon" />
                     INVITAR AL GRUPO
                   </Button>
-                  <InvitationForm onClose={() => this.handleInvitationClick()}
-                                  visible={this.state.invitationGroupFormVisible}
-                                  groupId={this.props.match.params.id}
-                                  token={this.context.token}
-                  />
-                  {/*
-                  visible={this.state.editGroupFormVisible}
-                            groupId={this.props.match.params.id}
-                            token={this.context.token}
-                            onClose={() => this.handleEditGroupClick()}
-                            initialGroupName={this.state.groupName}
-                            initialDescription={this.state.description}
-                            tags={this.context.labels}
-                            groupLabel={this.state.labels.map(
-                              (index) => index.name
-                            )}
-                            onChange={(newGroupName, newDescription) =>
-                              this.handleOnChange(newGroupName, newDescription)
-                            }
-                  */}
                   <SimpleSnackbar
                     open={this.state.openInvitationLinkSnack}
                     handleClose={() =>
@@ -580,13 +535,6 @@ class Group extends Component {
               this.setState({ openAnnouncementCreationErrorSnack: false })
             }
             message="Hubo un error al crear el anuncio"
-          />
-          <SimpleSnackbar
-            open={this.state.openAnnouncementDeletionErrorSnack}
-            handleClose={() =>
-              this.setState({ openAnnouncementDeletionErrorSnack: false })
-            }
-            message={`Hubo un error al eliminar el anuncio`}
           />
           <SimpleSnackbar
             open={this.state.getAnnouncementErrorSnack}
