@@ -3,8 +3,10 @@ import { Chip, Typography } from "@material-ui/core";
 import Menu from "@material-ui/core/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
-import history from "../../history";
 import baseUrl from "../../baseUrl";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
+
 
 
 export const ProfileButton = (props) => {
@@ -14,13 +16,17 @@ export const ProfileButton = (props) => {
     setAnchorEl(event.currentTarget);
   };
 
+  const propTypes = {
+    history: PropTypes.object.isRequired
+  };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const handleMyProfileClick = () => {
     setAnchorEl(null);
-    history.push("/profile");
+    props.history.push("/profile");
   };
 
   const handleLogOutClick = async () => {
@@ -66,4 +72,4 @@ export const ProfileButton = (props) => {
     </div>
   );
 };
-export default ProfileButton;
+export default withRouter(ProfileButton);

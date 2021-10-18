@@ -13,7 +13,6 @@ import com.agora.agora.repository.StudyGroupRepository;
 import com.agora.agora.repository.StudyGroupUsersRepository;
 import com.agora.agora.repository.UserRepository;
 import com.agora.agora.repository.*;
-import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.*;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -93,7 +91,7 @@ public class StudyGroupService {
          return Optional.of(groupRepository.findById(id)).orElseThrow(() -> new DataIntegrityViolationException(String.format("Group: %d does not exist", id)));
     }
 
-    public Page<StudyGroupDTO> findStudyGroups(Optional<String> text, int page) {
+    public Page<StudyGroupDTO> findStudyGroups(Optional<String> text, int page, Optional<List<Integer>> labelIds) {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -101,7 +99,7 @@ public class StudyGroupService {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             Page<StudyGroup> studyGroups;
-            if (text.isPresent()) {
+            if (text.isPresent() && labelIds.isPresent() && labelIds.get().size() > 0) {
                 studyGroups = groupRepository.findStudyGroupByNameOrDescription(text.get(),PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
             }else {
                 studyGroups = groupRepository.findAll(PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
@@ -110,6 +108,19 @@ public class StudyGroupService {
         } else{
             throw new NoSuchElementException("User does not exist.");
         }
+
+        /*
+        if (text.isPresent() && labelIds.isPresent() && labelIds.get().size() > 0) {
+                studyGroups = findByLabelIdsAndText(text.get(), labelIds.get());
+            } else if (labelIds.isPresent() && labelIds.get().size() > 0){
+                studyGroups = findByLabelIds(labelIds.get());
+            }else
+                if (text.isPresent()) {
+                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get());
+            }else {
+                studyGroups = groupRepository.findAll();
+            }
+         */
     }
 
     private StudyGroupDTO convertToDto(final StudyGroup studyGroup, User user){
@@ -155,7 +166,38 @@ public class StudyGroupService {
             StudyGroup studyGroup = groupId.get();
             studyGroup.setName(editGroupForm.getName());
             studyGroup.setDescription(editGroupForm.getDescription());
-            // TODO: Agregar la modificacion de Labels cuando esten diponibles!!
+
+            //If the list provided is empty, it should not change the existent Labels.
+            if (!editGroupForm.getLabels().isEmpty()) {
+                List<LabelIdDTO> labels = editGroupForm.getLabels();
+                List<Label> groupLabels = new ArrayList<>();
+                for (LabelIdDTO label : labels) {
+                    Optional<Label> labelOptional = labelRepository.findById(label.getId());
+                    if (!labelOptional.isPresent()) {
+                        throw new NoSuchElementException("Label does not exist.");
+                    } else {
+                        groupLabels.add(labelOptional.get());
+                    }
+                }
+
+                //If given form does not contain existent group labels, this should be deleted.
+                for (int i = 0; i < studyGroup.getLabels().size(); i++) {
+                    if(!groupLabels.contains(studyGroup.getLabels().get(i).getLabel())){
+                        studyGroupLabelRepository.delete(studyGroup.getLabels().get(i));
+                    }
+                }
+
+
+                List<StudyGroupLabel> newLabels = new ArrayList<>();
+                for (Label groupLabel : groupLabels) {
+                    if(!studyGroupLabelRepository.findByStudyGroupIdAndAndLabelId(id, groupLabel.getId()).isPresent()) {
+                        StudyGroupLabel studyGroupLabel = new StudyGroupLabel(groupLabel, studyGroup);
+                        studyGroupLabelRepository.save(studyGroupLabel);
+                        newLabels.add(studyGroupLabel);
+                    }
+                }
+                studyGroup.setLabels(newLabels);
+            }
             groupRepository.save(studyGroup);
             return true;
         }
@@ -338,6 +380,22 @@ public class StudyGroupService {
             throw new NoSuchElementException("There are no Labels available");
         }else {
             return labels;
+        }
+    }
+
+    private List<StudyGroup> findByLabelIds(List<Integer> labelIds) {
+        if (labelIds.size() == 1) {
+            return groupRepository.findByLabelId(labelIds.get(0));
+        } else {
+            return groupRepository.findByLabelIdIn(labelIds);
+        }
+    }
+
+    private List<StudyGroup> findByLabelIdsAndText(String text, List<Integer> labelIds) {
+        if (labelIds.size() == 1) {
+            return groupRepository.findByLabelIdAndText(labelIds.get(0), text);
+        } else {
+            return groupRepository.findByLabelIdInAndText(labelIds, text);
         }
     }
 }

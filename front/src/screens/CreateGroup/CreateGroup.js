@@ -9,6 +9,8 @@ import TextField from "@material-ui/core/TextField";
 import { AppContext } from "../../app-context";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import baseUrl from "../../baseUrl";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
 class CreateGroup extends Component {
   constructor(props) {
@@ -21,6 +23,10 @@ class CreateGroup extends Component {
       errorMsg: "",
     };
   }
+
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   render() {
 
@@ -87,7 +93,7 @@ class CreateGroup extends Component {
       }
     };
     return (
-      <HomeStructure history={this.props.history}>
+      <HomeStructure>
         <Box className="creategroup-form-box" boxShadow={2}>
           <Grid
             container
@@ -172,7 +178,7 @@ class CreateGroup extends Component {
                     {this.state.errorMsg}
                   </div>
                 </Box>
-              ) : null}
+              ) : <Box id={'creategroup-warning'} />}
             </Grid>
             <Grid item container direction="row" justifyContent="flex-end">
               <Grid item>
@@ -189,4 +195,4 @@ class CreateGroup extends Component {
 }
 CreateGroup.contextType = AppContext;
 
-export default CreateGroup;
+export default withRouter(CreateGroup);

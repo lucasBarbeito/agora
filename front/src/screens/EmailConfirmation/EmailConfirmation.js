@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { CircularProgress, Grid, Button } from "@material-ui/core";
 import baseUrl from "../../baseUrl";
 import "./EmailConfirmation.css";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
-export default class EmailConfirmation extends Component {
+ class EmailConfirmation extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,6 +13,10 @@ export default class EmailConfirmation extends Component {
       message: "",
     };
   }
+
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   makeRequest = async () => {
     try {
@@ -94,3 +100,4 @@ export default class EmailConfirmation extends Component {
     );
   }
 }
+export default withRouter(EmailConfirmation);

@@ -1,11 +1,14 @@
 import { Component } from "react";
 import { Box, MenuItem, MenuList } from "@material-ui/core";
 import "./HomeMenu.css";
+import { withRouter } from "react-router";
+import PropTypes from "prop-types";
 
 class HomeMenu extends Component {
-  constructor(props) {
-    super(props);
-  }
+
+  static propTypes = {
+    history: PropTypes.object.isRequired
+  };
 
   render() {
     const currentPath = this.props.history.location.pathname;
@@ -62,4 +65,4 @@ class HomeMenu extends Component {
   }
 }
 
-export default HomeMenu;
+export default withRouter(HomeMenu);
