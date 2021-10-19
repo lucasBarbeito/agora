@@ -47,6 +47,11 @@ public class StudyGroupControllerTest extends AbstractTest{
     private StudyGroupLabelRepository studyGroupLabelRepository;
 
     @Autowired
+    private NewPostNotificationRepository newPostNotificationRepository;
+    @Autowired
+    private NewMemberNotificationRepository newMemberNotificationRepository;
+
+    @Autowired
     private PostRepository postRepository;
 
     private Data data = new Data();
@@ -116,6 +121,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         }
 
         void rollback() {
+            newPostNotificationRepository.deleteAll();
+            newMemberNotificationRepository.deleteAll();
             postRepository.deleteAll();
             studyGroupLabelRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
