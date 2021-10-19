@@ -1182,7 +1182,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser(username = "tolkien@gmail.com")
     public void getUserGroupsShouldReturnUserGroups() throws Exception {
-        String uri = "/studyGroup/me";
+        String uri = "/studyGroup/me/?page=0";
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -1190,13 +1190,13 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(200, statusCode);
 
         String status = mvcResult.getResponse().getContentAsString();
-        List<StudyGroupDTO> groupsDTOs = super.mapFromJson(status, new TypeReference<List<StudyGroupDTO>>(){});
+        List<StudyGroupDTO> groupsDTOs = pageToList(status);
 
         assertEquals(groupsDTOs.get(0).getName(), data.group1.getName());
     }
 
     @Test
-    @WithMockUser(username = "carlos@mail.com")
+    @WithMockUser("carlos@mail.com")
     public void getUserWithNoGroupsShouldReturnEmptyList() throws Exception {
         String uri = "/studyGroup/me";
 
@@ -1206,7 +1206,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(200, statusCode);
 
         String status = mvcResult.getResponse().getContentAsString();
-        List<StudyGroupDTO> groupsDTOs = super.mapFromJson(status, new TypeReference<List<StudyGroupDTO>>(){});
+        List<StudyGroupDTO> groupsDTOs = pageToList(status);
 
         assertEquals(groupsDTOs.size(), 0);
     }
@@ -1416,30 +1416,28 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdReturnsReturnsAmountExpected() throws Exception {
-        String uri = "/studyGroup";
+        String uri = "/studyGroup/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", Integer.toString(data.label2.getId()))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         assertEquals(2,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdHasExpectedValues() throws Exception {
-        String uri = "/studyGroup";
+        String uri = "/studyGroup/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", data.label2.getId() + "," + data.label3.getId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group3.getName());
         expectedStudyGroupsNames.add(data.group2.getName());
@@ -1465,7 +1463,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdAndTextReturnsReturnsAmountExpected() throws Exception {
-        String uri = "/studyGroup";
+        String uri = "/studyGroup/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", ".")
@@ -1473,15 +1471,14 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         assertEquals(2,allStudyGroups.size());
     }
 
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdAndTextHasExpectedValues() throws Exception {
-        String uri = "/studyGroup";
+        String uri = "/studyGroup/?pge=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", ".")
@@ -1489,8 +1486,7 @@ public class StudyGroupControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
-        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
-        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<StudyGroupDTO> allStudyGroups = pageToList(status);
         List<String> expectedStudyGroupsNames = new ArrayList<>();
         expectedStudyGroupsNames.add(data.group3.getName());
         expectedStudyGroupsNames.add(data.group2.getName());

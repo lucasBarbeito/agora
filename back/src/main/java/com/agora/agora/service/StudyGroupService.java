@@ -255,7 +255,7 @@ public class StudyGroupService {
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
-        Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate"));
+        Pageable request = PageRequest.of(page,12);
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();

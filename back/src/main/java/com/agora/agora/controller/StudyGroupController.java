@@ -55,7 +55,8 @@ public class StudyGroupController {
                                 new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
         ).collect(Collectors.toList());
          */
-        return groupService.findCurrentUserGroups(page.orElse(0));
+        int pageNumber = page.orElse(0);
+        return groupService.findCurrentUserGroups(pageNumber);
     }
 
     @GetMapping(value = "/{id}")
