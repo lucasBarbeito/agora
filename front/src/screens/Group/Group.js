@@ -532,21 +532,6 @@ class Group extends Component {
                                   groupId={this.props.match.params.id}
                                   token={this.context.token}
                   />
-                  {/*
-                  visible={this.state.editGroupFormVisible}
-                            groupId={this.props.match.params.id}
-                            token={this.context.token}
-                            onClose={() => this.handleEditGroupClick()}
-                            initialGroupName={this.state.groupName}
-                            initialDescription={this.state.description}
-                            tags={this.context.labels}
-                            groupLabel={this.state.labels.map(
-                              (index) => index.name
-                            )}
-                            onChange={(newGroupName, newDescription) =>
-                              this.handleOnChange(newGroupName, newDescription)
-                            }
-                  */}
                   <SimpleSnackbar
                     open={this.state.openInvitationLinkSnack}
                     handleClose={() =>
