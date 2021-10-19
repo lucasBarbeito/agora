@@ -8,15 +8,13 @@ import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
-import com.agora.agora.repository.PostRepository;
-import com.agora.agora.repository.StudyGroupRepository;
-import com.agora.agora.repository.StudyGroupUsersRepository;
-import com.agora.agora.repository.UserRepository;
 import com.agora.agora.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.*;
-import org.springframework.http.HttpHeaders;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -99,28 +97,22 @@ public class StudyGroupService {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             Page<StudyGroup> studyGroups;
+            Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate"));
             if (text.isPresent() && labelIds.isPresent() && labelIds.get().size() > 0) {
-                studyGroups = groupRepository.findStudyGroupByNameOrDescription(text.get(),PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
+                studyGroups = findByLabelIdsAndText(text.get(), labelIds.get(), request);
+            } else if(labelIds.isPresent() && labelIds.get().size() > 0){
+                studyGroups = findByLabelIds(labelIds.get(), request);
             }else {
-                studyGroups = groupRepository.findAll(PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate")));
+                if (text.isPresent()) {
+                    studyGroups = groupRepository.findStudyGroupByNameOrDescription(text.get(), request);
+                } else {
+                    studyGroups = groupRepository.findAll(request);
+                }
             }
             return studyGroups.map((studyGroup -> convertToDto(studyGroup, user)));
         } else{
             throw new NoSuchElementException("User does not exist.");
         }
-
-        /*
-        if (text.isPresent() && labelIds.isPresent() && labelIds.get().size() > 0) {
-                studyGroups = findByLabelIdsAndText(text.get(), labelIds.get());
-            } else if (labelIds.isPresent() && labelIds.get().size() > 0){
-                studyGroups = findByLabelIds(labelIds.get());
-            }else
-                if (text.isPresent()) {
-                studyGroups = studyGroupUsersRepository.findByNameOrDescription(text.get());
-            }else {
-                studyGroups = groupRepository.findAll();
-            }
-         */
     }
 
     private StudyGroupDTO convertToDto(final StudyGroup studyGroup, User user){
@@ -259,19 +251,17 @@ public class StudyGroupService {
 
     }
 
-    public List<StudyGroup> findCurrentUserGroups(){
+    public Page<StudyGroupDTO> findCurrentUserGroups(int page){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
+        Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.DESC,"creationDate"));
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
-            List<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId());
-            List<StudyGroup> myGroups = new ArrayList<>();
-            for (StudyGroupUser userGroup : userGroups) {
-                myGroups.add(userGroup.getStudyGroup());
-            }
-            return myGroups;
+            Page<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+            Page<StudyGroup> studyGroups = userGroups.map(StudyGroupUser::getStudyGroup);
+            return studyGroups.map(studyGroup -> convertToDto(studyGroup, currentUser));
         }
         else{
             throw new NoSuchElementException("User does not exist.");
@@ -383,19 +373,19 @@ public class StudyGroupService {
         }
     }
 
-    private List<StudyGroup> findByLabelIds(List<Integer> labelIds) {
+    private Page<StudyGroup> findByLabelIds(List<Integer> labelIds, Pageable pageable) {
         if (labelIds.size() == 1) {
-            return groupRepository.findByLabelId(labelIds.get(0));
+            return groupRepository.findByLabelId(labelIds.get(0), pageable);
         } else {
-            return groupRepository.findByLabelIdIn(labelIds);
+            return groupRepository.findByLabelIdIn(labelIds, pageable);
         }
     }
 
-    private List<StudyGroup> findByLabelIdsAndText(String text, List<Integer> labelIds) {
+    private Page<StudyGroup> findByLabelIdsAndText(String text, List<Integer> labelIds, Pageable pageable) {
         if (labelIds.size() == 1) {
-            return groupRepository.findByLabelIdAndText(labelIds.get(0), text);
+            return groupRepository.findByLabelIdAndText(labelIds.get(0), text, pageable);
         } else {
-            return groupRepository.findByLabelIdInAndText(labelIds, text);
+            return groupRepository.findByLabelIdInAndText(labelIds, text, pageable);
         }
     }
 }

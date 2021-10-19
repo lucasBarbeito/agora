@@ -14,10 +14,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface StudyGroupUsersRepository extends CrudRepository<StudyGroupUser, Integer> {
+public interface StudyGroupUsersRepository extends PagingAndSortingRepository<StudyGroupUser, Integer> {
     List<StudyGroupUser> findStudyGroupUserByStudyGroupId(int studyGroupId);
     Optional<StudyGroupUser> findStudyGroupUserByStudyGroupIdAndAndUserId(int studyGroupId, int userId);
-    List<StudyGroupUser> findStudyGroupUserByUserId(int userId);
+    Page<StudyGroupUser> findStudyGroupUserByUserId(int userId, Pageable pageable);
 
     void deleteAllByStudyGroupId(int studyGroupId);
 }
