@@ -1,5 +1,5 @@
 import { Component } from "react";
-import {Box, Grid, IconButton, TextField } from "@material-ui/core";
+import { Box, Grid, IconButton, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
 import "./GroupsPage.css";
@@ -7,7 +7,7 @@ import GroupCard from "../../common/GroupCard/GroupCard";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from "@material-ui/lab/Pagination";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 
@@ -25,7 +25,7 @@ class GroupsPage extends Component {
   }
 
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
   };
 
   getGroups = async () => {
@@ -85,15 +85,38 @@ class GroupsPage extends Component {
   async searchGroups() {
     const esc = encodeURIComponent;
     try {
-      const response = await fetch(
-        `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`,
-        {
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${this.context.token}`,
+      let response;
+      if (this.state.tags.length === 0) {
+        response = await fetch(
+          `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`,
+          {
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: `Bearer ${this.context.token}`,
+            },
           },
-        }
-      );
+        );
+      } else if (this.state.groupName === "") {
+        response = await fetch(
+          `${baseUrl}/studyGroup?label=${this.state.tags.map(item => item.id)}`,
+          {
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: `Bearer ${this.context.token}`,
+            },
+          },
+        );
+      } else {
+        response = await fetch(
+          `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}&label=${this.state.tags.map(item => item.id)}`,
+          {
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: `Bearer ${this.context.token}`,
+            },
+          },
+        );
+      }
       this.setState({
         studyGroups: await response.json(),
       });
@@ -106,11 +129,11 @@ class GroupsPage extends Component {
     this.props.history.push(`/group/${id}`);
   }
 
-  handleChange = (_,page) =>{
+  handleChange = (_, page) => {
     this.setState({
-      currentPage: page
-    })
-  }
+      currentPage: page,
+    });
+  };
 
   render() {
     const indexOfLastPost = this.state.currentPage * this.state.postPerPage;
@@ -139,7 +162,7 @@ class GroupsPage extends Component {
                   options={this.context.labels.map(index => index.name)}
                   filterSelectedOptions
                   onChange={(event, newValue) => {
-                    this.setState({ tags: this.context.labels.filter(item => newValue.includes(item.name))});
+                    this.setState({ tags: this.context.labels.filter(item => newValue.includes(item.name)) });
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -152,7 +175,9 @@ class GroupsPage extends Component {
               </div>
               <IconButton
                 id="search-button"
-                onClick={() => this.searchGroups()}
+                onClick={() => {
+                  this.searchGroups();
+                }}
               >
                 <SearchIcon />
               </IconButton>
@@ -183,7 +208,9 @@ class GroupsPage extends Component {
           ))}
         </Grid>
         <Box display="flex" height={80} alignItems="center" justifyContent="center">
-           <Pagination id="group-page-pagination" count={Math.ceil((this.state.studyGroups.length)/this.state.postPerPage)} variant='outlined' onChange={this.handleChange} />
+          <Pagination id="group-page-pagination"
+                      count={Math.ceil((this.state.studyGroups.length) / this.state.postPerPage)} variant="outlined"
+                      onChange={this.handleChange} />
         </Box>
       </HomeStructure>
     );
