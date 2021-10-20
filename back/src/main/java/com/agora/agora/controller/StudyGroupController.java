@@ -42,15 +42,12 @@ public class StudyGroupController {
 
     @GetMapping(value = "/me")
     public List<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text){
-        System.out.println("Before Get");
         final List<StudyGroup> groups = groupService.findCurrentUserGroups(text);
-        System.out.println("Before List");
         List<StudyGroupDTO> groupDTOs = groups.stream().map(group ->
                 new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(),
                         group.getLabels().stream().map(label ->
                                 new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
         ).collect(Collectors.toList());
-        System.out.println("After List");
         return groupDTOs;
     }
 
