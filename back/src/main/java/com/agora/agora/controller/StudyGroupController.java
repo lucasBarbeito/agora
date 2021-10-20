@@ -41,11 +41,21 @@ public class StudyGroupController {
     }
 
     @GetMapping
+    public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label) {
+        return getAllStudyGroups(text,Optional.of(0),label).getContent();
+    }
+
+    @GetMapping(value = "/paged")
     public Page<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page, @RequestParam Optional<List<Integer>> label) {
         return groupService.findStudyGroups(text, page.orElse(0), label);
     }
 
     @GetMapping(value = "/me")
+    public List<StudyGroupDTO> getCurrentUserGroups(){
+        return getCurrentUserGroups(Optional.of(0)).getContent();
+    }
+
+    @GetMapping(value = "/me/paged")
     public Page<StudyGroupDTO> getCurrentUserGroups(@ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page){
         /*
         final Page<StudyGroup> groups = groupService.findCurrentUserGroups(page.orElse(0));

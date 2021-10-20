@@ -315,7 +315,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findAllStudyGroupsReturnsReturnsAmountExpected() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", "")
@@ -330,7 +330,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findAllStudyGroupsHasExpectedValues() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", "")
@@ -352,7 +352,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findAllStudyGroupsReturnsCurrentUserIsMember() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", "")
@@ -504,7 +504,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByExistingNameShouldReturnValues() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", "Dune")
@@ -519,7 +519,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByExistingDescriptionShouldReturnValues() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", ".")
@@ -534,7 +534,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByNonExistingDescriptionShouldReturnNothing() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", "No hay un grupo con esto")
@@ -549,7 +549,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByDescriptionHasExpectedValues() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", ".")
@@ -569,7 +569,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByNameHasExpectedValue() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", "Dune")
@@ -588,7 +588,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void findStudyGroupByPartialNameHasExpectedValue() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", "Du")
@@ -1182,7 +1182,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser(username = "tolkien@gmail.com")
     public void getUserGroupsShouldReturnUserGroups() throws Exception {
-        String uri = "/studyGroup/me/?page=0";
+        String uri = "/studyGroup/me/paged/?page=0";
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -1198,7 +1198,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("carlos@mail.com")
     public void getUserWithNoGroupsShouldReturnEmptyList() throws Exception {
-        String uri = "/studyGroup/me";
+        String uri = "/studyGroup/me/paged";
 
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -1386,7 +1386,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void whenGettingAllGroupsShouldReturnSorted() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -1416,7 +1416,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdReturnsReturnsAmountExpected() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", Integer.toString(data.label2.getId()))
@@ -1430,7 +1430,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdHasExpectedValues() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("label", data.label2.getId() + "," + data.label3.getId())
@@ -1463,7 +1463,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdAndTextReturnsReturnsAmountExpected() throws Exception {
-        String uri = "/studyGroup/?page=0";
+        String uri = "/studyGroup/paged/?page=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", ".")
@@ -1478,7 +1478,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getStudyGroupsByLabelIdAndTextHasExpectedValues() throws Exception {
-        String uri = "/studyGroup/?pge=0";
+        String uri = "/studyGroup/paged/?pge=0";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .param("text", ".")
