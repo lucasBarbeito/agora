@@ -1,12 +1,14 @@
 package com.agora.agora.model;
 
 import com.agora.agora.model.type.LinkType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "labels")
-public class ContactLink {
+public class ContactLink implements Identifiable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,6 +29,11 @@ public class ContactLink {
     public ContactLink() {
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
+
     public LinkType getLinkType() {
         return linkType;
     }
@@ -42,4 +49,5 @@ public class ContactLink {
     public void setLink(String link) {
         this.link = link;
     }
+
 }
