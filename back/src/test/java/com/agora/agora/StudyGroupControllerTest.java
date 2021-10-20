@@ -119,8 +119,8 @@ public class StudyGroupControllerTest extends AbstractTest{
             postRepository.deleteAll();
             studyGroupLabelRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
-            labelRepository.deleteAll();
             groupRepository.deleteAll();
+            labelRepository.deleteAll();
             userRepository.deleteAll();
         }
     }
