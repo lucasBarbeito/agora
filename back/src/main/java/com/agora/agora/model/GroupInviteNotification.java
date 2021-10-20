@@ -14,8 +14,8 @@ public class GroupInviteNotification extends Notification{
     public GroupInviteNotification() {
     }
 
-    public GroupInviteNotification(int id, User user, boolean isRead, LocalDate creationDate, StudyGroup group) {
-        super(id, user, isRead, creationDate);
+    public GroupInviteNotification(User user, boolean isRead, LocalDate creationDate, StudyGroup group) {
+        super(user, isRead, creationDate);
         this.group = group;
     }
 }
