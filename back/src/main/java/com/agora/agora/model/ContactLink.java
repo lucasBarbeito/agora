@@ -2,10 +2,21 @@ package com.agora.agora.model;
 
 import com.agora.agora.model.type.LinkType;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "labels")
 public class ContactLink {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
+    private int id;
+
+    @Column
     private LinkType linkType;
 
+    @Column
     private String link;
 
     public ContactLink(LinkType linkType, String link) {
