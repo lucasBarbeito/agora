@@ -242,6 +242,7 @@ public class UserControllerTest extends AbstractTest{
         assertEquals(userDTO.getEmail(), data.user1.getEmail());
         assertEquals(userDTO.getName(), data.user1.getName());
         assertEquals(userDTO.getSurname(), data.user1.getSurname());
+        assertEquals(userDTO.getUserGroups().get(0).getId(), data.group1.getId());
     }
 
     @Test
@@ -274,6 +275,7 @@ public class UserControllerTest extends AbstractTest{
         assertEquals(userDTO.getEmail(), data.user1.getEmail());
         assertEquals(userDTO.getName(), data.user1.getName());
         assertEquals(userDTO.getSurname(), data.user1.getSurname());
+        assertEquals(userDTO.getUserGroups().get(0).getId(), data.group1.getId());
     }
 
     @Test
@@ -305,6 +307,7 @@ public class UserControllerTest extends AbstractTest{
         String status = mvcResult.getResponse().getContentAsString();
         FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
         assertEquals(4,fullUserDTO.length);
+        assertEquals(fullUserDTO[0].getUserGroups().get(0).getId(), data.group1.getId());
     }
 
     @Test
