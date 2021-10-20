@@ -259,13 +259,12 @@ public class StudyGroupService {
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
-            Page<StudyGroupUser> userGroups;
+            Page<StudyGroup> studyGroups;
             if (text.isPresent()) {
-                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
+                studyGroups = groupRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
             } else {
-                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+                studyGroups = groupRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
             }
-            Page<StudyGroup> studyGroups = userGroups.map(StudyGroupUser::getStudyGroup);
             return studyGroups.map(studyGroup -> convertToDto(studyGroup, currentUser));
         }
         else{
