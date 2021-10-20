@@ -3,6 +3,7 @@ package com.agora.agora;
 import com.agora.agora.model.dto.LabelDTO;
 import com.agora.agora.model.dto.LabelIdDTO;
 import com.agora.agora.model.form.LabelForm;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.service.*;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,13 +29,15 @@ public class StartUpDatabase {
     private final UserService userService;
     private final StudyGroupService studyGroupService;
     private final LabelRepository labelRepository;
+    private final PostRepository postRepository;
 
     @Autowired
 
-    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository) {
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
         this.labelRepository = labelRepository;
+        this.postRepository = postRepository;
     }
 
     private void addManyToGroup(int groupId, List<Integer> userId){
@@ -148,7 +152,6 @@ public class StartUpDatabase {
                 List<LabelIdDTO> design = new ArrayList<>();
                 design.add(new LabelIdDTO(label6.getId()));
 
-
                 //Study Groups
                 StudyGroupForm group1 = new StudyGroupForm("Teologia", "Estudios de Dios",userId4,LocalDate.of(2020, 10, 25), philosophy);
                 StudyGroupForm group2 = new StudyGroupForm("Platon", "Estudios de Platon", userId5, LocalDate.of(2020, 10, 25), philosophy);
@@ -216,6 +219,186 @@ public class StartUpDatabase {
                 addManyToGroup(groupId19, Arrays.asList(userId3, userId8, userId9));
                 addManyToGroup(groupId20, Arrays.asList(userId3, userId9, userId10));
                 addManyToGroup(groupId21, Arrays.asList(userId3, userId10, userId11));
+
+                User u1 = userService.findById(userId1).get();
+                User u2 = userService.findById(userId2).get();
+                User u3 = userService.findById(userId3).get();
+                User u4 = userService.findById(userId4).get();
+                User u5 = userService.findById(userId5).get();
+                User u6 = userService.findById(userId6).get();
+                User u7 = userService.findById(userId7).get();
+                User u8 = userService.findById(userId8).get();
+                User u9 = userService.findById(userId9).get();
+                User u10 = userService.findById(userId10).get();
+                User u11 = userService.findById(userId11).get();
+                User u12 = userService.findById(userId12).get();
+
+                StudyGroup sg1 = studyGroupService.findStudyGroupById(groupId1).get();
+                StudyGroup sg2 = studyGroupService.findStudyGroupById(groupId2).get();
+                StudyGroup sg3 = studyGroupService.findStudyGroupById(groupId3).get();
+                StudyGroup sg4 = studyGroupService.findStudyGroupById(groupId4).get();
+                StudyGroup sg5 = studyGroupService.findStudyGroupById(groupId5).get();
+                StudyGroup sg6 = studyGroupService.findStudyGroupById(groupId6).get();
+                StudyGroup sg7 = studyGroupService.findStudyGroupById(groupId7).get();
+                StudyGroup sg8 = studyGroupService.findStudyGroupById(groupId8).get();
+                StudyGroup sg9 = studyGroupService.findStudyGroupById(groupId9).get();
+                StudyGroup sg10 = studyGroupService.findStudyGroupById(groupId10).get();
+                StudyGroup sg11 = studyGroupService.findStudyGroupById(groupId11).get();
+                StudyGroup sg12 = studyGroupService.findStudyGroupById(groupId12).get();
+                StudyGroup sg13 = studyGroupService.findStudyGroupById(groupId13).get();
+                StudyGroup sg14 = studyGroupService.findStudyGroupById(groupId14).get();
+                StudyGroup sg15 = studyGroupService.findStudyGroupById(groupId15).get();
+                StudyGroup sg16 = studyGroupService.findStudyGroupById(groupId16).get();
+                StudyGroup sg17 = studyGroupService.findStudyGroupById(groupId17).get();
+                StudyGroup sg18 = studyGroupService.findStudyGroupById(groupId18).get();
+                StudyGroup sg19 = studyGroupService.findStudyGroupById(groupId19).get();
+                StudyGroup sg20 = studyGroupService.findStudyGroupById(groupId20).get();
+                StudyGroup sg21 = studyGroupService.findStudyGroupById(groupId21).get();
+
+                //Posts
+                Post post1 = new Post("Dios es el creador", sg1, u1, LocalDateTime.of(2019, 2,18, 0, 0));
+                Post post2 = new Post("Creo todo lo que vemos", sg1, u2, LocalDateTime.of(2021, 2,18, 0, 0));
+                Post post3 = new Post("Y ademas es el salvador.", sg1, u2, LocalDateTime.of(2021, 2,19, 0, 0));
+                Post post4 = new Post("Platon era Crack", sg2, u2, LocalDateTime.of(2021, 5,18, 0, 0));
+                Post post5 = new Post("Era un seguidor de Socrates", sg2, u3, LocalDateTime.of(2021, 5,18, 0, 0));
+                Post post6 = new Post("Vivio entre 427 y 347 AC", sg2, u3, LocalDateTime.of(2021, 5,18, 0, 0));
+                Post post7 = new Post("Platón desarrolló sus doctrinas filosóficas mediante mitos y alegorías", sg2, u4, LocalDateTime.of(2021, 5,18, 0, 0));
+                Post post8 = new Post("Aristoteles vivo entre 384 y 322 AC", sg3, u3, LocalDateTime.of(2020, 1,2, 0, 0));
+                Post post9 = new Post("Desarrolló una filosofía empírica en donde la experiencia es la fuente del conocimiento", sg3, u3, LocalDateTime.of(2020, 1,2, 0, 0));
+                Post post10 = new Post("Formuló la teoría de la generación espontánea, el principio de no contradicción y las nociones de categoría, sustancia, acto y potencia", sg3, u4, LocalDateTime.of(2020, 1,2, 0, 0));
+                Post post11 = new Post("Algunas de sus ideas, que fueron novedosas para la filosofía de su tiempo, hoy forman parte del sentido común de muchas personas", sg3, u5, LocalDateTime.of(2020, 1,2, 0, 0));
+                Post post12 = new Post("Ahora vamos a arrancar a ver integrales", sg4, u4, LocalDateTime.of(2017, 4,9, 0, 0));
+                Post post13 = new Post("la integral es igual al área de la región del plano xy limitada entre la gráfica de f, el eje x, y las líneas verticales y x=b", sg4, u4, LocalDateTime.of(2017, 4,9, 0, 0));
+                Post post14 = new Post("Los principios de la integración fueron formulados por Newton y Leibniz a finales del siglo xvii", sg4, u5, LocalDateTime.of(2017, 4,9, 0, 0));
+                Post post15 = new Post("Argentina queda en America", sg6, u6, LocalDateTime.of(2021, 4,23, 0, 0));
+                Post post16 = new Post("Su capital es CABA", sg6, u7, LocalDateTime.of(2021, 4,23, 0, 0));
+                Post post17 = new Post("Es uno de los paises mas al sur del mundo", sg6, u8, LocalDateTime.of(2021, 4,23, 0, 0));
+                Post post18 = new Post("La cordillera de los Andes lo separa de Chile", sg6, u6, LocalDateTime.of(2021, 4,23, 0, 0));
+                Post post19 = new Post("Limita con Chile, Paraguay, Bolivia, Uruguay y Brasil", sg6, u7, LocalDateTime.of(2021, 4,23, 0, 0));
+                Post post20 = new Post("La ley 27546 claramente dice que esta mal", sg8, u8, LocalDateTime.of(2019, 4,15, 0, 0));
+                Post post21 = new Post("Pero el inciso 4 dice otra cosa", sg8, u9, LocalDateTime.of(2019, 4,15, 0, 0));
+                Post post22 = new Post("Asi es, parecec que e contradice...", sg8, u10, LocalDateTime.of(2019, 4,15, 0, 0));
+                Post post23 = new Post("Entonces hay que buscar otra forma para resolver el caso de estudio", sg8, u8, LocalDateTime.of(2019, 4,15, 0, 0));
+                Post post24 = new Post("No creo que haya otra cosa", sg8, u9, LocalDateTime.of(2019, 4,15, 0, 0));
+                Post post25 = new Post("Cuando ocurre la Fotosintesis?", sg11, u11, LocalDateTime.of(2021, 7,2, 0, 0));
+                Post post26 = new Post("Es la conversión de materia inorgánica a materia orgánica gracias a la energía que aporta la luz del Sol", sg11, u12, LocalDateTime.of(2021, 7,2, 0, 0));
+                Post post27 = new Post("Gracias por la respuesta!", sg11, u11, LocalDateTime.of(2021, 7,2, 0, 0));
+                Post post28 = new Post("Para mañana aprendase la letra de Persiana Americana de Soda Stereo", sg9, u9, LocalDateTime.of(2021, 3,18, 0, 0));
+                Post post29 = new Post("No creo que lleguemos", sg9, u10, LocalDateTime.of(2021, 3,18, 0, 0));
+                Post post30 = new Post("Deberian poder, es facil y corta", sg9, u9, LocalDateTime.of(2021, 3,18, 0, 0));
+                Post post31 = new Post("Dale, perfecto!", sg9, u11, LocalDateTime.of(2021, 3,18, 0, 0));
+                Post post32 = new Post("Cual era la diferencia entre lenguaje Funcional y OO?", sg13, u1,  LocalDateTime.of(2021, 6,20, 0, 0));
+                Post post33 = new Post("Elixir es funcional y Java OO, saca conclusiones...", sg13, u3, LocalDateTime.of(2021, 6,21, 0, 0));
+                Post post34 = new Post("Por algo pregunto imbecil!", sg13, u1, LocalDateTime.of(2021, 6,22, 0, 0));
+                Post post35 = new Post("Ser o no ser, esa es la cuestion.", sg18, u7, LocalDateTime.of(2020, 11,6, 0, 0));
+                Post post36 = new Post("De que obra es esa frase?", sg18, u3, LocalDateTime.of(2020, 11,6, 0, 0));
+                Post post37 = new Post("Hamlet, de Shakespere", sg18, u8, LocalDateTime.of(2020, 11,6, 0, 0));
+                Post post38 = new Post("Gracias!", sg18, u3, LocalDateTime.of(2020, 11,6, 0, 0));
+                Post post39 = new Post("Acuerdense de la tarea d Photoshop", sg16, u4, LocalDateTime.of(2019, 7,28, 0, 0));
+                Post post40 = new Post("Que habia que hacer?", sg16, u5, LocalDateTime.of(2019, 7,28, 0, 0));
+                Post post41 = new Post("Buscar una foto u usar el Stamp Tool para editar.", sg16, u6, LocalDateTime.of(2019, 7,28, 0, 0));
+                Post post42 = new Post("Solo eso? Facil", sg16, u5, LocalDateTime.of(2019, 7,28, 0, 0));
+                Post post43 = new Post("Sisi, solo eso.", sg16, u4, LocalDateTime.of(2019, 7,28, 0, 0));
+                Post post44 = new Post("Ok", sg16, u6, LocalDateTime.of(2019, 7,28, 0, 0));
+                Post post45 = new Post("La matriz por su identidad es igual a la matriz.", sg19, u8, LocalDateTime.of(2021, 12,18, 0, 0));
+                Post post46 = new Post("Solo aplica en matrices cuadradas eso", sg19, u3, LocalDateTime.of(2021, 12,18, 0, 0));
+                Post post47 = new Post("Acuerdense de descargar Ubuntu 20.04", sg20, u10, LocalDateTime.of(2021, 7,3, 0, 0));
+                Post post48 = new Post("Gracias por avisar!", sg20, u9, LocalDateTime.of(2021, 7,3, 0, 0));
+                Post post49 = new Post("Acuerdense de la tarea de Alicia", sg21, u3, LocalDateTime.of(2020, 5,19, 0, 0));
+                Post post50 = new Post("Que era?", sg21, u10, LocalDateTime.of(2020, 5,19, 0, 0));
+                Post post51 = new Post("Hacer un B-tree en java", sg21, u11, LocalDateTime.of(2020, 5,19, 0, 0));
+                Post post52 = new Post("Dale, gracias!", sg21, u10, LocalDateTime.of(2020, 5,19, 0, 0));
+                Post post53 = new Post("En que año se fundo Roma?", sg7, u7, LocalDateTime.of(2021, 1,24, 0, 0));
+                Post post54 = new Post("753 AC", sg7, u8, LocalDateTime.of(2021, 1,24, 0, 0));
+                Post post55 = new Post("Segun el mito de Romulo y Remo", sg7, u9, LocalDateTime.of(2021, 1,24, 0, 0));
+                Post post56 = new Post("Alguno tiene tela para el lunes?", sg17, u3, LocalDateTime.of(2020, 4,29, 0, 0));
+                Post post57 = new Post("Yo tengo, te llevo", sg17, u6, LocalDateTime.of(2020, 4,29, 0, 0));
+                Post post58 = new Post("Muchas gracias!", sg17, u3, LocalDateTime.of(2020, 4,29, 0, 0));
+                Post post59 = new Post("Las rosas tienen espinas, cuidado!", sg10, u10, LocalDateTime.of(2021, 5,30, 0, 0));
+                Post post60 = new Post("Como se hace para cortarlas?", sg10, u11, LocalDateTime.of(2021, 5,30, 0, 0));
+                Post post61 = new Post("Tenes que conseguir guantes gruesos.", sg12, u10, LocalDateTime.of(2021, 5,30, 0, 0));
+                Post post62 = new Post("El area de un circulo es pi*r^2", sg5, u5, LocalDateTime.of(2021, 2,2, 0, 0));
+                Post post63 = new Post("Su diametro = r x 2", sg5, u6, LocalDateTime.of(2021, 2,2, 0, 0));
+                Post post64 = new Post("Podemos ver que la corriente fluye hacia el norte", sg12, u12, LocalDateTime.of(2020, 6,12, 0, 0));
+                Post post65 = new Post("Pero esto solo ocurre en invierno", sg12, u1, LocalDateTime.of(2020, 6,12, 0, 0));
+                Post post66 = new Post("Claro, las demas estaciones fluye hacia el este", sg12, u2, LocalDateTime.of(2020, 6,12, 0, 0));
+                Post post67 = new Post("Pablito clavo un clavito. Cual es. Cual es el sujeto y el predicado?", sg14, u2, LocalDateTime.of(2020, 10,18, 0, 0));
+                Post post68 = new Post("Pablito es el sujeto", sg14, u3, LocalDateTime.of(2020, 10,18, 0, 0));
+                Post post69 = new Post("Un clavito es el predicado", sg14, u4, LocalDateTime.of(2020, 10,18, 0, 0));
+                Post post70 = new Post("El primer mundial de futbol fue en el año 1930", sg15, u5, LocalDateTime.of(2021, 7,7, 0, 0));
+                Post post71 = new Post("El primer mundial de rugby fue en el año 1987", sg15, u4, LocalDateTime.of(2021, 4,19, 0, 0));
+
+                postRepository.save(post1);
+                postRepository.save(post2);
+                postRepository.save(post3);
+                postRepository.save(post4);
+                postRepository.save(post5);
+                postRepository.save(post6);
+                postRepository.save(post7);
+                postRepository.save(post8);
+                postRepository.save(post9);
+                postRepository.save(post10);
+                postRepository.save(post11);
+                postRepository.save(post12);
+                postRepository.save(post13);
+                postRepository.save(post14);
+                postRepository.save(post15);
+                postRepository.save(post16);
+                postRepository.save(post17);
+                postRepository.save(post18);
+                postRepository.save(post19);
+                postRepository.save(post20);
+                postRepository.save(post21);
+                postRepository.save(post22);
+                postRepository.save(post23);
+                postRepository.save(post24);
+                postRepository.save(post25);
+                postRepository.save(post26);
+                postRepository.save(post27);
+                postRepository.save(post28);
+                postRepository.save(post29);
+                postRepository.save(post30);
+                postRepository.save(post31);
+                postRepository.save(post32);
+                postRepository.save(post33);
+                postRepository.save(post34);
+                postRepository.save(post35);
+                postRepository.save(post36);
+                postRepository.save(post37);
+                postRepository.save(post38);
+                postRepository.save(post39);
+                postRepository.save(post40);
+                postRepository.save(post41);
+                postRepository.save(post42);
+                postRepository.save(post43);
+                postRepository.save(post44);
+                postRepository.save(post45);
+                postRepository.save(post46);
+                postRepository.save(post47);
+                postRepository.save(post48);
+                postRepository.save(post49);
+                postRepository.save(post50);
+                postRepository.save(post51);
+                postRepository.save(post52);
+                postRepository.save(post53);
+                postRepository.save(post54);
+                postRepository.save(post55);
+                postRepository.save(post56);
+                postRepository.save(post57);
+                postRepository.save(post58);
+                postRepository.save(post59);
+                postRepository.save(post60);
+                postRepository.save(post61);
+                postRepository.save(post62);
+                postRepository.save(post63);
+                postRepository.save(post64);
+                postRepository.save(post65);
+                postRepository.save(post66);
+                postRepository.save(post67);
+                postRepository.save(post68);
+                postRepository.save(post69);
+                postRepository.save(post70);
+                postRepository.save(post71);
 
             } catch (Exception ignored){}
         }
