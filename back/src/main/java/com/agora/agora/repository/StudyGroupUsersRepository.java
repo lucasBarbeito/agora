@@ -28,6 +28,6 @@ public interface StudyGroupUsersRepository extends PagingAndSortingRepository<St
                 "where lower(sg.name) like lower(concat('%',concat(:text, '%')))" +
                     "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))" +
                 "and (creator.id = :id or sg_user.id = :id)")
-    List<StudyGroupUser> findStudyGroupUserByUserIdAndText(@Param("id")int id, @Param("text")String text);
+    Page<StudyGroupUser> findStudyGroupUserByUserIdAndText(@Param("id")int id, @Param("text")String text, Pageable pageable);
 
 }

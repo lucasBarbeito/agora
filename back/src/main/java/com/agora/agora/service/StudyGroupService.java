@@ -251,7 +251,7 @@ public class StudyGroupService {
 
     }
 
-    public Page<StudyGroupDTO> findCurrentUserGroups(int page){
+    public Page<StudyGroupDTO> findCurrentUserGroups(Optional<String> text, int page, Optional<List<Integer>> labelIds){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -259,33 +259,14 @@ public class StudyGroupService {
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
-            Page<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+            Page<StudyGroupUser> userGroups;
+            if (text.isPresent()) {
+                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
+            } else {
+                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+            }
             Page<StudyGroup> studyGroups = userGroups.map(StudyGroupUser::getStudyGroup);
             return studyGroups.map(studyGroup -> convertToDto(studyGroup, currentUser));
-        }
-        else{
-            throw new NoSuchElementException("User does not exist.");
-        }
-    }
-
-    public List<StudyGroup> findCurrentUserGroups(Optional<String> text){
-        String email = ((org.springframework.security.core.userdetails.User)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        Optional<User> optionalUser = userRepository.findUserByEmail(email);
-
-        if(optionalUser.isPresent()){
-            User currentUser = optionalUser.get();
-            List<StudyGroupUser> userGroups;
-            if (text.isPresent()) {
-                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get());
-            } else {
-                userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId());
-            }
-            List<StudyGroup> myGroups = new ArrayList<>();
-            for (StudyGroupUser userGroup : userGroups) {
-                myGroups.add(userGroup.getStudyGroup());
-            }
-            return myGroups;
         }
         else{
             throw new NoSuchElementException("User does not exist.");
