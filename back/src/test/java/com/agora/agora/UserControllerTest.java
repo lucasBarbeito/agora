@@ -120,6 +120,7 @@ public class UserControllerTest extends AbstractTest{
             postRepository.deleteAll();
             studyGroupLabelRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
+            labelRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
         }
