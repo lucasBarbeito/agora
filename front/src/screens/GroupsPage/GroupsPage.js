@@ -1,5 +1,11 @@
 import { Component } from "react";
-import {Box, Grid, IconButton, TextField } from "@material-ui/core";
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  IconButton,
+  TextField,
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
 import "./GroupsPage.css";
@@ -7,10 +13,10 @@ import GroupCard from "../../common/GroupCard/GroupCard";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from "@material-ui/lab/Pagination";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
-
+import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar";
 
 class GroupsPage extends Component {
   constructor(props) {
@@ -20,27 +26,43 @@ class GroupsPage extends Component {
       tags: [],
       studyGroups: [],
       currentPage: 1,
-      postPerPage: 12,
+      totalPages: 0,
+      loadingStudyGroups: true,
+      openGetGroupsErrorSnack: false,
     };
   }
 
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
   };
 
-  getGroups = async () => {
+  getGroups = async (page) => {
     const { token } = this.context;
+    this.setState({ loadingStudyGroups: true });
+
     try {
-      const response = await fetch(`${baseUrl}/studyGroup`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({
-        studyGroups: await response.json(),
-      });
+      const response = await fetch(
+        `${baseUrl}/studyGroup/paged?page=${page - 1}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        this.setState({ openGetGroupsErrorSnack: true });
+      } else {
+        const res = await response.json();
+        this.setState({
+          studyGroups: res.content,
+          totalPages: res.totalPages,
+        });
+      }
+
+      this.setState({ loadingStudyGroups: false });
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
@@ -68,7 +90,7 @@ class GroupsPage extends Component {
     if (this.props.onlyMyGroups) {
       this.getMyGroups();
     } else {
-      this.getGroups();
+      this.getGroups(this.state.currentPage);
     }
   }
 
@@ -106,17 +128,12 @@ class GroupsPage extends Component {
     this.props.history.push(`/group/${id}`);
   }
 
-  handleChange = (_,page) =>{
-    this.setState({
-      currentPage: page
-    })
-  }
+  handlePageChange = (_, page) => {
+    this.setState({ currentPage: page });
+    this.getGroups(page);
+  };
 
   render() {
-    const indexOfLastPost = this.state.currentPage * this.state.postPerPage;
-    const indexOfFirstPost = indexOfLastPost - this.state.postPerPage;
-    const currentPost = this.state.studyGroups.slice(indexOfFirstPost, indexOfLastPost);
-
     return (
       <HomeStructure>
         <Grid container spacing={3}>
@@ -136,10 +153,14 @@ class GroupsPage extends Component {
               <div id="group-label-field">
                 <Autocomplete
                   multiple
-                  options={this.context.labels.map(index => index.name)}
+                  options={this.context.labels.map((index) => index.name)}
                   filterSelectedOptions
                   onChange={(event, newValue) => {
-                    this.setState({ tags: this.context.labels.filter(item => newValue.includes(item.name))});
+                    this.setState({
+                      tags: this.context.labels.filter((item) =>
+                        newValue.includes(item.name)
+                      ),
+                    });
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -158,33 +179,57 @@ class GroupsPage extends Component {
               </IconButton>
             </div>
           </Grid>
-          {currentPost.map((group, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={4}
-              key={index}
-              container
-              direction="column"
-              alignItems="center"
-            >
-              <GroupCard
-                name={group.name}
-                labels={group.labels.map(index => index.name)}
-                description={group.description}
-                buttonAction={() => this.joinGroup(group.id)}
-                buttonLabel={
-                  group.currentUserIsMember ? "Ver grupo" : "Sumarme al grupo"
-                }
-              />
+          {this.state.loadingStudyGroups && (
+            <Grid item container direction="column" alignItems="center">
+              <CircularProgress />
             </Grid>
-          ))}
+          )}
+          {!this.state.loadingStudyGroups &&
+            this.state.studyGroups.map((group, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                lg={4}
+                key={index}
+                container
+                direction="column"
+                alignItems="center"
+              >
+                <GroupCard
+                  name={group.name}
+                  labels={group.labels.map((index) => index.name)}
+                  description={group.description}
+                  buttonAction={() => this.joinGroup(group.id)}
+                  buttonLabel={
+                    group.currentUserIsMember ? "Ver grupo" : "Sumarme al grupo"
+                  }
+                />
+              </Grid>
+            ))}
         </Grid>
-        <Box display="flex" height={80} alignItems="center" justifyContent="center">
-           <Pagination id="group-page-pagination" count={Math.ceil((this.state.studyGroups.length)/this.state.postPerPage)} variant='outlined' onChange={this.handleChange} />
+        <Box
+          display="flex"
+          height={80}
+          alignItems="center"
+          justifyContent="center"
+        >
+          {!this.state.loadingStudyGroups && (
+            <Pagination
+              id="group-page-pagination"
+              count={this.state.totalPages}
+              page={this.state.currentPage}
+              variant="outlined"
+              onChange={this.handlePageChange}
+            />
+          )}
         </Box>
+        <SimpleSnackbar
+          open={this.state.openGetGroupsErrorSnack}
+          handleClose={() => this.setState({ openGetGroupsErrorSnack: false })}
+          message="Hubo un error al pedir los grupos"
+        />
       </HomeStructure>
     );
   }
