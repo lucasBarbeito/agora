@@ -51,22 +51,13 @@ public class StudyGroupController {
     }
 
     @GetMapping(value = "/me")
-    public List<StudyGroupDTO> getCurrentUserGroups(){
-        return getCurrentUserGroups(Optional.of(0)).getContent();
+    public List<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label){
+        return getCurrentUserGroups(text,Optional.of(0),label).getContent();
     }
 
     @GetMapping(value = "/me/paged")
-    public Page<StudyGroupDTO> getCurrentUserGroups(@ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page){
-        /*
-        final Page<StudyGroup> groups = groupService.findCurrentUserGroups(page.orElse(0));
-        List<StudyGroupDTO> groupDTOs = groups.stream().map(group ->
-                new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(),
-                        group.getLabels().stream().map(label ->
-                                new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
-        ).collect(Collectors.toList());
-         */
-        int pageNumber = page.orElse(0);
-        return groupService.findCurrentUserGroups(pageNumber);
+    public Page<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page, @RequestParam Optional<List<Integer>> label){
+        return groupService.findCurrentUserGroups(text, page.orElse(0), label);
     }
 
     @GetMapping(value = "/{id}")

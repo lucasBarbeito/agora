@@ -1,6 +1,7 @@
 package com.agora.agora.repository;
 
 import com.agora.agora.model.StudyGroup;
+import com.agora.agora.model.StudyGroupUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +39,18 @@ public interface StudyGroupRepository extends PagingAndSortingRepository<StudyGr
             "(lower(sg.name) like lower(concat('%',concat(:text, '%')))) " +
             "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))")
     Page<StudyGroup> findByLabelIdInAndText(@Param("ids") List<Integer> labelIds, @Param("text") String text,Pageable pageable);
+
+    @Query(value = "select DISTINCT sg from StudyGroup sg " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+            "where lower(sg.name) like lower(concat('%',concat(:text, '%')))" +
+            "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))" +
+            "and sg_user.id = :id")
+    Page<StudyGroup> findStudyGroupUserByUserIdAndText(@Param("id")int id, @Param("text")String text, Pageable pageable);
+
+    @Query(value = "select DISTINCT sg from StudyGroup sg " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+            "where sg_user.id = :id")
+    Page<StudyGroup> findStudyGroupUserByUserId(@Param("id")int id, Pageable pageable);
 }

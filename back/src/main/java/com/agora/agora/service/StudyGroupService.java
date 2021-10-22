@@ -273,7 +273,7 @@ public class StudyGroupService {
 
     }
 
-    public Page<StudyGroupDTO> findCurrentUserGroups(int page){
+    public Page<StudyGroupDTO> findCurrentUserGroups(Optional<String> text, int page, Optional<List<Integer>> labelIds){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -281,8 +281,12 @@ public class StudyGroupService {
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
-            Page<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
-            Page<StudyGroup> studyGroups = userGroups.map(StudyGroupUser::getStudyGroup);
+            Page<StudyGroup> studyGroups;
+            if (text.isPresent()) {
+                studyGroups = groupRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
+            } else {
+                studyGroups = groupRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+            }
             return studyGroups.map(studyGroup -> convertToDto(studyGroup, currentUser));
         }
         else{
