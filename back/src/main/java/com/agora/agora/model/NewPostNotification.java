@@ -16,8 +16,8 @@ public class NewPostNotification extends Notification{
     public NewPostNotification() {
     }
 
-    public NewPostNotification(int id, User user, boolean isRead, LocalDate creationDate, Post newPost, StudyGroup group) {
-        super(id, user, isRead, creationDate);
+    public NewPostNotification(User user, boolean isRead, LocalDate creationDate, Post newPost, StudyGroup group) {
+        super(user, isRead, creationDate);
         this.newPost = newPost;
         this.group = group;
     }

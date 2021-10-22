@@ -2,6 +2,8 @@ package com.agora.agora.model.dto;
 
 import com.agora.agora.model.type.UserType;
 
+import java.util.List;
+
 public class FullUserDTO {
 
     //TODO: Agregar lista de grupos cuando se haga merge con master
@@ -14,13 +16,16 @@ public class FullUserDTO {
 
     private String email;
 
+    private List<StudyGroupDTO> userGroups;
+
     public FullUserDTO(){}
 
-    public FullUserDTO(int id, String name, String surname, String email) {
+    public FullUserDTO(int id, String name, String surname, String email, List<StudyGroupDTO> userGroups) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;
+        this.userGroups = userGroups;
     }
 
     public int getId() {
@@ -55,4 +60,11 @@ public class FullUserDTO {
         this.email = email;
     }
 
+    public List<StudyGroupDTO> getUserGroups() {
+        return userGroups;
+    }
+
+    public void setUserGroups(List<StudyGroupDTO> userGroups) {
+        this.userGroups = userGroups;
+    }
 }
