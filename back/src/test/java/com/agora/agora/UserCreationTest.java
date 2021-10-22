@@ -1,9 +1,7 @@
 package com.agora.agora;
 
 import com.agora.agora.model.User;
-import com.agora.agora.model.dto.FullStudyGroupDTO;
-import com.agora.agora.model.dto.UserContactDTO;
-import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.model.type.UserType;
@@ -19,6 +17,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.io.IOException;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -178,29 +179,42 @@ public class UserCreationTest{
 
     @Test
     public void testFullUserDTOSerialization() throws IOException {
-        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com");
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\"}";
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "label"));
+        List<StudyGroupDTO> groups = new ArrayList<>();
+        groups.add(new StudyGroupDTO(1, "grupo", "...", 1, LocalDate.of(2020, 2, 14), labels));
+        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com", groups);
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}]}";
 
         assertEquals(expectedJson,jsonFull.write(user).getJson());
     }
 
     @Test
     public void testFullUserDTOSetSerialization() throws IOException {
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "label"));
+        List<StudyGroupDTO> groups = new ArrayList<>();
+        groups.add(new StudyGroupDTO(1, "grupo", "...", 1, LocalDate.of(2020, 2, 14), labels));
         FullUserDTO user = new FullUserDTO();
         user.setName("Carlos");
         user.setSurname("Mendez");
         user.setEmail("Carlos@gmail.com");
         user.setId(0);
+        user.setUserGroups(groups);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}]}";
 
         assertEquals(expectedJson,jsonFull.write(user).getJson());
     }
 
     @Test
     public void FullUserDTODeserialization() throws IOException {
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\"}";
-        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com");
+        List<LabelDTO> labels = new ArrayList<>();
+        labels.add(new LabelDTO(12, "label"));
+        List<StudyGroupDTO> groups = new ArrayList<>();
+        groups.add(new StudyGroupDTO(1, "grupo", "...", 1, LocalDate.of(2020, 2, 14), labels));
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}]}";
+        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com", groups);
 
         FullUserDTO userObtained = jsonFull.parse(expectedJson).getObject();
 

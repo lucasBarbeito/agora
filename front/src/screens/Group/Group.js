@@ -44,8 +44,6 @@ class Group extends Component {
       requestLoading: false,
       openAbandonGroupSnack: false,
       openInvitationLinkSnack: false,
-      announcementsIdsBeingRemoved: [],
-      openAnnouncementDeletionErrorSnack: false,
       newAnnouncementContent: "",
       creatingAnnouncement: false,
       openAnnouncementCreationErrorSnack: false,
@@ -66,17 +64,9 @@ class Group extends Component {
     }));
   };
 
-  handleOnChange = (newGroupName, newDescription) => {
-    if (newGroupName) {
-      this.setState({
-        groupName: newGroupName,
-      });
-    }
-    if (newDescription) {
-      this.setState({
-        description: newDescription,
-      });
-    }
+  handleOnChange = () => {
+    this.setState({ isFetching: true });
+    this.fetchGroupInformation();
   };
 
   componentDidMount() {
@@ -107,12 +97,10 @@ class Group extends Component {
               "es-AR"
             ),
             content: item.content,
-            id: item.id,
-            creatorId: item.creatorId,
           };
         });
 
-        this.setState({ announcements: announcementFormat.reverse() });
+        this.setState({ announcements: announcementFormat });
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -260,7 +248,16 @@ class Group extends Component {
       if (!response.ok) {
         this.setState({ openAnnouncementCreationErrorSnack: true });
       } else {
-        await this.getAnnouncements(this.state.userContacts);
+        const newAnnouncements = this.state.announcements;
+        const newAnnouncement = {
+          name: `${this.context.userInfo.name} ${this.context.userInfo.surname}`,
+          date: `${date.getDate()}/${
+            date.getMonth() + 1
+          }/${date.getFullYear()}`,
+          content: this.state.newAnnouncementContent,
+        };
+        newAnnouncements.unshift(newAnnouncement);
+        this.setState({ announcements: newAnnouncements });
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -269,39 +266,10 @@ class Group extends Component {
     this.setState({ newAnnouncementContent: "" });
   }
 
-  async deleteAnnouncement(announcementId) {
-    const groupId = this.props.match.params.id;
-    let announcementsIdsBeingRemoved = this.state.announcementsIdsBeingRemoved;
-    announcementsIdsBeingRemoved.push(announcementId);
-    this.setState({ announcementsBeingRemoved: announcementsIdsBeingRemoved });
-
-    try {
-      const response = await fetch(
-        `${baseUrl}/studyGroup/${groupId}/forum/${announcementId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${this.context.token}`,
-          },
-        }
-      );
-
-      announcementsIdsBeingRemoved = announcementsIdsBeingRemoved.filter(
-        (id) => id === announcementId
-      );
-      this.setState({
-        announcementsBeingRemoved: announcementsIdsBeingRemoved,
-      });
-
-      if (!response.ok) {
-        this.setState({ openAnnouncementDeletionErrorSnack: true });
-      } else {
-        await this.getAnnouncements(this.state.userContacts);
-      }
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
+  deleteAnnouncement(id) {
+    const newAnnouncements = this.state.announcements;
+    newAnnouncements.splice(id, 1);
+    this.setState({ announcements: newAnnouncements });
   }
 
   render() {
@@ -344,9 +312,7 @@ class Group extends Component {
                             groupLabel={this.state.labels.map(
                               (index) => index.name
                             )}
-                            onChange={(newGroupName, newDescription) =>
-                              this.handleOnChange(newGroupName, newDescription)
-                            }
+                            onChange={() => this.handleOnChange()}
                           />
                         </Grid>
                       )}
@@ -494,19 +460,11 @@ class Group extends Component {
                         key={index}
                         canDelete={
                           this.state.isAdmin ||
-                          announcement.creatorId === this.context.userInfo.id
+                          announcement.name ===
+                            `${this.context.userInfo.name} ${this.context.userInfo.surname}`
                         }
-                        handleDelete={() =>
-                          this.deleteAnnouncement(announcement.id)
-                        }
-                        isBeingRemoved={this.state.announcementsIdsBeingRemoved.includes(
-                          announcement.id
-                        )}
-                        name={
-                          this.state.userContacts.find(
-                            (user) => user.id === announcement.creatorId
-                          ).name
-                        }
+                        handleDelete={() => this.deleteAnnouncement(index)}
+                        name={announcement.name}
                         date={announcement.date}
                         content={announcement.content}
                       />
@@ -566,13 +524,6 @@ class Group extends Component {
               this.setState({ openAnnouncementCreationErrorSnack: false })
             }
             message="Hubo un error al crear el anuncio"
-          />
-          <SimpleSnackbar
-            open={this.state.openAnnouncementDeletionErrorSnack}
-            handleClose={() =>
-              this.setState({ openAnnouncementDeletionErrorSnack: false })
-            }
-            message={`Hubo un error al eliminar el anuncio`}
           />
           <SimpleSnackbar
             open={this.state.getAnnouncementErrorSnack}
