@@ -24,6 +24,7 @@
 #selection-member-accordion {
     background-color: #c5b2a529;
     box-shadow: none;
+    overflow-x: hidden;
 }
 
 #accordion-detail.MuiAccordionDetails-root {

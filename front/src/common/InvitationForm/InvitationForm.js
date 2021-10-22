@@ -65,9 +65,12 @@ export default function InvitationForm(props) {
             },
           },
         );
+
         const res = await response.json();
-        setUsers(res);
-        if (res.length === 0) setSearchError(true);
+        const array = res.filter(item => !props.members.map(member => member.id).includes(item.id));
+
+        setUsers(array);
+        if (array.length === 0) setSearchError(true);
         else setSearchError(false);
 
       } else {

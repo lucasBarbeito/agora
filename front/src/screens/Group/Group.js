@@ -531,6 +531,7 @@ class Group extends Component {
                                   visible={this.state.invitationGroupFormVisible}
                                   groupId={this.props.match.params.id}
                                   token={this.context.token}
+                                  members={this.state.userContacts}
                   />
                   <SimpleSnackbar
                     open={this.state.openInvitationLinkSnack}
