@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "labels")
+@Table(name = "contact_link")
 public class ContactLink implements Identifiable{
 
     @Id
