@@ -28,102 +28,51 @@ class GroupsPage extends Component {
     history: PropTypes.object.isRequired,
   };
 
-  getGroups = async () => {
-    const { token } = this.context;
-    try {
-      const response = await fetch(`${baseUrl}/studyGroup`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({
-        studyGroups: await response.json(),
-      });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
-  };
-
-  getMyGroups = async () => {
-    const { token } = this.context;
-    try {
-      const response = await fetch(`${baseUrl}/studyGroup/me`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({
-        studyGroups: await response.json(),
-      });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
-  };
-
-  checkIfOnlyMyGroups() {
-    if (this.props.onlyMyGroups) {
-      this.getMyGroups();
-    } else {
-      this.getGroups();
-    }
-  }
-
   componentDidMount() {
-    this.checkIfOnlyMyGroups();
+    this.searchGroups(this.props.onlyMyGroups);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.onlyMyGroups !== prevProps.onlyMyGroups) {
-      this.checkIfOnlyMyGroups();
+      this.searchGroups(this.props.onlyMyGroups);
     }
   }
 
-  async searchGroups() {
+  async searchGroups(onlyMyGroups) {
     const esc = encodeURIComponent;
+    let text;
+    if (this.state.tags.length === 0) {
+      text = "?text=" + esc(this.state.groupName);
+    } else if (this.state.groupName === "") {
+      text = "?label=" + this.state.tags.map(item => item.id);
+    } else {
+      text = "?text=" + esc(this.state.groupName) + "&label=" + this.state.tags.map(item => item.id);
+    }
     try {
-      let response;
-      if (this.state.tags.length === 0) {
-        response = await fetch(
-          `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`,
-          {
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: `Bearer ${this.context.token}`,
-            },
-          },
-        );
-      } else if (this.state.groupName === "") {
-        response = await fetch(
-          `${baseUrl}/studyGroup?label=${this.state.tags.map(item => item.id)}`,
-          {
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: `Bearer ${this.context.token}`,
-            },
-          },
-        );
+      let input;
+      if (onlyMyGroups) {
+        input = baseUrl + "/studyGroup/me" + text;
       } else {
-        response = await fetch(
-          `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}&label=${this.state.tags.map(item => item.id)}`,
-          {
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: `Bearer ${this.context.token}`,
-            },
-          },
-        );
+        input = baseUrl + "/studyGroup" + text;
       }
+
+      const response = await fetch(input, {
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
+        },
+      );
+
       this.setState({
-        studyGroups: await response.json(),
+        studyGroups: await response.json()
       });
+
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
   }
+
 
   joinGroup(id) {
     this.props.history.push(`/group/${id}`);
@@ -176,7 +125,7 @@ class GroupsPage extends Component {
               <IconButton
                 id="search-button"
                 onClick={() => {
-                  this.searchGroups();
+                  this.searchGroups(this.props.onlyMyGroups);
                 }}
               >
                 <SearchIcon />
