@@ -516,6 +516,7 @@ class Group extends Component {
                       memberContacts={this.state.userContacts}
                       creatorId={this.state.creatorId}
                       isAdmin={this.state.isAdmin}
+                      history={this.props.history}
                     />
                   )}
                 </Grid>
