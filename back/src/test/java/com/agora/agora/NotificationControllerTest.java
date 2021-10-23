@@ -83,12 +83,12 @@ public class NotificationControllerTest extends AbstractTest{
         }
 
         void rollback() {
-            postRepository.deleteAll();
-            studyGroupRepository.deleteAll();
-            userRepository.deleteAll();
             newMemberNotificationRepository.deleteAll();
             newPostNotificationRepository.deleteAll();
             groupInviteNotificationRepository.deleteAll();
+            postRepository.deleteAll();
+            studyGroupRepository.deleteAll();
+            userRepository.deleteAll();
         }
     }
 
@@ -113,6 +113,38 @@ public class NotificationControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200,status);
+    }
 
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void whenAccessingNotificationThatIsNotYoursShouldReturnForbidden() throws Exception{
+        String uri = "/notification/" + data.newMemberNotification1.getId() + "/read";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(403,status);
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void whenAccessingNotExistingNotificationShouldFail() throws Exception{
+        String uri = "/notification/" + -1 + "/read";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404,status);
+    }
+
+    @Test
+    @WithMockUser("noExisting@mail.com")
+    public void whenAccessingWithNonExistingUserShouldFail() throws Exception{
+        String uri = "/notification/" + data.newMemberNotification1.getId() + "/read";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404,status);
     }
 }
