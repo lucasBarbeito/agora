@@ -4,6 +4,7 @@ import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.StudyGroupForm;
+import com.agora.agora.model.type.LinkType;
 import com.agora.agora.model.type.UserType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -123,14 +124,17 @@ public class StudyGroupCreationTest {
 
     @Test
     public void testFullStudyGroupDTOSerialization() throws IOException {
+
         Label label = new Label("SciFi");
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
         studyGroup.getLabels().add(new StudyGroupLabel(label, studyGroup));
         User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
         studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
-
-        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getSurname(), user2.getEmail());
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        user.setContactLinks(contactLinks);
+        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getSurname(), user2.getEmail(), contactLinks);
         List<UserContactDTO> users = new ArrayList<>();
         users.add(userDTO);
 
@@ -138,7 +142,7 @@ public class StudyGroupCreationTest {
         labels.add(new LabelDTO(12, "SciFi"));
         FullStudyGroupDTO dto = new FullStudyGroupDTO(studyGroup.getId(), studyGroup.getName(), studyGroup.getDescription(), studyGroup.getCreator().getId(), studyGroup.getCreationDate(), users, labels);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\",\"surname\":\"Tolkien\"}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\",\"surname\":\"Tolkien\",\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }
@@ -151,8 +155,8 @@ public class StudyGroupCreationTest {
         User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
         studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
         studyGroup.getLabels().add(new StudyGroupLabel(label, studyGroup));
-
-        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getSurname(), user2.getEmail());
+        List<ContactLink> contactLinks = new ArrayList<>();
+        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getSurname(), user2.getEmail(), contactLinks);
         List<UserContactDTO> users = new ArrayList<>();
         users.add(userDTO);
 
@@ -175,8 +179,10 @@ public class StudyGroupCreationTest {
         StudyGroup studyGroup = new StudyGroup("Lord of the rings", "...", user,LocalDate.of(2021, 8, 17));
         User user2 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
         studyGroup.getUsers().add(new StudyGroupUser(user2, studyGroup));
-
-        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getSurname(), user2.getEmail());
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        user.setContactLinks(contactLinks);
+        UserContactDTO userDTO = new UserContactDTO(user2.getId(), user2.getName(), user2.getSurname(), user2.getEmail(), contactLinks);
         List<UserContactDTO> users = new ArrayList<>();
         users.add(userDTO);
 
@@ -193,7 +199,7 @@ public class StudyGroupCreationTest {
         dto.setName(studyGroup.getName());
         dto.setLabels(labels);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\",\"surname\":\"Tolkien\"}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Lord of the rings\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"SciFi\"}],\"creatorId\":0,\"creationDate\":\"2021-08-17\",\"currentUserIsMember\":false,\"userContacts\":[{\"id\":0,\"name\":\"J. R. R.\",\"email\":\"tolkien@gmail.com\",\"surname\":\"Tolkien\",\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}]}";
 
         assertEquals(expectedJson,jsonFullDTO.write(dto).getJson());
     }

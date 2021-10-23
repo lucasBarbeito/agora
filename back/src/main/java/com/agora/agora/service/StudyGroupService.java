@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,16 +36,21 @@ public class StudyGroupService {
     private StudyGroupUsersRepository studyGroupUsersRepository;
     private StudyGroupLabelRepository studyGroupLabelRepository;
     private LabelRepository labelRepository;
+    private NewMemberNotificationRepository newMemberNotificationRepository;
+    private NewPostNotificationRepository newPostNotificationRepository;
+
     private UserService userService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService, NewMemberNotificationRepository newMemberNotificationRepository, NewPostNotificationRepository newPostNotificationRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
         this.studyGroupLabelRepository = studyGroupLabelRepository;
         this.labelRepository = labelRepository;
+        this.newMemberNotificationRepository = newMemberNotificationRepository;
+        this.newPostNotificationRepository = newPostNotificationRepository;
         this.userService = userService;
     }
 
@@ -143,9 +149,15 @@ public class StudyGroupService {
                 throw new DataIntegrityViolationException(String.format("User: %d is already in Study Group", userId));
             }
         }
+        //New Notification
+        for (StudyGroupUser groupUser : checker) {
+            NewMemberNotification notification = new NewMemberNotification(groupUser.getUser(), false, LocalDate.now(), user, studyGroup);
+            newMemberNotificationRepository.save(notification);
+        }
 
         StudyGroupUser studyGroupUser = new StudyGroupUser(user, studyGroup);
         studyGroupUsersRepository.save(studyGroupUser);
+
     }
 
     public List<StudyGroupUser> findUsersInStudyGroup(int studyGroupId){
@@ -241,6 +253,16 @@ public class StudyGroupService {
                 if (optionalStudyGroupUser.isPresent()) {
                     Post post = new Post(postForm.getContent(), studyGroup, user, postForm.getCreationDateAndTime());
                     postRepository.save(post);
+
+                    //New Notification
+                    List<StudyGroupUser> studyGroupUsers = studyGroupUsersRepository.findStudyGroupUserByStudyGroupId(studyGroupId);
+                    for (StudyGroupUser groupUser : studyGroupUsers) {
+                        if(groupUser.getUser().getId() != user.getId()) {
+                            NewPostNotification notification = new NewPostNotification(groupUser.getUser(), false, LocalDate.now(), post, studyGroup);
+                            newPostNotificationRepository.save(notification);
+                        }
+                    }
+
                     return post.getId();
                 }
                 throw new ForbiddenElementException("User does not belong to study group.");
@@ -251,7 +273,7 @@ public class StudyGroupService {
 
     }
 
-    public Page<StudyGroupDTO> findCurrentUserGroups(int page){
+    public Page<StudyGroupDTO> findCurrentUserGroups(Optional<String> text, int page, Optional<List<Integer>> labelIds){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -259,8 +281,12 @@ public class StudyGroupService {
 
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
-            Page<StudyGroupUser> userGroups = studyGroupUsersRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
-            Page<StudyGroup> studyGroups = userGroups.map(StudyGroupUser::getStudyGroup);
+            Page<StudyGroup> studyGroups;
+            if (text.isPresent()) {
+                studyGroups = groupRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
+            } else {
+                studyGroups = groupRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+            }
             return studyGroups.map(studyGroup -> convertToDto(studyGroup, currentUser));
         }
         else{

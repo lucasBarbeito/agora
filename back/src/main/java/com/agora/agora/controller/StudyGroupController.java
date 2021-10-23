@@ -1,6 +1,5 @@
 package com.agora.agora.controller;
 
-import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
@@ -10,7 +9,6 @@ import com.agora.agora.service.StudyGroupService;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,29 +48,20 @@ public class StudyGroupController {
     }
 
     @GetMapping(value = "/me")
-    public List<StudyGroupDTO> getCurrentUserGroups(){
-        return getCurrentUserGroups(Optional.of(0)).getContent();
+    public List<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label){
+        return getCurrentUserGroups(text,Optional.of(0),label).getContent();
     }
 
     @GetMapping(value = "/me/paged")
-    public Page<StudyGroupDTO> getCurrentUserGroups(@ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page){
-        /*
-        final Page<StudyGroup> groups = groupService.findCurrentUserGroups(page.orElse(0));
-        List<StudyGroupDTO> groupDTOs = groups.stream().map(group ->
-                new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(),
-                        group.getLabels().stream().map(label ->
-                                new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
-        ).collect(Collectors.toList());
-         */
-        int pageNumber = page.orElse(0);
-        return groupService.findCurrentUserGroups(pageNumber);
+    public Page<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page, @RequestParam Optional<List<Integer>> label){
+        return groupService.findCurrentUserGroups(text, page.orElse(0), label);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity getStudyGroupInfoById(@PathVariable("id") int id){
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
         final List<StudyGroupUser> studyGroupUsers = groupService.findUsersInStudyGroup(id);
-        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getSurname(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
+        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getSurname(), studyGroupUser.getUser().getEmail(), studyGroupUser.getUser().getContactLinks())).collect(Collectors.toList());
         final List<StudyGroupLabel> studyGroupLabels = groupService.findStudyGroupLabelsById(id);
         final List<LabelDTO> labelDTOs = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
         final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs, labelDTOs));

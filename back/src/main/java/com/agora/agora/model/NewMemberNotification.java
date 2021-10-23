@@ -14,8 +14,8 @@ public class NewMemberNotification extends Notification {
     public NewMemberNotification() {
     }
 
-    public NewMemberNotification(int id, User user, boolean isRead, LocalDate creationDate, User newMember, StudyGroup studyGroup) {
-        super(id, user, isRead, creationDate);
+    public NewMemberNotification(User user, boolean isRead, LocalDate creationDate, User newMember, StudyGroup studyGroup) {
+        super(user, isRead, creationDate);
         this.newMember = newMember;
         this.studyGroup = studyGroup;
     }

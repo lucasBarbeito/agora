@@ -48,6 +48,14 @@ class GroupMembersAccordion extends Component {
                       />
                     ))}
                 </MenuList>
+                <Button
+                  id="visit-member-profile-button"
+                  onClick={() => {
+                    this.props.history.push(`/user/${member.id}`);
+                  }}
+                >
+                  Ver perfil de usuario
+                </Button>
                 {this.props.isAdmin && !(this.props.creatorId == member.id) && (
                   <Box id="kick-member-button-container">
                     <Button
