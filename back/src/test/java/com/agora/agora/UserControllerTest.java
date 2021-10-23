@@ -6,8 +6,10 @@ import com.agora.agora.model.dto.FullUserDTO;
 import com.agora.agora.model.dto.NotificationDTO;
 import com.agora.agora.model.dto.PostDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
+import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
+import com.agora.agora.model.type.NotificationType;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.*;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,9 +18,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
 import javax.swing.*;
 import java.time.LocalDate;
@@ -55,6 +62,9 @@ public class UserControllerTest extends AbstractTest{
 
     @Autowired
     private NewPostNotificationRepository newPostNotificationRepository;
+
+    @Autowired
+    private NewMemberNotificationRepository newMemberNotificationRepository;
 
     private Data data = new Data();
 
@@ -100,8 +110,10 @@ public class UserControllerTest extends AbstractTest{
 
             StudyGroupUser group1User1 = new StudyGroupUser(user1, group1);
             StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
+            StudyGroupUser group1User4 = new StudyGroupUser(user4, group1);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
+            studyGroupUsersRepository.save(group1User4);
 
             post = new Post("...", group1, user2, LocalDateTime.now());
             postRepository.save(post);
@@ -117,6 +129,7 @@ public class UserControllerTest extends AbstractTest{
 
         void rollback() {
             newPostNotificationRepository.deleteAll();
+            newMemberNotificationRepository.deleteAll();
             postRepository.deleteAll();
             studyGroupLabelRepository.deleteAll();
             studyGroupUsersRepository.deleteAll();
@@ -242,6 +255,7 @@ public class UserControllerTest extends AbstractTest{
         assertEquals(userDTO.getEmail(), data.user1.getEmail());
         assertEquals(userDTO.getName(), data.user1.getName());
         assertEquals(userDTO.getSurname(), data.user1.getSurname());
+        assertEquals(userDTO.getUserGroups().get(0).getId(), data.group1.getId());
     }
 
     @Test
@@ -274,6 +288,7 @@ public class UserControllerTest extends AbstractTest{
         assertEquals(userDTO.getEmail(), data.user1.getEmail());
         assertEquals(userDTO.getName(), data.user1.getName());
         assertEquals(userDTO.getSurname(), data.user1.getSurname());
+        assertEquals(userDTO.getUserGroups().get(0).getId(), data.group1.getId());
     }
 
     @Test
@@ -305,6 +320,7 @@ public class UserControllerTest extends AbstractTest{
         String status = mvcResult.getResponse().getContentAsString();
         FullUserDTO[] fullUserDTO = super.mapFromJson(status, FullUserDTO[].class);
         assertEquals(4,fullUserDTO.length);
+        assertEquals(fullUserDTO[0].getUserGroups().get(0).getId(), data.group1.getId());
     }
 
     @Test
@@ -430,6 +446,100 @@ public class UserControllerTest extends AbstractTest{
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getUserNotificationWhenNewMemberIsAddedShouldReturnOkAndNotification() throws Exception {
+        String uri = "/studyGroup";
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + data.group2.getId() + "/" + data.user3.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int statusPostCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusPostCode);
+
+        String uri2 = "/user/notification/me";
+        MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri2)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcGETResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String status = mvcGETResult.getResponse().getContentAsString();
+        List<NotificationDTO> notificationDTO = super.mapFromJson(status, new TypeReference<List<NotificationDTO>>(){});
+
+        assertEquals(NotificationType.NEW_MEMBER_NOTIFICATION, notificationDTO.get(0).getNotificationType());
+        assertEquals(data.group2.getId(), notificationDTO.get(0).getStudyGroupId());
+    }
+
+    @Test
+    public void getUserNotificationWhenAnotherMemberAddsAPostShouldReturnOkAndNotification() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .with(user("carlos@mail.com"))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+
+        String uri2 = "/user/notification/me";
+        MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri2)
+                        .with(user("frankgimenez@gmail.com"))
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcGETResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+
+        String getStatus = mvcGETResult.getResponse().getContentAsString();
+        List<NotificationDTO> notificationDTO = super.mapFromJson(getStatus, new TypeReference<List<NotificationDTO>>(){});
+
+        assertEquals(NotificationType.NEW_POST_NOTIFICATION, notificationDTO.get(0).getNotificationType());
+        assertEquals(data.group1.getId(), notificationDTO.get(0).getStudyGroupId());
+    }
+
+    @Test
+    public void getUserNotificationWhenTheSameUserAddsAPostShouldReturnNoNotification() throws Exception {
+        StudyGroup studyGroup = data.group1;
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .with(user("frankgimenez@gmail.com"))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(groupForm))
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(201, status);
+
+        String uri2 = "/user/notification/me";
+        MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri2)
+                .with(user("frankgimenez@gmail.com"))
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcGETResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void getUserNotificationWhenTheSameUserIsAddedToAGroupShouldReturnNoNotifications() throws Exception {
+        String uri = "/studyGroup";
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri + "/" + data.group2.getId() + "/" + data.user3.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int statusPostCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusPostCode);
+
+        String uri2 = "/user/notification/me";
+        MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri2)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int statusCode = mvcGETResult.getResponse().getStatus();
         assertEquals(404, statusCode);
     }
 }

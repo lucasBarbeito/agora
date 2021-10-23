@@ -3,6 +3,7 @@ package com.agora.agora.controller;
 import com.agora.agora.model.StudyGroup;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.FullUserDTO;
+import com.agora.agora.model.dto.LabelDTO;
 import com.agora.agora.model.dto.NotificationDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
 import com.agora.agora.model.form.UserForm;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -46,14 +48,16 @@ public class UserController {
     @GetMapping(value = "/me")
     public ResponseEntity getCurrentUser() {
         final Optional<User> optional = userService.findCurrentUser();
-        final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
+        final List<StudyGroupDTO> userGroups = optional.get().getStudyGroups().stream().map(groups -> new StudyGroupDTO(groups.getStudyGroup().getId(), groups.getStudyGroup().getName(), groups.getStudyGroup().getDescription(), groups.getStudyGroup().getCreator().getId(), groups.getStudyGroup().getCreationDate(), groups.getStudyGroup().getLabels().stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))).collect(Collectors.toList());
+        final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), userGroups));
         return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity getUserById(@PathVariable("id") int id) {
         final Optional<User> optional = userService.findById(id);
-        final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
+        final List<StudyGroupDTO> userGroups = optional.get().getStudyGroups().stream().map(groups -> new StudyGroupDTO(groups.getStudyGroup().getId(), groups.getStudyGroup().getName(), groups.getStudyGroup().getDescription(), groups.getStudyGroup().getCreator().getId(), groups.getStudyGroup().getCreationDate(), groups.getStudyGroup().getLabels().stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))).collect(Collectors.toList());
+        final Optional<FullUserDTO> userDTO = optional.map((user) -> new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), userGroups));
         return userDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
@@ -62,7 +66,8 @@ public class UserController {
         List<User> users = userService.findUsers(name);
         List<FullUserDTO> responseUsers = new ArrayList<>();
         for (User user : users) {
-            responseUsers.add(new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail()));
+            final List<StudyGroupDTO> userGroups = user.getStudyGroups().stream().map(groups -> new StudyGroupDTO(groups.getStudyGroup().getId(), groups.getStudyGroup().getName(), groups.getStudyGroup().getDescription(), groups.getStudyGroup().getCreator().getId(), groups.getStudyGroup().getCreationDate(), groups.getStudyGroup().getLabels().stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))).collect(Collectors.toList());
+            responseUsers.add(new FullUserDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), userGroups));
         }
         return responseUsers;
     }

@@ -7,7 +7,11 @@ import com.agora.agora.model.form.EditStudyGroupForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.service.StudyGroupService;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/studyGroup")
+@EnableSpringDataWebSupport
 public class StudyGroupController {
 
     private StudyGroupService groupService;
@@ -37,18 +42,22 @@ public class StudyGroupController {
 
     @GetMapping
     public List<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label) {
-        return groupService.findStudyGroups(text, label);
+        return getAllStudyGroups(text,Optional.of(0),label).getContent();
+    }
+
+    @GetMapping(value = "/paged")
+    public Page<StudyGroupDTO> getAllStudyGroups(@RequestParam Optional<String> text, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page, @RequestParam Optional<List<Integer>> label) {
+        return groupService.findStudyGroups(text, page.orElse(0), label);
     }
 
     @GetMapping(value = "/me")
-    public List<StudyGroupDTO> getCurrentUserGroups(){
-        final List<StudyGroup> groups = groupService.findCurrentUserGroups();
-        List<StudyGroupDTO> groupDTOs = groups.stream().map(group ->
-                new StudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(),
-                        group.getLabels().stream().map(label ->
-                                new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList()))
-        ).collect(Collectors.toList());
-        return groupDTOs;
+    public List<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text, @RequestParam Optional<List<Integer>> label){
+        return getCurrentUserGroups(text,Optional.of(0),label).getContent();
+    }
+
+    @GetMapping(value = "/me/paged")
+    public Page<StudyGroupDTO> getCurrentUserGroups(@RequestParam Optional<String> text, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page, @RequestParam Optional<List<Integer>> label){
+        return groupService.findCurrentUserGroups(text, page.orElse(0), label);
     }
 
     @GetMapping(value = "/{id}")
