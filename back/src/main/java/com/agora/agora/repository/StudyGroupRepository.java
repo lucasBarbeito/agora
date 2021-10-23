@@ -53,4 +53,44 @@ public interface StudyGroupRepository extends PagingAndSortingRepository<StudyGr
             "join users.user sg_user " +
             "where sg_user.id = :id")
     Page<StudyGroup> findStudyGroupUserByUserId(@Param("id")int id, Pageable pageable);
+
+    @Query(value = "select DISTINCT sg from StudyGroup sg " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+            "join sg.labels labels " +
+            "join labels.label lbl " +
+                "where lbl.id = :labelId " +
+                    "and (lower(sg.name) like lower(concat('%',concat(:text, '%'))) " +
+                        "or (lower(sg.description) like lower(concat('%',concat(:text, '%'))))) " +
+                    "and sg_user.id = :id")
+    Page<StudyGroup> findStudyGroupUserByUserIdAndTextAndLabel(@Param("id")int id, @Param("labelId") int labelId, @Param("text") String text, Pageable pageable);
+
+    @Query(value = "select DISTINCT sg from StudyGroup sg " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+            "join sg.labels labels " +
+            "join labels.label lbl " +
+                "where lbl.id in (:ids) " +
+                    "and (lower(sg.name) like lower(concat('%',concat(:text, '%')))" +
+                        "or (lower(sg.description) like lower(concat('%',concat(:text, '%')))))" +
+                    "and sg_user.id = :id")
+    Page<StudyGroup> findByUserLabelIdInAndText(@Param("id")int id, @Param("ids") List<Integer> labelIds, @Param("text") String text, Pageable pageable);
+
+    @Query(value = "select DISTINCT sg from StudyGroup sg " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+            "join sg.labels labels " +
+            "join labels.label lbl " +
+                "where lbl.id = :labelId " +
+                    "and sg_user.id = :id")
+    Page<StudyGroup> findByUserAndLabelId(@Param("id")int id, @Param("labelId") int labelId, Pageable pageable);
+
+    @Query(value = "select DISTINCT sg from StudyGroup sg " +
+            "join sg.users users " +
+            "join users.user sg_user " +
+            "join sg.labels labels " +
+            "join labels.label lbl " +
+                "where lbl.id in (:ids) " +
+                    "and sg_user.id = :id")
+    Page<StudyGroup> findByUserAndLabelIdIn(@Param("id")int id, @Param("ids") List<Integer> labelIds, Pageable pageable);
 }
