@@ -26,12 +26,14 @@ import { withRouter } from "react-router-dom";
 import baseUrl from "../../baseUrl";
 import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js";
+import InvitationForm from "../../common/InvitationForm/InvitationForm";
 
 class Group extends Component {
   constructor(props) {
     super(props);
     this.state = {
       editGroupFormVisible: false,
+      invitationGroupFormVisible: false,
       groupName: "",
       description: "",
       labels: [],
@@ -53,6 +55,12 @@ class Group extends Component {
   handleEditGroupClick = () => {
     this.setState((state) => ({
       editGroupFormVisible: !state.editGroupFormVisible,
+    }));
+  };
+
+  handleInvitationClick = () => {
+    this.setState((state) => ({
+      invitationGroupFormVisible: !state.invitationGroupFormVisible,
     }));
   };
 
@@ -146,31 +154,6 @@ class Group extends Component {
       alert("Error, no es posible conectarse al back-end");
     }
   };
-
-  async getInvitationLink() {
-    const groupId = this.props.match.params.id;
-    const response = await fetch(
-      `${baseUrl}/studyGroup/${groupId}/inviteLink`,
-      {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${this.context.token}`,
-        },
-      }
-    );
-    return await response.text();
-  }
-
-  async copyInvitationLinkToClipboard() {
-    try {
-      let res = await this.getInvitationLink();
-      navigator.clipboard.writeText(res);
-      this.setState({ openInvitationLinkSnack: true });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
-  }
 
   async fetchGroupInformation() {
     const groupId = this.props.match.params.id;
@@ -497,11 +480,17 @@ class Group extends Component {
                     id="invite-button"
                     variant="contained"
                     color="primary"
-                    onClick={() => this.copyInvitationLinkToClipboard()}
+                    onClick={() => this.handleInvitationClick()}
                   >
                     <LinkIcon id="invite-icon" />
                     INVITAR AL GRUPO
                   </Button>
+                  <InvitationForm onClose={() => this.handleInvitationClick()}
+                                  visible={this.state.invitationGroupFormVisible}
+                                  groupId={this.props.match.params.id}
+                                  token={this.context.token}
+                                  members={this.state.userContacts}
+                  />
                   <SimpleSnackbar
                     open={this.state.openInvitationLinkSnack}
                     handleClose={() =>
@@ -516,6 +505,7 @@ class Group extends Component {
                       memberContacts={this.state.userContacts}
                       creatorId={this.state.creatorId}
                       isAdmin={this.state.isAdmin}
+                      history={this.props.history}
                     />
                   )}
                 </Grid>

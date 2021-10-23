@@ -51,3 +51,11 @@
 #kick-member-button {
   color: #e8a5a5;
 }
+
+#visit-member-profile-button {
+  color: #c5b2a5;
+  margin-left: 70px;
+  font-family: "Roboto";
+  letter-spacing: 0.15ch;
+  font-weight: 500;
+}

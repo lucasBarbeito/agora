@@ -1,9 +1,8 @@
 package com.agora.agora.model.dto;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.agora.agora.model.ContactLink;
+
+import java.util.List;
 
 public class UserContactDTO {
 
@@ -15,11 +14,14 @@ public class UserContactDTO {
 
     private String surname;
 
-    public UserContactDTO(int id, String name, String surname, String email) {
+    private List<ContactLink> contactLinks;
+
+    public UserContactDTO(int id, String name, String surname, String email, List<ContactLink> contactLinks) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;
+        this.contactLinks = contactLinks;
     }
 
     public UserContactDTO() {
@@ -55,5 +57,13 @@ public class UserContactDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<ContactLink> getContactLinks() {
+        return contactLinks;
+    }
+
+    public void setContactLinks(List<ContactLink> contactLinks) {
+        this.contactLinks = contactLinks;
     }
 }

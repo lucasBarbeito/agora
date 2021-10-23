@@ -1,9 +1,11 @@
 package com.agora.agora;
 
+import com.agora.agora.model.ContactLink;
 import com.agora.agora.model.User;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
+import com.agora.agora.model.type.LinkType;
 import com.agora.agora.model.type.UserType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +18,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class UserCreationTest{
     @Test
     public void testUserSerialization() throws Exception {
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":true}";
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"password\":\"Agustin123\",\"userVerificationToken\":null,\"contactLinks\":[],\"type\":\"USER\",\"verified\":true}";
 
         assertEquals(expectedJson,jsonU.write(user).getJson());
     }
@@ -105,8 +106,11 @@ public class UserCreationTest{
         user.setSurname("Mendez");
         user.setEmail("Carlos@gmail.com");
         user.setVerified(false);
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        user.setContactLinks(contactLinks);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"password\":\"Carlos123\",\"userVerificationToken\":null,\"type\":\"USER\",\"verified\":false}";
+        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"password\":\"Carlos123\",\"userVerificationToken\":null,\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}],\"type\":\"USER\",\"verified\":false}";
 
         assertEquals(expectedJson,jsonU.write(user).getJson());
     }
@@ -143,8 +147,10 @@ public class UserCreationTest{
     @Test
     public void testUserContactDTOSerialization() throws IOException {
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
-        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail());
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\"}";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), contactLinks);
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\",\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}";
 
         assertEquals(expectedJson,jsonContact.write(userDTO).getJson());
     }
@@ -152,13 +158,17 @@ public class UserCreationTest{
     @Test
     public void testUserContactDTOSetSerialization() throws IOException {
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        user.setContactLinks(contactLinks);
         UserContactDTO userDTO = new UserContactDTO();
         userDTO.setId(user.getId());
         userDTO.setName(user.getName());
         userDTO.setEmail(user.getEmail());
         userDTO.setSurname(user.getSurname());
+        userDTO.setContactLinks(user.getContactLinks());
 
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\"}";
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\",\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}";
 
         assertEquals(expectedJson,jsonContact.write(userDTO).getJson());
     }
@@ -166,7 +176,8 @@ public class UserCreationTest{
     @Test
     public void testUserContactDTODeserialization() throws IOException {
         User user = new User("Agustin","Von","a@gmail.com","Agustin123",true, UserType.USER);
-        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail());
+        List<ContactLink> contactLinks = new ArrayList<>();
+        UserContactDTO userDTO = new UserContactDTO(user.getId(), user.getName(), user.getSurname(), user.getEmail(), contactLinks);
         String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"email\":\"a@gmail.com\",\"surname\":\"Von\"}";
 
         UserContactDTO obtained = jsonContact.parse(expectedJson).getObject();
@@ -183,8 +194,10 @@ public class UserCreationTest{
         labels.add(new LabelDTO(12, "label"));
         List<StudyGroupDTO> groups = new ArrayList<>();
         groups.add(new StudyGroupDTO(1, "grupo", "...", 1, LocalDate.of(2020, 2, 14), labels));
-        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com", groups);
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}]}";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com", groups, contactLinks);
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}],\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}";
 
         assertEquals(expectedJson,jsonFull.write(user).getJson());
     }
@@ -201,8 +214,11 @@ public class UserCreationTest{
         user.setEmail("Carlos@gmail.com");
         user.setId(0);
         user.setUserGroups(groups);
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink(LinkType.EMAIL, "link.com"));
+        user.setContactLinks(contactLinks);
 
-        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}]}";
+        String expectedJson = "{\"id\":0,\"name\":\"Carlos\",\"surname\":\"Mendez\",\"email\":\"Carlos@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}],\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}";
 
         assertEquals(expectedJson,jsonFull.write(user).getJson());
     }
@@ -212,9 +228,10 @@ public class UserCreationTest{
         List<LabelDTO> labels = new ArrayList<>();
         labels.add(new LabelDTO(12, "label"));
         List<StudyGroupDTO> groups = new ArrayList<>();
+        List<ContactLink> contactLinks = new ArrayList<>();
         groups.add(new StudyGroupDTO(1, "grupo", "...", 1, LocalDate.of(2020, 2, 14), labels));
-        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}]}";
-        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com", groups);
+        String expectedJson = "{\"id\":0,\"name\":\"Agustin\",\"surname\":\"Von\",\"email\":\"a@gmail.com\",\"userGroups\":[{\"id\":1,\"name\":\"grupo\",\"description\":\"...\",\"labels\":[{\"id\":12,\"name\":\"label\"}],\"creatorId\":1,\"creationDate\":\"2020-02-14\",\"currentUserIsMember\":false}],\"contactLinks\":[{\"id\":0,\"linkType\":\"EMAIL\",\"link\":\"link.com\"}]}";
+        FullUserDTO user = new FullUserDTO(0,"Agustin", "Von", "a@gmail.com", groups, contactLinks);
 
         FullUserDTO userObtained = jsonFull.parse(expectedJson).getObject();
 

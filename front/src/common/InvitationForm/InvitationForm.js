@@ -15,7 +15,7 @@ import baseUrl from "../../baseUrl";
 import CloseIcon from "@material-ui/icons/Close";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MemberContact from "../MemberContact/MemberContact";
-import './InvitationForm.css'
+import "./InvitationForm.css";
 
 export default function InvitationForm(props) {
 
@@ -50,59 +50,42 @@ export default function InvitationForm(props) {
     }
   }
 
-  //to test impl
-  const usersAux = [
-    {
-      name: "Nicolas",
-      lastname: "Werner ",
-      email: "nicowerner@gmail.com",
-    },
-    {
-      name: "Nicolas",
-      lastname: "Otamendi",
-      email: "nicolasotamendi@gmail.com",
-    },
-    {
-      name: "Nicolas",
-      lastname: "Perez",
-      email: "nicolasperez@gmail.com",
-    },
-    {
-      name: "Nicolas",
-      lastname: "Martinez",
-      email: "nicolasmartinez@gmail.com",
-    },
-    {
-      name: "Nicolas",
-      lastname: "Otero ",
-      email: "nicolasotero@gmail.com",
-    },
-  ];
-  const searchMembers = [];
+  const searchUser = async () => {
+    const esc = encodeURIComponent;
+    try {
+      if (searchMsg !== "") {
+        setSearch(false);
 
-  const searchUser = () => {
-    //need to change with the integration
-    usersAux.map(item => {
-      setUsers([]);
-      if (item.name === searchMsg || item.lastname === searchMsg) {
-        searchMembers.unshift(item);
+        const response = await fetch(
+          `${baseUrl}/user?name=${esc(searchMsg)}`,
+          {
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: `Bearer ${props.token}`,
+            },
+          },
+        );
+
+        const res = await response.json();
+        const array = res.filter(item => !props.members.map(member => member.id).includes(item.id));
+
+        setUsers(array);
+        if (array.length === 0) setSearchError(true);
+        else setSearchError(false);
+
+      } else {
+        setSearchError(true);
+        setSearch(false);
+        setUsers([]);
       }
-    });
-
-    if (searchMembers.length === 0) {
-      setSearchError(true);
-      setSearch(false);
-    } else {
-      setUsers(searchMembers);
-      setSearch(false);
-      setSearchError(false);
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
     }
   };
 
-
   return (
     <div>
-      <Dialog open={props.visible} onClose={props.onClose} fullWidth id='dialog'>
+      <Dialog open={props.visible} onClose={props.onClose} fullWidth id="dialog">
         <DialogTitle
           id="edit-group-customized-dialog-title"
           onClose={props.onClose}>
@@ -127,68 +110,69 @@ export default function InvitationForm(props) {
             <SearchIcon />
           </IconButton>
         </div>
-          {searchError ? <div id="invitation-no-result-message">
-            No hay resultados para su búsqueda. Si el usuario que está buscando no existe, pruebe compartiendo el link
-            de
-            invitación de grupo.
-          </div> : null}
+        {searchError ? <div id="invitation-no-result-message">
+          No hay resultados para su búsqueda. Si el usuario que está buscando no existe, pruebe compartiendo el link
+          de
+          invitación de grupo.
+        </div> : null}
 
-          {search ? <div id="invitation-no-result-message">
-            Ingrese el nombre de usuario que quiere agregar al grupo. Si no, pruebe compartiendo el link de invitación
-            de grupo.
-          </div> : null}
-          { users.length !== 0 ?
-            <div className='invitation-accordion'>
-              {" "}
-              {users.map((member, index) => (
-                <Accordion id="selection-member-accordion" key={index}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header">
-                    <FormControlLabel
-                      aria-label="Acknowledge"
-                      onClick={(event) => event.stopPropagation()}
-                      onFocus={(event) => event.stopPropagation()}
-                      control={<Checkbox color='default' onClick={() => setSelectedMember(member)}  />}
-                      label={<Typography id='user-name-typography'>{member.name} {member.lastname}</Typography>}
-                    />
-                  </AccordionSummary>
-                  <AccordionDetails id='accordion-detail'>
-                    <MenuList>
-                      {Object.keys(member)
-                        .slice(2)
-                        .map((contactType, index) => (
+        {search ? <div id="invitation-no-result-message">
+          Ingrese el nombre de usuario que quiere agregar al grupo. Si no, pruebe compartiendo el link de invitación
+          de grupo.
+        </div> : null}
+        {users.length !== 0 ?
+          <div className="invitation-accordion">
+            {" "}
+            {users.map((member, index) => (
+              <Accordion id="selection-member-accordion" key={index}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header">
+                  <FormControlLabel
+                    aria-label="Acknowledge"
+                    onClick={(event) => event.stopPropagation()}
+                    onFocus={(event) => event.stopPropagation()}
+                    control={<Checkbox color="default" onClick={() => setSelectedMember(member)} />}
+                    label={<Typography id="user-name-typography">{member.name} {member.surname}</Typography>}
+                  />
+                </AccordionSummary>
+                <AccordionDetails id="accordion-detail">
+                  <MenuList>
+                    {Object.keys(member)
+                      .slice(2, 4)
+                      .map((contactType, index) => (
                           <MemberContact
                             key={index}
                             type={contactType}
                             value={member[contactType]}
                           />
-                        ))}
-                    </MenuList>
-                  </AccordionDetails>
-                  <AccordionActions id='user-invitation-button'>
-                    <Button id='submit-invitation'>Ver perfil de usuario</Button>
-                  </AccordionActions>
-                </Accordion>
-              ))}{" "}
-            </div> : null
-          }
+                        ),
+                      )}
+                  </MenuList>
+                </AccordionDetails>
+                <AccordionActions id="user-invitation-button">
+                  <Button id="submit-invitation">Ver perfil de usuario</Button>
+                </AccordionActions>
+              </Accordion>
+            ))}{" "}
+          </div> : null
+        }
 
-          {searchError || search ?
-            <div className="invite-link-button">
-              <Button
-                fullWidth
-                id="copy-link-button"
-                variant="contained"
-                color="primary"
-                onClick={copyInvitationLinkToClipboard}
-              >
-                <LinkIcon id="invite-icon" />
-                Copiar link de invitacion
-              </Button>
-            </div> : null
-          }
+        {searchError || search ?
+          <div className="invite-link-button">
+            <Button
+              fullWidth
+              id="copy-link-button"
+              variant="contained"
+              color="primary"
+              onClick={copyInvitationLinkToClipboard}
+            >
+              <LinkIcon id="invite-icon" />
+              Copiar link de invitacion
+            </Button>
+          </div> : null
+        }
 
         <Snackbar open={openCopyLinkSnack}
                   autoHideDuration={5000}

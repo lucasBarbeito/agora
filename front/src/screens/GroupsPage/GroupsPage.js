@@ -1,5 +1,5 @@
 import { Component } from "react";
-import {Box, Grid, IconButton, TextField } from "@material-ui/core";
+import { Box, Grid, IconButton, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import SearchIcon from "@material-ui/icons/Search";
 import "./GroupsPage.css";
@@ -7,7 +7,7 @@ import GroupCard from "../../common/GroupCard/GroupCard";
 import HomeStructure from "../../common/HomeStructure/HomeStructure.js";
 import { AppContext } from "../../app-context";
 import baseUrl from "../../baseUrl";
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from "@material-ui/lab/Pagination";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 
@@ -25,92 +25,64 @@ class GroupsPage extends Component {
   }
 
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
   };
-
-  getGroups = async () => {
-    const { token } = this.context;
-    try {
-      const response = await fetch(`${baseUrl}/studyGroup`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({
-        studyGroups: await response.json(),
-      });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
-  };
-
-  getMyGroups = async () => {
-    const { token } = this.context;
-    try {
-      const response = await fetch(`${baseUrl}/studyGroup/me`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({
-        studyGroups: await response.json(),
-      });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
-  };
-
-  checkIfOnlyMyGroups() {
-    if (this.props.onlyMyGroups) {
-      this.getMyGroups();
-    } else {
-      this.getGroups();
-    }
-  }
 
   componentDidMount() {
-    this.checkIfOnlyMyGroups();
+    this.searchGroups(this.props.onlyMyGroups);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.onlyMyGroups !== prevProps.onlyMyGroups) {
-      this.checkIfOnlyMyGroups();
+      this.searchGroups(this.props.onlyMyGroups);
     }
   }
 
-  async searchGroups() {
+  async searchGroups(onlyMyGroups) {
     const esc = encodeURIComponent;
+    let text;
+    if (this.state.tags.length === 0) {
+      text = "?text=" + esc(this.state.groupName);
+    } else if (this.state.groupName === "") {
+      text = "?label=" + this.state.tags.map(item => item.id);
+    } else {
+      text = "?text=" + esc(this.state.groupName) + "&label=" + this.state.tags.map(item => item.id);
+    }
     try {
-      const response = await fetch(
-        `${baseUrl}/studyGroup?text=${esc(this.state.groupName)}`,
-        {
+      let input;
+      if (onlyMyGroups) {
+        input = baseUrl + "/studyGroup/me" + text;
+      } else {
+        input = baseUrl + "/studyGroup" + text;
+      }
+
+      const response = await fetch(input, {
           headers: {
             "Content-type": "application/json; charset=UTF-8",
             Authorization: `Bearer ${this.context.token}`,
           },
-        }
+        },
       );
+
       this.setState({
-        studyGroups: await response.json(),
+        studyGroups: await response.json()
       });
+
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
   }
+
 
   joinGroup(id) {
     this.props.history.push(`/group/${id}`);
   }
 
-  handleChange = (_,page) =>{
+  handleChange = (_, page) => {
     this.setState({
-      currentPage: page
-    })
-  }
+      currentPage: page,
+    });
+  };
 
   render() {
     const indexOfLastPost = this.state.currentPage * this.state.postPerPage;
@@ -139,7 +111,7 @@ class GroupsPage extends Component {
                   options={this.context.labels.map(index => index.name)}
                   filterSelectedOptions
                   onChange={(event, newValue) => {
-                    this.setState({ tags: this.context.labels.filter(item => newValue.includes(item.name))});
+                    this.setState({ tags: this.context.labels.filter(item => newValue.includes(item.name)) });
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -152,7 +124,9 @@ class GroupsPage extends Component {
               </div>
               <IconButton
                 id="search-button"
-                onClick={() => this.searchGroups()}
+                onClick={() => {
+                  this.searchGroups(this.props.onlyMyGroups);
+                }}
               >
                 <SearchIcon />
               </IconButton>
@@ -183,7 +157,9 @@ class GroupsPage extends Component {
           ))}
         </Grid>
         <Box display="flex" height={80} alignItems="center" justifyContent="center">
-           <Pagination id="group-page-pagination" count={Math.ceil((this.state.studyGroups.length)/this.state.postPerPage)} variant='outlined' onChange={this.handleChange} />
+          <Pagination id="group-page-pagination"
+                      count={Math.ceil((this.state.studyGroups.length) / this.state.postPerPage)} variant="outlined"
+                      onChange={this.handleChange} />
         </Box>
       </HomeStructure>
     );
