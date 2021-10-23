@@ -278,19 +278,41 @@ public class StudyGroupService {
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
         Pageable request = PageRequest.of(page,12);
-
+//
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
             Page<StudyGroup> studyGroups;
-            if (text.isPresent()) {
-                studyGroups = groupRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
-            } else {
-                studyGroups = groupRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+            if (text.isPresent() && labelIds.isPresent() && labelIds.get().size() > 0) {
+                studyGroups = findByLabelIdsAndTextAndUser(currentUser.getId(),text.get(), labelIds.get(), request);
+            } else if(labelIds.isPresent() && labelIds.get().size() > 0){
+                studyGroups = findByLabelIdsAndUser(currentUser.getId(),labelIds.get(), request);
+            }else {
+                if (text.isPresent()) {
+                    studyGroups = groupRepository.findStudyGroupUserByUserIdAndText(currentUser.getId(), text.get(), request);
+                } else {
+                    studyGroups = groupRepository.findStudyGroupUserByUserId(currentUser.getId(), request);
+                }
             }
             return studyGroups.map(studyGroup -> convertToDto(studyGroup, currentUser));
         }
         else{
             throw new NoSuchElementException("User does not exist.");
+        }
+    }
+
+    private Page<StudyGroup> findByLabelIdsAndUser(int id, List<Integer> labelIds, Pageable pageable) {
+        if (labelIds.size() == 1) {
+            return groupRepository.findByUserAndLabelId(id, labelIds.get(0), pageable);
+        } else {
+            return groupRepository.findByUserAndLabelIdIn(id,  labelIds, pageable);
+        }
+    }
+
+    private Page<StudyGroup> findByLabelIdsAndTextAndUser(int id, String text, List<Integer> labelIds, Pageable pageable) {
+        if (labelIds.size() == 1) {
+            return groupRepository.findStudyGroupUserByUserIdAndTextAndLabel(id, labelIds.get(0), text, pageable);
+        } else {
+            return groupRepository.findByUserLabelIdInAndText(id, labelIds, text, pageable);
         }
     }
 
