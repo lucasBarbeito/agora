@@ -485,11 +485,12 @@ class Group extends Component {
                     <LinkIcon id="invite-icon" />
                     INVITAR AL GRUPO
                   </Button>
-                  <InvitationForm onClose={() => this.handleInvitationClick()}
-                                  visible={this.state.invitationGroupFormVisible}
-                                  groupId={this.props.match.params.id}
-                                  token={this.context.token}
-                                  members={this.state.userContacts}
+                  <InvitationForm
+                    onClose={() => this.handleInvitationClick()}
+                    visible={this.state.invitationGroupFormVisible}
+                    groupId={this.props.match.params.id}
+                    token={this.context.token}
+                    members={this.state.userContacts}
                   />
                   <SimpleSnackbar
                     open={this.state.openInvitationLinkSnack}

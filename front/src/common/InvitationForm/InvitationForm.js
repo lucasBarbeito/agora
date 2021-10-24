@@ -1,12 +1,20 @@
 import {
-  Accordion, AccordionActions, AccordionDetails, AccordionSummary,
-  Button, Checkbox,
+  Accordion,
+  AccordionActions,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogContentText,
-  DialogTitle, FormControlLabel,
-  IconButton, MenuList, Snackbar,
-  TextField, Typography,
+  DialogTitle,
+  FormControlLabel,
+  IconButton,
+  MenuList,
+  Snackbar,
+  TextField,
+  Typography,
 } from "@material-ui/core";
 import React, { useState } from "react";
 import SearchIcon from "@material-ui/icons/Search";
@@ -18,7 +26,6 @@ import MemberContact from "../MemberContact/MemberContact";
 import "./InvitationForm.css";
 
 export default function InvitationForm(props) {
-
   const [searchMsg, setSearchMsg] = useState("");
   const [openCopyLinkSnack, setOpenCopyLinkSnack] = useState(false);
   const [searchError, setSearchError] = useState(false);
@@ -35,7 +42,7 @@ export default function InvitationForm(props) {
           "Content-type": "application/json; charset=UTF-8",
           Authorization: `Bearer ${props.token}`,
         },
-      },
+      }
     );
     return await response.text();
   }
@@ -56,23 +63,21 @@ export default function InvitationForm(props) {
       if (searchMsg !== "") {
         setSearch(false);
 
-        const response = await fetch(
-          `${baseUrl}/user?name=${esc(searchMsg)}`,
-          {
-            headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              Authorization: `Bearer ${props.token}`,
-            },
+        const response = await fetch(`${baseUrl}/user?name=${esc(searchMsg)}`, {
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${props.token}`,
           },
-        );
+        });
 
         const res = await response.json();
-        const array = res.filter(item => !props.members.map(member => member.id).includes(item.id));
+        const array = res.filter(
+          (item) => !props.members.map((member) => member.id).includes(item.id)
+        );
 
         setUsers(array);
         if (array.length === 0) setSearchError(true);
         else setSearchError(false);
-
       } else {
         setSearchError(true);
         setSearch(false);
@@ -85,15 +90,23 @@ export default function InvitationForm(props) {
 
   return (
     <div>
-      <Dialog open={props.visible} onClose={props.onClose} fullWidth id="dialog">
+      <Dialog
+        open={props.visible}
+        onClose={props.onClose}
+        fullWidth
+        id="dialog"
+      >
         <DialogTitle
           id="edit-group-customized-dialog-title"
-          onClose={props.onClose}>
-          <div id="edit-group-customized-dialog-title-paragraph">Invitar usuarios al grupo</div>
+          onClose={props.onClose}
+        >
+          <div id="edit-group-customized-dialog-title-paragraph">
+            Invitar usuarios al grupo
+          </div>
           <DialogContentText>
             <div id="invitation-description-message">
-              Busca a usuarios registrados en la plataforma para invitar al grupo para que puedan formar parte de la
-              discusión.
+              Busca a usuarios registrados en la plataforma para invitar al
+              grupo para que puedan formar parte de la discusión.
             </div>
           </DialogContentText>
         </DialogTitle>
@@ -104,23 +117,24 @@ export default function InvitationForm(props) {
             variant="outlined"
             onChange={(text) => setSearchMsg(text.target.value)}
           />
-          <IconButton
-            id="invitation-search-button"
-            onClick={searchUser}>
+          <IconButton id="invitation-search-button" onClick={searchUser}>
             <SearchIcon />
           </IconButton>
         </div>
-        {searchError ? <div id="invitation-no-result-message">
-          No hay resultados para su búsqueda. Si el usuario que está buscando no existe, pruebe compartiendo el link
-          de
-          invitación de grupo.
-        </div> : null}
+        {searchError ? (
+          <div id="invitation-no-result-message">
+            No hay resultados para su búsqueda. Si el usuario que está buscando
+            no existe, pruebe compartiendo el link de invitación de grupo.
+          </div>
+        ) : null}
 
-        {search ? <div id="invitation-no-result-message">
-          Ingrese el nombre de usuario que quiere agregar al grupo. Si no, pruebe compartiendo el link de invitación
-          de grupo.
-        </div> : null}
-        {users.length !== 0 ?
+        {search ? (
+          <div id="invitation-no-result-message">
+            Ingrese el nombre de usuario que quiere agregar al grupo. Si no,
+            pruebe compartiendo el link de invitación de grupo.
+          </div>
+        ) : null}
+        {users.length !== 0 ? (
           <div className="invitation-accordion">
             {" "}
             {users.map((member, index) => (
@@ -128,13 +142,23 @@ export default function InvitationForm(props) {
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="panel1a-content"
-                  id="panel1a-header">
+                  id="panel1a-header"
+                >
                   <FormControlLabel
                     aria-label="Acknowledge"
                     onClick={(event) => event.stopPropagation()}
                     onFocus={(event) => event.stopPropagation()}
-                    control={<Checkbox color="default" onClick={() => setSelectedMember(member)} />}
-                    label={<Typography id="user-name-typography">{member.name} {member.surname}</Typography>}
+                    control={
+                      <Checkbox
+                        color="default"
+                        onClick={() => setSelectedMember(member)}
+                      />
+                    }
+                    label={
+                      <Typography id="user-name-typography">
+                        {member.name} {member.surname}
+                      </Typography>
+                    }
                   />
                 </AccordionSummary>
                 <AccordionDetails id="accordion-detail">
@@ -142,13 +166,12 @@ export default function InvitationForm(props) {
                     {Object.keys(member)
                       .slice(2, 4)
                       .map((contactType, index) => (
-                          <MemberContact
-                            key={index}
-                            type={contactType}
-                            value={member[contactType]}
-                          />
-                        ),
-                      )}
+                        <MemberContact
+                          key={index}
+                          type={contactType}
+                          value={member[contactType]}
+                        />
+                      ))}
                   </MenuList>
                 </AccordionDetails>
                 <AccordionActions id="user-invitation-button">
@@ -156,10 +179,10 @@ export default function InvitationForm(props) {
                 </AccordionActions>
               </Accordion>
             ))}{" "}
-          </div> : null
-        }
+          </div>
+        ) : null}
 
-        {searchError || search ?
+        {searchError || search ? (
           <div className="invite-link-button">
             <Button
               fullWidth
@@ -171,29 +194,31 @@ export default function InvitationForm(props) {
               <LinkIcon id="invite-icon" />
               Copiar link de invitacion
             </Button>
-          </div> : null
-        }
+          </div>
+        ) : null}
 
-        <Snackbar open={openCopyLinkSnack}
-                  autoHideDuration={5000}
-                  onClose={() => setOpenCopyLinkSnack(false)}
-                  message={<Typography>Link copiado exitosamente!</Typography>}
-                  action={[
-                    <IconButton
-                      color="inherit"
-                      onClick={() => setOpenCopyLinkSnack(false)}>
-                      <CloseIcon />
-                    </IconButton>,
-                  ]}
+        <Snackbar
+          open={openCopyLinkSnack}
+          autoHideDuration={5000}
+          onClose={() => setOpenCopyLinkSnack(false)}
+          message={<Typography>Link copiado exitosamente!</Typography>}
+          action={[
+            <IconButton
+              color="inherit"
+              onClick={() => setOpenCopyLinkSnack(false)}
+            >
+              <CloseIcon />
+            </IconButton>,
+          ]}
         />
         <div className="dialog-submit-button">
-          <Button id="cancel-invitation" onClick={() => props.onClose()}>Cancelar</Button>
-          <Button id="submit-invitation"
-                  disabled={selectedMember.length === 0}>
+          <Button id="cancel-invitation" onClick={() => props.onClose()}>
+            Cancelar
+          </Button>
+          <Button id="submit-invitation" disabled={selectedMember.length === 0}>
             Enviar invitaciones
           </Button>
         </div>
-
       </Dialog>
     </div>
   );
