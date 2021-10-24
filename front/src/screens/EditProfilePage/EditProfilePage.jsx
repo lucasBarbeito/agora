@@ -32,8 +32,7 @@ function EditProfilePage(props) {
 
     const handleUncompleteFields = (e) => {
         if (
-          !name || !lastName || !email || !confirmedEmail || !password || !confirmedPassword
-        ) {
+          !name || !lastName || !email || !confirmedEmail ) {
             setShowErrorMsg(true);
             setErrorMsg("Todos los campos deben ser completados");
             return false
@@ -53,13 +52,14 @@ function EditProfilePage(props) {
             checkSamePassword()
           ){
               setShowErrorMsg(false)
+              alert("Se hicieron cambios")
               console.log(name,lastName,email,password)
           }
 
     }
     
     const checkSamePassword = (e) => {
-        if(password !== confirmedPassword || password === "" || confirmedPassword === ""){
+        if(password !== confirmedPassword){
             setShowErrorMsg(true);
             setErrorMsg("Las contraseñas no coinciden");
             return false
@@ -94,6 +94,7 @@ function EditProfilePage(props) {
     const validatePasswordFunction = (e) =>{
         const CapitalRegex = /[A-Z]/;
         const NumberRegex = /[0-9]/;
+        if(password.length === 0) return true
         if(password.length <= 8){
             setShowErrorMsg(true);
             setErrorMsg("La contraseña debe tener más de 8 caracteres")
