@@ -1,17 +1,17 @@
 package com.agora.agora.service;
 
 import com.agora.agora.exceptions.ForbiddenElementException;
-import com.agora.agora.model.GroupInviteNotification;
-import com.agora.agora.model.Notification;
-import com.agora.agora.model.User;
+import com.agora.agora.model.*;
 import com.agora.agora.repository.GroupInviteNotificationRepository;
 import com.agora.agora.repository.NewMemberNotificationRepository;
 import com.agora.agora.repository.NewPostNotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class NotificationService {
@@ -29,27 +29,35 @@ public class NotificationService {
         this.userService = userService;
     }
 
-    public boolean readNotification(int notificationId) {
-        if(newMemberNotificationRepository.findById(notificationId).isPresent()){
-            Notification notification = newMemberNotificationRepository.findById(notificationId).get();
-            return checkIfNotificationIsForCurrentUser(notification);
-        } else if(newPostNotificationRepository.findById(notificationId).isPresent()){
-            Notification notification = newPostNotificationRepository.findById(notificationId).get();
-            return checkIfNotificationIsForCurrentUser(notification);
-        } else if(groupInviteNotificationRepository.findById(notificationId).isPresent()){
-            Notification notification = groupInviteNotificationRepository.findById(notificationId).get();
-            return checkIfNotificationIsForCurrentUser(notification);
+    public void readNotification(int notificationId) {
+        Optional<NewMemberNotification> newMember = newMemberNotificationRepository.findById(notificationId);
+        Optional<NewPostNotification> newPost = newPostNotificationRepository.findById(notificationId);
+        Optional<GroupInviteNotification> groupInvite = groupInviteNotificationRepository.findById(notificationId);
+
+        if(newMember.isPresent()){
+            NewMemberNotification notification = newMember.get();
+            if(checkIfNotificationIsForCurrentUser(notification)){
+                notification.setRead(true);
+                newMemberNotificationRepository.save(notification);
+            } else throw new ForbiddenElementException("Notification is not for current user. Only the recipient user can mark notification as read");
+        } else if(newPost.isPresent()){
+            NewPostNotification notification = newPost.get();
+            if(checkIfNotificationIsForCurrentUser(notification)){
+                notification.setRead(true);
+                newPostNotificationRepository.save(notification);
+            } else throw new ForbiddenElementException("Notification is not for current user. Only the recipient user can mark notification as read");
+        } else if(groupInvite.isPresent()){
+            GroupInviteNotification notification = groupInvite.get();
+            if(checkIfNotificationIsForCurrentUser(notification)){
+                notification.setRead(true);
+                groupInviteNotificationRepository.save(notification);
+            } else throw new ForbiddenElementException("Notification is not for current user. Only the recipient user can mark notification as read");
         } else throw new NoSuchElementException();
     }
 
     private boolean checkIfNotificationIsForCurrentUser(Notification notification){
         User currentUser = userService.findCurrentUser().orElseThrow(()->
                 new NoSuchElementException("Current user credentials are wrong"));
-        if(notification.getUser().getId() == currentUser.getId()){
-            notification.setRead(true);
-            return true;
-        } else {
-            throw new ForbiddenElementException("Notification is not for current user. Only the recipient user can mark notification as read");
-        }
+        return notification.getUser().getId() == currentUser.getId();
     }
 }

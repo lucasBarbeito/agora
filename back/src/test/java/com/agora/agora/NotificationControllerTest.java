@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class NotificationControllerTest extends AbstractTest{
 
@@ -113,6 +113,8 @@ public class NotificationControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200,status);
+        boolean isRead = newMemberNotificationRepository.findById(data.newMemberNotification1.getId()).get().isRead();
+        assertTrue(isRead);
     }
 
     @Test
@@ -124,6 +126,8 @@ public class NotificationControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(403,status);
+        boolean isRead = newMemberNotificationRepository.findById(data.newMemberNotification1.getId()).get().isRead();
+        assertFalse(isRead);
     }
 
     @Test
@@ -146,5 +150,7 @@ public class NotificationControllerTest extends AbstractTest{
                         .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(404,status);
+        boolean isRead = newMemberNotificationRepository.findById(data.newMemberNotification1.getId()).get().isRead();
+        assertFalse(isRead);
     }
 }
