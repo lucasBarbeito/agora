@@ -17,32 +17,16 @@ function EditProfilePage(props) {
     const [password, setPassword] = useState("");
     const [confirmedPassword, setConfirmedPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
-    const [completeFields, setCompleteFields] = useState(null);
-    const [samePassword, setSamePassword] = useState(null);
-    const [sameEmail, setSameEmail] = useState(null);
-    const [validateName, setValidateName] = useState(null);
-    const [validateLastName, setValidateLastName] = useState(null);
-    const [validatePassword, setValidatePassword] = useState(null);
-    const [validateEmail, setValidateEmail] = useState(null);
     const [showErrorMsg, setShowErrorMsg] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     
-    useEffect(() => {
-        handleConfirmEditClick()
-    }, [completeFields,samePassword,sameEmail,validateName,validateLastName,validatePassword,validateEmail,showErrorMsg,showPassword])
+    
 
     const handleClickShowPassword = (e) => {
         setShowPassword(!showPassword);
     }
 
     const handleConfirmEditClick = (e) =>{
-        validatePasswordFunction()
-        checkSamePassword()
-        validateEmailFunction()
-        checkSameEmail()
-        validateLastNameFunction()
-        validateNameFunction()
-        handleUncompleteFields()
         stopError()
     }
 
@@ -50,23 +34,23 @@ function EditProfilePage(props) {
         if (
           !name || !lastName || !email || !confirmedEmail || !password || !confirmedPassword
         ) {
-            setCompleteFields(false);
             setShowErrorMsg(true);
             setErrorMsg("Todos los campos deben ser completados");
+            return false
         } else {
-            setCompleteFields(true)
+            return true
         }
       }
     
     const stopError = () =>{
         if (
-            validateEmail &&
-            validateLastName &&
-            validatePassword &&
-            validateName &&
-            samePassword &&
-            sameEmail &&
-            completeFields
+            handleUncompleteFields() &&
+            checkSameEmail() &&
+            validateEmailFunction() &&
+            validatePasswordFunction() &&
+            validateNameFunction() &&
+            validateLastNameFunction() &&
+            checkSamePassword()
           ){
               setShowErrorMsg(false)
               console.log(name,lastName,email,password)
@@ -76,31 +60,34 @@ function EditProfilePage(props) {
     
     const checkSamePassword = (e) => {
         if(password !== confirmedPassword || password === "" || confirmedPassword === ""){
-            setSamePassword(false);
-            setShowPassword(true);
+            setShowErrorMsg(true);
             setErrorMsg("Las contraseñas no coinciden");
+            return false
+
         }else{
-            setSamePassword(true)
+            return true
         }
     }
 
     const checkSameEmail = (e) =>{
         if(email !== confirmedEmail || email === "" || confirmedEmail === "" ){
-            setSameEmail(false)
             setShowErrorMsg(true)
             setErrorMsg("Los Correos Electrónicos no coinciden")
+            return false
+
         }else{
-            setSameEmail(true)
+            return true
         }
     }
 
     const validateEmailFunction = (e) => {
         if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-            setValidateEmail(false)
             setShowErrorMsg(true)
             setErrorMsg("El correo electrónico no es valido")
+            return false
+
         }else{
-            setValidateEmail(true)
+            return true
         }
     }
 
@@ -108,35 +95,39 @@ function EditProfilePage(props) {
         const CapitalRegex = /[A-Z]/;
         const NumberRegex = /[0-9]/;
         if(password.length <= 8){
-            setValidatePassword(false);
             setShowErrorMsg(true);
             setErrorMsg("La contraseña debe tener más de 8 caracteres")
+            return false
+
         }else if (!CapitalRegex.test(password) || !NumberRegex.test(password)){
-            setValidatePassword(false)
             setShowErrorMsg(true)
             setErrorMsg("La contraseña debe tener al menos una mayúscula y un número")
+            return false
+
         }else{
-            setValidatePassword(true)
+            return true
         }
     }
 
     const validateNameFunction = (e) => {
         if(/[0-9]/.test(name) || name === ""){
-            setValidateName(false)
             setShowErrorMsg(true)
             setErrorMsg(`El nombre no debe contener números`)
+            return false
+
         }else{
-            setValidateName(true)
+            return true
         }
     }
 
     const validateLastNameFunction = (e) => {
         if(/[0-9]/.test(lastName) || lastName === ""){
-            setValidateLastName(false)
             setShowErrorMsg(true)
             setErrorMsg(`El apellido no debe contener números`)
+             return false
+
         }else{
-            setValidateLastName(true)
+            return true
         }
     }
 
