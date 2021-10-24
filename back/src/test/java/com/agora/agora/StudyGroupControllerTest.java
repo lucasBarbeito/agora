@@ -1575,4 +1575,98 @@ public class StudyGroupControllerTest extends AbstractTest{
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
     }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getUserGroupsWithLabelShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("label", Integer.toString(data.label1.getId()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getUserGroupsWithLabelsShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("label", data.label1.getId() + "," + data.label3.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getUserGroupsWithLabelAndTextShouldReturnNothing() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "Description")
+                        .param("label", Integer.toString(data.label1.getId()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        assertTrue(allStudyGroups.isEmpty());
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getUserGroupsWithLabelAndTextShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", ".")
+                        .param("label", Integer.toString(data.label1.getId()))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void getUserGroupsWithLabelsAndTextShouldReturnUserGroups() throws Exception {
+        String uri = "/studyGroup/me";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", ".")
+                        .param("label", data.label1.getId() + "," + data.label3.getId())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        String status = mvcResult.getResponse().getContentAsString();
+        FullStudyGroupDTO[] gottenStudyGroups = super.mapFromJson(status, FullStudyGroupDTO[].class);
+        List<StudyGroupDTO> allStudyGroups = Arrays.stream(gottenStudyGroups).collect(Collectors.toList());
+        List<String> expectedStudyGroupsNames = new ArrayList<>();
+        expectedStudyGroupsNames.add(data.group1.getName());
+        for (StudyGroupDTO studyGroup : allStudyGroups) {
+            assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
+        }
+    }
 }

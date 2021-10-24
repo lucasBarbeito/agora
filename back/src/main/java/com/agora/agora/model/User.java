@@ -37,6 +37,9 @@ public class User implements Identifiable {
     @Column
     private String userVerificationToken;
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ContactLink> contactLinks;
+
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "user",
             targetEntity = StudyGroupUser.class)
@@ -54,6 +57,7 @@ public class User implements Identifiable {
         this.password = password;
         this.isVerified = isVerified;
         this.type=userType;
+        this.contactLinks = new ArrayList<>();
         this.studyGroups = new ArrayList<>();
     }
 
@@ -124,5 +128,14 @@ public class User implements Identifiable {
 
     public List<StudyGroupUser> getStudyGroups() {
         return studyGroups;
+    }
+
+
+    public List<ContactLink> getContactLinks() {
+        return contactLinks;
+    }
+
+    public void setContactLinks(List<ContactLink> contactLinks) {
+        this.contactLinks = contactLinks;
     }
 }

@@ -1,6 +1,5 @@
 package com.agora.agora.controller;
 
-import com.agora.agora.exceptions.ForbiddenElementException;
 import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
@@ -10,7 +9,6 @@ import com.agora.agora.service.StudyGroupService;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +61,7 @@ public class StudyGroupController {
     public ResponseEntity getStudyGroupInfoById(@PathVariable("id") int id){
         final Optional<StudyGroup> studyGroupOptional = groupService.findStudyGroupById(id);
         final List<StudyGroupUser> studyGroupUsers = groupService.findUsersInStudyGroup(id);
-        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getSurname(), studyGroupUser.getUser().getEmail())).collect(Collectors.toList());
+        final List<UserContactDTO> userContactDTOs = studyGroupUsers.stream().map((studyGroupUser) -> new UserContactDTO(studyGroupUser.getUser().getId(), studyGroupUser.getUser().getName(), studyGroupUser.getUser().getSurname(), studyGroupUser.getUser().getEmail(), studyGroupUser.getUser().getContactLinks())).collect(Collectors.toList());
         final List<StudyGroupLabel> studyGroupLabels = groupService.findStudyGroupLabelsById(id);
         final List<LabelDTO> labelDTOs = studyGroupLabels.stream().map(label -> new LabelDTO(label.getLabel().getId(), label.getLabel().getName())).collect(Collectors.toList());
         final Optional<FullStudyGroupDTO> studyGroupDTOOptional = studyGroupOptional.map((group) -> new FullStudyGroupDTO(group.getId(), group.getName(), group.getDescription(), group.getCreator().getId(), group.getCreationDate(), userContactDTOs, labelDTOs));

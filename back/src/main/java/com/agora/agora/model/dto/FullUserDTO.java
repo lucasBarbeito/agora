@@ -1,6 +1,6 @@
 package com.agora.agora.model.dto;
 
-import com.agora.agora.model.type.UserType;
+import com.agora.agora.model.ContactLink;
 
 import java.util.List;
 
@@ -18,14 +18,17 @@ public class FullUserDTO {
 
     private List<StudyGroupDTO> userGroups;
 
+    private List<ContactLink> contactLinks;
+
     public FullUserDTO(){}
 
-    public FullUserDTO(int id, String name, String surname, String email, List<StudyGroupDTO> userGroups) {
+    public FullUserDTO(int id, String name, String surname, String email, List<StudyGroupDTO> userGroups, List<ContactLink> contactLinks) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.userGroups = userGroups;
+        this.contactLinks = contactLinks;
     }
 
     public int getId() {
@@ -66,5 +69,13 @@ public class FullUserDTO {
 
     public void setUserGroups(List<StudyGroupDTO> userGroups) {
         this.userGroups = userGroups;
+    }
+
+    public List<ContactLink> getContactLinks() {
+        return contactLinks;
+    }
+
+    public void setContactLinks(List<ContactLink> contactLinks) {
+        this.contactLinks = contactLinks;
     }
 }
