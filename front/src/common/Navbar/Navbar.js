@@ -13,6 +13,7 @@ import ProfileButton from "./ProfileButton";
 import SimpleSnackbar from "../SimpleSnackbar/SimpleSnackbar";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
+import {Badge} from '@material-ui/core';
 
 
 class Navbar extends Component {
@@ -21,6 +22,7 @@ class Navbar extends Component {
     
     this.state ={
       snackBarVisible: false,
+      notifications: 5
     }
   }
   static propTypes = {
@@ -39,6 +41,10 @@ class Navbar extends Component {
     this.setState({
       snackBarVisible: newVisibility
     })
+  }
+
+  handleNotificationClick = () =>{
+    console.log(`Tienes ${this.state.notifications} notificaciones pendientes`)
   }
 
   render() {
@@ -69,8 +75,10 @@ class Navbar extends Component {
                 <Grid item>
                   <Grid container direction="row" alignItems="center">
                     <Grid item xs={2}>
-                      <IconButton>
-                        <NotificationsIcon />
+                      <IconButton onClick = {() => this.handleNotificationClick()}>
+                        <Badge badgeContent={this.state.notifications} color="secondary">
+                          <NotificationsIcon />
+                        </Badge>
                       </IconButton>
                     </Grid>
                     <Grid item xs={10}>
