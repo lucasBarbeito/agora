@@ -16,6 +16,7 @@ import UserPage from "./screens/UserPage/UserPage";
 import CheckYourEmailPage from "./screens/CheckYourEmail/CheckYourEmailPage";
 import baseUrl from "./baseUrl.js";
 import { CircularProgress } from "@material-ui/core";
+import EditProfilePage from "./screens/EditProfilePage/EditProfilePage";
 
 const AuthRoute = ({ children, ...rest }) => (
   <AppContext.Consumer>
@@ -155,6 +156,9 @@ class App extends Component {
                   </AuthRoute>
                   <AuthRoute path="/user/:id">
                     <UserPage />
+                  </AuthRoute>
+                  <AuthRoute path="/profile">
+                    {this.state.userInfo && <EditProfilePage context ={this.state}/>}
                   </AuthRoute>
                   <Route>
                     <ErrorNotFound/>
