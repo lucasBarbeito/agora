@@ -36,21 +36,43 @@ class GroupsPage extends Component {
     history: PropTypes.object.isRequired,
   };
 
-  getGroups = async (page) => {
-    const { token } = this.context;
+  componentDidMount() {
+    this.searchGroups(this.props.onlyMyGroups);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.onlyMyGroups !== prevProps.onlyMyGroups) {
+      this.searchGroups(this.props.onlyMyGroups);
+    }
+  }
+
+  async searchGroups(onlyMyGroups) {
     this.setState({ loadingStudyGroups: true });
+    const esc = encodeURIComponent;
+
+    let text = `?page=${this.state.currentPage - 1}`;
+    if (this.state.groupName.trim() !== "") {
+      text += "&text=" + esc(this.state.groupName.trim());
+    }
+    if (this.state.tags.length > 0) {
+      text += "&label=" + this.state.tags.map((item) => item.id);
+    }
 
     try {
-      const response = await fetch(
-        `${baseUrl}/studyGroup/paged?page=${page - 1}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let input;
+      if (onlyMyGroups) {
+        input = baseUrl + "/studyGroup/me/paged" + text;
+      } else {
+        input = baseUrl + "/studyGroup/paged" + text;
+      }
+
+      const response = await fetch(input, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        },
+      });
 
       if (!response.ok) {
         this.setState({ openGetGroupsErrorSnack: true });
@@ -66,80 +88,6 @@ class GroupsPage extends Component {
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
-  };
-
-  getMyGroups = async () => {
-    const { token } = this.context;
-    try {
-      const response = await fetch(`${baseUrl}/studyGroup/me`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      this.setState({
-        studyGroups: await response.json(),
-      });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
-  };
-
-  checkIfOnlyMyGroups() {
-    if (this.props.onlyMyGroups) {
-      this.getMyGroups();
-    } else {
-      this.getGroups(this.state.currentPage);
-    }
-  }
-
-  componentDidMount() {
-    this.searchGroups(this.props.onlyMyGroups);
-    this.checkIfOnlyMyGroups();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.onlyMyGroups !== prevProps.onlyMyGroups) {
-      this.searchGroups(this.props.onlyMyGroups);
-    }
-  }
-
-  async searchGroups(onlyMyGroups) {
-    const esc = encodeURIComponent;
-    let text;
-    if (this.state.tags.length === 0) {
-      text = "?text=" + esc(this.state.groupName);
-    } else if (this.state.groupName === "") {
-      text = "?label=" + this.state.tags.map((item) => item.id);
-    } else {
-      text =
-        "?text=" +
-        esc(this.state.groupName) +
-        "&label=" +
-        this.state.tags.map((item) => item.id);
-    }
-    try {
-      let input;
-      if (onlyMyGroups) {
-        input = baseUrl + "/studyGroup/me" + text;
-      } else {
-        input = baseUrl + "/studyGroup" + text;
-      }
-
-      const response = await fetch(input, {
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${this.context.token}`,
-        },
-      });
-
-      this.setState({
-        studyGroups: await response.json(),
-      });
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
-    }
   }
 
   joinGroup(id) {
@@ -147,8 +95,9 @@ class GroupsPage extends Component {
   }
 
   handlePageChange = (_, page) => {
-    this.setState({ currentPage: page });
-    this.getGroups(page);
+    this.setState({ currentPage: page }, () =>
+      this.searchGroups(this.props.onlyMyGroups)
+    );
   };
 
   render() {
@@ -192,7 +141,9 @@ class GroupsPage extends Component {
               <IconButton
                 id="search-button"
                 onClick={() => {
-                  this.searchGroups(this.props.onlyMyGroups);
+                  this.setState({ currentPage: 1 }, () =>
+                    this.searchGroups(this.props.onlyMyGroups)
+                  );
                 }}
               >
                 <SearchIcon />
