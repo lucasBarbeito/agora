@@ -6,6 +6,7 @@ import com.agora.agora.model.form.LabelForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.form.UserForm;
+import com.agora.agora.model.type.LinkType;
 import com.agora.agora.service.*;
 import com.agora.agora.model.*;
 import com.agora.agora.model.type.UserType;
@@ -30,14 +31,16 @@ public class StartUpDatabase {
     private final StudyGroupService studyGroupService;
     private final LabelRepository labelRepository;
     private final PostRepository postRepository;
+    private final ContactLinkRepository contactLinkRepository;
 
     @Autowired
 
-    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository) {
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository, ContactLinkRepository contactLinkRepository) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
         this.labelRepository = labelRepository;
         this.postRepository = postRepository;
+        this.contactLinkRepository = contactLinkRepository;
     }
 
     private void addManyToGroup(int groupId, List<Integer> userId){
@@ -232,6 +235,90 @@ public class StartUpDatabase {
                 User u10 = userService.findById(userId10).get();
                 User u11 = userService.findById(userId11).get();
                 User u12 = userService.findById(userId12).get();
+
+
+                //ContactLinks
+                ContactLink u1l1 = new ContactLink(LinkType.INSTAGRAM, "@pepPerez_");
+                ContactLink u1l2 = new ContactLink(LinkType.FACEBOOK, "@pepPerez");
+                ContactLink u1l3 = new ContactLink(LinkType.TWITTER, "@pep_Perez");
+                ContactLink u1l4 = new ContactLink(LinkType.PHONE, "1133090807");
+                ContactLink u2l1 = new ContactLink(LinkType.INSTAGRAM, "@TomG");
+                ContactLink u2l2 = new ContactLink(LinkType.FACEBOOK, "@TomasG");
+                ContactLink u2l3 = new ContactLink(LinkType.EMAIL, "gomez@gmail.com");
+                ContactLink u2l4 = new ContactLink(LinkType.PHONE, "1144090807");
+                ContactLink u3l1 = new ContactLink(LinkType.INSTAGRAM, "@ARod");
+                ContactLink u3l2 = new ContactLink(LinkType.FACEBOOK, "@agustinR");
+                ContactLink u3l3 = new ContactLink(LinkType.TWITTER, "@Arod");
+                ContactLink u3l4 = new ContactLink(LinkType.PHONE, "1122090807");
+                ContactLink u3l5 = new ContactLink(LinkType.EMAIL, "rodriguez@gmail.com");
+                ContactLink u4l1 = new ContactLink(LinkType.INSTAGRAM, "@delfAl");
+                ContactLink u4l2 = new ContactLink(LinkType.FACEBOOK, "@delfinaA");
+                ContactLink u4l3 = new ContactLink(LinkType.TWITTER, "@delAlo");
+                ContactLink u4l4 = new ContactLink(LinkType.PHONE, "1111090807");
+                ContactLink u5l1 = new ContactLink(LinkType.INSTAGRAM, "@agusL");
+                ContactLink u5l2 = new ContactLink(LinkType.FACEBOOK, "@agustinaL");
+                ContactLink u5l3 = new ContactLink(LinkType.TWITTER, "@aLopez");
+                ContactLink u5l4 = new ContactLink(LinkType.EMAIL, "lopez@gmail.com");
+                ContactLink u6l1 = new ContactLink(LinkType.INSTAGRAM, "@RoDiaz");
+                ContactLink u6l2 = new ContactLink(LinkType.FACEBOOK, "@RomiD");
+                ContactLink u6l3 = new ContactLink(LinkType.TWITTER, "@roDiaz");
+                ContactLink u6l4 = new ContactLink(LinkType.PHONE, "1155090807");
+                ContactLink u7l1 = new ContactLink(LinkType.INSTAGRAM, "@mLop");
+                ContactLink u7l2 = new ContactLink(LinkType.FACEBOOK, "@matiL");
+                ContactLink u7l3 = new ContactLink(LinkType.TWITTER, "@matLop");
+                ContactLink u7l4 = new ContactLink(LinkType.EMAIL, "matias@gmail.com");
+                ContactLink u8l1 = new ContactLink(LinkType.INSTAGRAM, "@carlosM");
+                ContactLink u8l2 = new ContactLink(LinkType.FACEBOOK, "@carlMendez");
+                ContactLink u9l1 = new ContactLink(LinkType.TWITTER, "@sofiG");
+                ContactLink u9l2 = new ContactLink(LinkType.PHONE, "1166090807");
+                ContactLink u10l1 = new ContactLink(LinkType.INSTAGRAM, "@micaDi");
+                ContactLink u10l2 = new ContactLink(LinkType.TWITTER, "@micaDiaz");
+                ContactLink u11l1 = new ContactLink(LinkType.FACEBOOK, "@FernandoRojas");
+                ContactLink u11l2 = new ContactLink(LinkType.EMAIL, "rojas@gmail.com");
+                ContactLink u12l1 = new ContactLink(LinkType.INSTAGRAM, "@juanC");
+                ContactLink u12l2 = new ContactLink(LinkType.FACEBOOK, "@JuanCruz");
+                ContactLink u12l3 = new ContactLink(LinkType.TWITTER, "@jc");
+
+                contactLinkRepository.save(u1l1);
+                contactLinkRepository.save(u1l2);
+                contactLinkRepository.save(u1l3);
+                contactLinkRepository.save(u1l4);
+                contactLinkRepository.save(u2l1);
+                contactLinkRepository.save(u2l2);
+                contactLinkRepository.save(u2l3);
+                contactLinkRepository.save(u2l4);
+                contactLinkRepository.save(u3l1);
+                contactLinkRepository.save(u3l2);
+                contactLinkRepository.save(u3l3);
+                contactLinkRepository.save(u3l4);
+                contactLinkRepository.save(u3l5);
+                contactLinkRepository.save(u4l1);
+                contactLinkRepository.save(u4l2);
+                contactLinkRepository.save(u4l3);
+                contactLinkRepository.save(u4l4);
+                contactLinkRepository.save(u5l1);
+                contactLinkRepository.save(u5l2);
+                contactLinkRepository.save(u5l3);
+                contactLinkRepository.save(u5l4);
+                contactLinkRepository.save(u6l1);
+                contactLinkRepository.save(u6l2);
+                contactLinkRepository.save(u6l3);
+                contactLinkRepository.save(u6l4);
+                contactLinkRepository.save(u7l1);
+                contactLinkRepository.save(u7l2);
+                contactLinkRepository.save(u7l3);
+                contactLinkRepository.save(u7l4);
+                contactLinkRepository.save(u8l1);
+                contactLinkRepository.save(u8l2);
+                contactLinkRepository.save(u9l1);
+                contactLinkRepository.save(u9l2);
+                contactLinkRepository.save(u10l1);
+                contactLinkRepository.save(u10l2);
+                contactLinkRepository.save(u11l1);
+                contactLinkRepository.save(u11l2);
+                contactLinkRepository.save(u12l1);
+                contactLinkRepository.save(u12l2);
+                contactLinkRepository.save(u12l3);
 
                 StudyGroup sg1 = studyGroupService.findStudyGroupById(groupId1).get();
                 StudyGroup sg2 = studyGroupService.findStudyGroupById(groupId2).get();
