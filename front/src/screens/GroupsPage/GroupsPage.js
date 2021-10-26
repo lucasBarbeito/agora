@@ -42,7 +42,18 @@ class GroupsPage extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.onlyMyGroups !== prevProps.onlyMyGroups) {
-      this.searchGroups(this.props.onlyMyGroups);
+      this.setState(
+        {
+          groupName: "",
+          tags: [],
+          studyGroups: [],
+          currentPage: 1,
+          totalPages: 0,
+          loadingStudyGroups: true,
+          openGetGroupsErrorSnack: false,
+        },
+        () => this.searchGroups(this.props.onlyMyGroups)
+      );
     }
   }
 
