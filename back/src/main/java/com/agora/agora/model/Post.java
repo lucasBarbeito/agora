@@ -1,6 +1,9 @@
 package com.agora.agora.model;
 
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -18,6 +21,7 @@ public class Post implements Identifiable{
     private String content;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private StudyGroup studyGroup;
 
     @ManyToOne

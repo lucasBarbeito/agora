@@ -1,5 +1,8 @@
 package com.agora.agora.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -7,8 +10,10 @@ import java.time.LocalDate;
 @Table(name = "new_member_notification")
 public class NewMemberNotification extends Notification {
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User newMember;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private StudyGroup studyGroup;
 
     public NewMemberNotification() {
