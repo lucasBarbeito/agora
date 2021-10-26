@@ -163,15 +163,13 @@ export default function InvitationForm(props) {
                 </AccordionSummary>
                 <AccordionDetails id="accordion-detail">
                   <MenuList>
-                    {Object.keys(member)
-                      .slice(2, 4)
-                      .map((contactType, index) => (
-                        <MemberContact
-                          key={index}
-                          type={contactType}
-                          value={member[contactType]}
-                        />
-                      ))}
+                    {member.contactLinks.map((link, index) => (
+                      <MemberContact
+                        key={index}
+                        type={link.linkType.toLowerCase()}
+                        value={link.link}
+                      />
+                    ))}
                   </MenuList>
                 </AccordionDetails>
                 <AccordionActions id="user-invitation-button">

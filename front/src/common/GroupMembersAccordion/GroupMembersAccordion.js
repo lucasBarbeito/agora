@@ -30,7 +30,7 @@ class GroupMembersAccordion extends Component {
               aria-controls="panel1a-content"
               id="panel1a-header"
             >
-              <Typography id="member-name-typography">{member.name}</Typography>
+              <Typography id="member-name-typography">{member.name} {member.surname}</Typography>
               {this.props.creatorId == member.id && (
                 <Typography id="admin-typography"> admin </Typography>
               )}
@@ -38,15 +38,13 @@ class GroupMembersAccordion extends Component {
             <AccordionDetails id="accordion-details">
               <Box>
                 <MenuList>
-                  {Object.keys(member)
-                    .slice(2)
-                    .map((contactType, index) => (
-                      <MemberContact
-                        key={index}
-                        type={contactType}
-                        value={member[contactType]}
-                      />
-                    ))}
+                  {member.contactLinks.map((link, index) => (
+                    <MemberContact
+                      key={index}
+                      type={link.linkType.toLowerCase()}
+                      value={link.link}
+                    />
+                  ))}
                 </MenuList>
                 <Button
                   id="visit-member-profile-button"
