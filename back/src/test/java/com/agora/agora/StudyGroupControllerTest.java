@@ -1479,7 +1479,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         ).andReturn();
         String status = mvcResult.getResponse().getContentAsString();
         List<StudyGroupDTO> allStudyGroups = pageToList(status);
-        assertEquals(2,allStudyGroups.size());
+        assertEquals(1,allStudyGroups.size());
     }
 
     @Test
@@ -1505,7 +1505,7 @@ public class StudyGroupControllerTest extends AbstractTest{
 
 
     @Test
-    @WithMockUser(username = "tolkien@gmail.com")
+    @WithMockUser(username = "herbert@gmail.com")
     public void getUserGroupsWithNameShouldReturnUserGroups() throws Exception {
         String uri = "/studyGroup/me";
 
@@ -1521,7 +1521,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser(username = "tolkien@gmail.com")
+    @WithMockUser(username = "herbert@gmail.com")
     public void getUserGroupsWithPartialNameShouldReturnUserGroups() throws Exception {
         String uri = "/studyGroup/me";
 
