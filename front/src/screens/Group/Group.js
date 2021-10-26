@@ -296,6 +296,26 @@ class Group extends Component {
     }
   }
 
+  compareDates(date1, date2) {
+    console.log(date1);
+
+    const date1Components = date1.split("/");
+    const date2Components = date2.split("/");
+
+    const newDate1 = new Date(
+      date1Components[2],
+      date1Components[1] - 1,
+      date1Components[0]
+    );
+    const newDate2 = new Date(
+      date2Components[2],
+      date2Components[1] - 1,
+      date2Components[0]
+    );
+
+    return newDate2 - newDate1;
+  }
+
   render() {
     return (
       <div className="main-div">
@@ -479,7 +499,9 @@ class Group extends Component {
                 </Grid>
                 <Container id="announcement">
                   {!this.state.isFetching &&
-                    this.state.announcements.map((announcement, index) => (
+                    this.state.announcements
+                      .sort((a1, a2) => this.compareDates(a1.date, a2.date))
+                      .map((announcement, index) => (
                       <GroupAnnouncement
                         key={index}
                         canDelete={
