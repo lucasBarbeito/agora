@@ -99,6 +99,7 @@ class Group extends Component {
               "es-AR"
             ),
             content: item.content,
+            creatorId: item.creatorId,
             id: item.id,
           };
         });
@@ -502,24 +503,23 @@ class Group extends Component {
                     this.state.announcements
                       .sort((a1, a2) => this.compareDates(a1.date, a2.date))
                       .map((announcement, index) => (
-                      <GroupAnnouncement
-                        key={index}
-                        canDelete={
-                          this.state.isAdmin ||
-                          announcement.name ===
-                            `${this.context.userInfo.name} ${this.context.userInfo.surname}`
-                        }
-                        handleDelete={() =>
-                          this.deleteAnnouncement(announcement.id)
-                        }
-                        name={announcement.name}
-                        date={announcement.date}
-                        content={announcement.content}
-                        isBeingRemoved={this.state.deletingAnnouncements.includes(
-                          announcement.id
-                        )}
-                      />
-                    ))}
+                        <GroupAnnouncement
+                          key={index}
+                          canDelete={
+                            this.state.isAdmin ||
+                            this.context.userInfo.id === announcement.creatorId
+                          }
+                          handleDelete={() =>
+                            this.deleteAnnouncement(announcement.id)
+                          }
+                          name={announcement.name}
+                          date={announcement.date}
+                          content={announcement.content}
+                          isBeingRemoved={this.state.deletingAnnouncements.includes(
+                            announcement.id
+                          )}
+                        />
+                      ))}
                 </Container>
               </Grid>
             </Grid>

@@ -52,7 +52,7 @@ class App extends Component {
         this.getLabels(newToken);
       } else {
         localStorage.removeItem("token");
-        history.push("/");
+        history.push(redirectTo || "/");
       }
     };
 
@@ -128,16 +128,14 @@ class App extends Component {
                     />
                   </Route>
                   <Route path="/login">
-                    <LoginPage/>
+                    <LoginPage />
                   </Route>
                   <Route path="/register">
-                    <RegisterPage/>
+                    <RegisterPage />
                   </Route>
                   <Route
                     path="/user/verify-user/:id"
-                    render={(props) => (
-                      <EmailConfirmation {...props} />
-                    )}
+                    render={(props) => <EmailConfirmation {...props} />}
                   />
                   <Route exact path="/check-email">
                     <CheckYourEmailPage />
@@ -149,7 +147,7 @@ class App extends Component {
                     <GroupsPage onlyMyGroups={true} />
                   </AuthRoute>
                   <AuthRoute path="/create-group">
-                    <CreateGroup  />
+                    <CreateGroup />
                   </AuthRoute>
                   <AuthRoute path="/group/:id">
                     <Group />
@@ -158,10 +156,12 @@ class App extends Component {
                     <UserPage />
                   </AuthRoute>
                   <AuthRoute path="/profile">
-                    {this.state.userInfo && <EditProfilePage context ={this.state}/>}
+                    {this.state.userInfo && (
+                      <EditProfilePage context={this.state} />
+                    )}
                   </AuthRoute>
                   <Route>
-                    <ErrorNotFound/>
+                    <ErrorNotFound />
                   </Route>
                 </Switch>
               </div>
