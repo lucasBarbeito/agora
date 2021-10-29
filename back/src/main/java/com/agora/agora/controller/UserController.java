@@ -1,10 +1,8 @@
 package com.agora.agora.controller;
 
 import com.agora.agora.model.User;
-import com.agora.agora.model.dto.FullUserDTO;
-import com.agora.agora.model.dto.LabelDTO;
-import com.agora.agora.model.dto.NotificationDTO;
-import com.agora.agora.model.dto.StudyGroupDTO;
+import com.agora.agora.model.dto.*;
+import com.agora.agora.model.form.EditUserForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
 import com.agora.agora.service.UserService;
@@ -74,5 +72,11 @@ public class UserController {
     @GetMapping(value = "/notification/me")
     public List<NotificationDTO> getCurrentUserNotifications(){
         return userService.getCurrentUserNotifications();
+    }
+
+    @PostMapping(value = "/me")
+    public ResponseEntity editUser(@Valid @RequestBody EditUserForm editUserForm){
+        int id = userService.editUser(editUserForm);
+        return ResponseEntity.ok(id);
     }
 }

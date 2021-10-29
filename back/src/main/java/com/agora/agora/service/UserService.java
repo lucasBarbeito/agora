@@ -2,16 +2,17 @@ package com.agora.agora.service;
 
 import com.agora.agora.model.*;
 import com.agora.agora.model.dto.NotificationDTO;
+import com.agora.agora.model.form.EditUserForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.type.NotificationType;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,15 +26,17 @@ public class UserService {
     private EmailService emailService;
     private NewMemberNotificationRepository newMemberNotificationRepository;
     private NewPostNotificationRepository newPostNotificationRepository;
+    private ContactLinkRepository contactLinkRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository,StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService, NewPostNotificationRepository newPostNotificationRepository, NewMemberNotificationRepository newMemberNotificationRepository) {
+    public UserService(UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService, NewPostNotificationRepository newPostNotificationRepository, NewMemberNotificationRepository newMemberNotificationRepository, ContactLinkRepository contactLinkRepository) {
         this.userRepository = userRepository;
         this.studyGroupRepository = studyGroupRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
         this.emailService = emailService;
         this.newMemberNotificationRepository = newMemberNotificationRepository;
         this.newPostNotificationRepository = newPostNotificationRepository;
+        this.contactLinkRepository = contactLinkRepository;
     }
 
 
@@ -131,4 +134,43 @@ public class UserService {
     }
 
 
+    public int editUser(EditUserForm changedUserData) {
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> userOptional = userRepository.findUserByEmail(email);
+
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+            if (!changedUserData.getContactLinks().isEmpty()) {
+                List<ContactLink> finalContactLinks = new ArrayList<>();
+                for (ContactLink newContactLink : changedUserData.getContactLinks()) {
+                    for (ContactLink contactLink : user.getContactLinks()) {
+                        if (newContactLink.getId() == contactLink.getId()) {
+                            finalContactLinks.add(newContactLink);
+                            break;
+                        }
+                    }
+                }
+                if (finalContactLinks.size() != changedUserData.getContactLinks().size()){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
+                for (ContactLink contactLink : changedUserData.getContactLinks()) {
+                    contactLinkRepository.save(contactLink);
+                }
+            }
+            if (changedUserData.getName() != null) {
+                user.setName(changedUserData.getName());
+            }
+            if (changedUserData.getSurname() != null) {
+                user.setSurname(changedUserData.getSurname());
+            }
+            if (changedUserData.getPassword() != null) {
+                user.setPassword(changedUserData.getPassword());
+            }
+            userRepository.save(user);
+            return user.getId();
+        } else {
+            throw new NoSuchElementException("User does not exist.");
+        }
+    }
 }

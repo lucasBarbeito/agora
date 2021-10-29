@@ -6,9 +6,11 @@ import com.agora.agora.model.dto.FullUserDTO;
 import com.agora.agora.model.dto.NotificationDTO;
 import com.agora.agora.model.dto.PostDTO;
 import com.agora.agora.model.dto.StudyGroupDTO;
+import com.agora.agora.model.form.EditUserForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
+import com.agora.agora.model.type.LinkType;
 import com.agora.agora.model.type.NotificationType;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.*;
@@ -28,11 +30,13 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 
 import javax.swing.*;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -61,6 +65,9 @@ public class UserControllerTest extends AbstractTest{
     private LabelRepository labelRepository;
 
     @Autowired
+    private ContactLinkRepository contactLinkRepository;
+
+    @Autowired
     private NewPostNotificationRepository newPostNotificationRepository;
 
     @Autowired
@@ -82,12 +89,21 @@ public class UserControllerTest extends AbstractTest{
         Label label1;
         Label label2;
         NewPostNotification notification1;
+        ContactLink contactLink1;
 
         void setup() {
+            contactLink1 = new ContactLink(LinkType.EMAIL, "jrr@mail.com");
+            List<ContactLink> contactLinks = new ArrayList<>();
+            contactLinks.add(contactLink1);
+            contactLinkRepository.save(contactLink1);
+
             user1 = new User("Carlos", "Gimenez", "carlos@mail.com", "Carlos123", false, UserType.USER);
             user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false, UserType.USER);
             user3 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
             user4 = new User("Frank", "Gimenez", "frankgimenez@gmail.com", "Frankherbert2021", false, UserType.USER);
+
+
+            user3.setContactLinks(contactLinks);
             userRepository.save(user1);
             userRepository.save(user2);
             userRepository.save(user3);
@@ -136,6 +152,7 @@ public class UserControllerTest extends AbstractTest{
             labelRepository.deleteAll();
             groupRepository.deleteAll();
             userRepository.deleteAll();
+            contactLinkRepository.deleteAll();
         }
     }
 
@@ -542,4 +559,97 @@ public class UserControllerTest extends AbstractTest{
         int statusCode = mvcGETResult.getResponse().getStatus();
         assertEquals(404, statusCode);
     }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void editUserReturnsOk() throws Exception {
+        String uri = "/user/me";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        EditUserForm form = new EditUserForm("Manuel","Gimenez","Manuel123", contactLinks);
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(200, statusCode);
+    }
+
+    @Test
+    @WithMockUser("USER")
+    public void editUserWithNotExistingUserReturnsNotFound() throws Exception {
+        String uri = "/user/me";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        EditUserForm form = new EditUserForm("Manuel","Gimenez","Manuel123", contactLinks);
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(404, statusCode);
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void editUserWithWrongContactLinksReturnsOk() throws Exception {
+        String uri = "/user/me";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        contactLinks.add(new ContactLink());
+        EditUserForm form = new EditUserForm("Manuel","Gimenez","Manuel123", contactLinks);
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(400, statusCode);
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser("tolkien@gmail.com")
+    public void editUserEditsCorrectly() throws Exception {
+        String uri = "/user/me";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        ContactLink contactLink = data.contactLink1;
+        contactLink.setLink("manuel@mail.com");
+        contactLinks.add(contactLink);
+        EditUserForm form = new EditUserForm("Manuel","Gimenez","Manuel123", contactLinks);
+        mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        Optional<User> userOptional = userRepository.findById(data.user3.getId());
+        User user = userOptional.get();
+        assertEquals(form.getName(), user.getName());
+        assertEquals(form.getSurname(), user.getSurname());
+        assertEquals(form.getPassword(), user.getPassword());
+        assertEquals(contactLinks.get(0).getId(), user.getContactLinks().get(0).getId());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser("tolkien@gmail.com")
+    public void editUserEditsCorrectlyWithoutPassword() throws Exception {
+        String uri = "/user/me";
+        List<ContactLink> contactLinks = new ArrayList<>();
+        ContactLink contactLink = data.contactLink1;
+        contactLink.setLink("manuel@mail.com");
+        contactLinks.add(contactLink);
+        EditUserForm form = new EditUserForm("Manuel","Gimenez",null, contactLinks);
+        mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapToJson(form))
+        ).andReturn();
+        Optional<User> userOptional = userRepository.findById(data.user3.getId());
+        User user = userOptional.get();
+        assertEquals(form.getName(), user.getName());
+        assertEquals(form.getSurname(), user.getSurname());
+        assertEquals(contactLinks.get(0).getId(), user.getContactLinks().get(0).getId());
+    }
 }
+
+
