@@ -91,10 +91,26 @@ class Group extends Component {
       } else {
         const res = await response.json();
 
-        const announcementFormat = res.map((item) => {
+        const announcementFormatPromises = res.map(async (item) => {
           const userId = item.creatorId;
+          let user = contacts.find((user) => user.id === userId);
+          if (!user) {
+            const response = await fetch(`${baseUrl}/user/${userId}`, {
+              method: "GET",
+              headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                Authorization: `Bearer ${this.context.token}`,
+              },
+            });
+            if (response.ok) {
+              user = await response.json();
+              user.name = user.name + " (ex-miembro)";
+            } else {
+              throw new Error("User not found");
+            }
+          }
           return {
-            name: contacts.find((user) => user.id === userId).name,
+            name: user.name,
             date: new Date(item.creationDateAndTime).toLocaleDateString(
               "es-AR"
             ),
@@ -103,7 +119,9 @@ class Group extends Component {
             id: item.id,
           };
         });
-
+        const announcementFormat = await Promise.all(
+          announcementFormatPromises
+        );
         this.setState({ announcements: announcementFormat });
       }
     } catch (e) {

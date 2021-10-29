@@ -22,43 +22,50 @@ export default function CustomizedDialogs(props) {
   };
 
   const requestBackChanges = async () => {
-    setWaitingResponse(true);
-    setEditUnsuccessfully(false);
-    setWarningMsg("");
+    if (label.length > 0) {
+      setWaitingResponse(true);
+      setEditUnsuccessfully(false);
+      setWarningMsg("");
 
-    if (!name) {
-      setEditUnsuccessfully(true);
-      setWarningMsg("Por favor ingrese un nombre de grupo");
-      setWaitingResponse(false);
-    } else if (!description) {
-      setEditUnsuccessfully(true);
-      setWarningMsg("Por favor ingrese una descripción");
-      setWaitingResponse(false);
-    } else {
-      try {
-        const response = await fetch(`${baseUrl}/studyGroup/${props.groupId}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            description: description,
-            name: name,
-            labels: label,
-          }),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${props.token}`,
-          },
-        });
-        if (response.ok) {
-          setWaitingResponse(false);
-          handleSaveChanges();
-        } else if (response.status === 409) {
-          setWarningMsg("Grupo creado con nombre ya existente");
-          setWaitingResponse(false);
-          setEditUnsuccessfully(true);
+      if (!name) {
+        setEditUnsuccessfully(true);
+        setWarningMsg("Por favor ingrese un nombre de grupo");
+        setWaitingResponse(false);
+      } else if (!description) {
+        setEditUnsuccessfully(true);
+        setWarningMsg("Por favor ingrese una descripción");
+        setWaitingResponse(false);
+      } else {
+        try {
+          const response = await fetch(
+            `${baseUrl}/studyGroup/${props.groupId}`,
+            {
+              method: "PUT",
+              body: JSON.stringify({
+                description: description,
+                name: name,
+                labels: label,
+              }),
+              headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                Authorization: `Bearer ${props.token}`,
+              },
+            }
+          );
+          if (response.ok) {
+            setWaitingResponse(false);
+            handleSaveChanges();
+          } else if (response.status === 409) {
+            setWarningMsg("Grupo creado con nombre ya existente");
+            setWaitingResponse(false);
+            setEditUnsuccessfully(true);
+          }
+        } catch (e) {
+          alert("Error, no es posible conectarse al back-end");
         }
-      } catch (e) {
-        alert("Error, no es posible conectarse al back-end");
       }
+    } else {
+      alert("El grupo debe tener al menos una etiqueta");
     }
   };
   return (
