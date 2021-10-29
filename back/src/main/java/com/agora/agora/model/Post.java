@@ -28,16 +28,16 @@ public class Post implements Identifiable{
     private User creator;
 
     @Column
-    private LocalDateTime creationDateAndTime;
+    private LocalDateTime creationDateTime;
 
     public Post() {
     }
 
-    public Post(String content, StudyGroup studyGroup, User creator, LocalDateTime creationDateAndTime) {
+    public Post(String content, StudyGroup studyGroup, User creator, LocalDateTime creationDateTime) {
         this.content = content;
         this.studyGroup = studyGroup;
         this.creator = creator;
-        this.creationDateAndTime = creationDateAndTime;
+        this.creationDateTime = creationDateTime;
     }
 
     @Override
@@ -53,8 +53,8 @@ public class Post implements Identifiable{
         this.creator = creator;
     }
 
-    public void setCreationDateAndTime(LocalDateTime creationDateAndTime) {
-        this.creationDateAndTime = creationDateAndTime;
+    public void setCreationDateTime(LocalDateTime creationDateTime) {
+        this.creationDateTime = creationDateTime;
     }
 
     public String getContent() {
@@ -65,8 +65,8 @@ public class Post implements Identifiable{
         return creator;
     }
 
-    public LocalDateTime getCreationDateAndTime() {
-        return creationDateAndTime;
+    public LocalDateTime getCreationDateTime() {
+        return creationDateTime;
     }
 
     public StudyGroup getStudyGroup() {

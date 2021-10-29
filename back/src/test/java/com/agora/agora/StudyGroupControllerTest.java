@@ -1,37 +1,24 @@
 package com.agora.agora;
 
-import com.agora.agora.controller.StudyGroupController;
 import com.agora.agora.model.*;
 import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditStudyGroupForm;
-import com.agora.agora.model.form.LoginForm;
 import com.agora.agora.model.form.PostForm;
 import com.agora.agora.model.form.StudyGroupForm;
 import com.agora.agora.model.type.UserType;
 import com.agora.agora.repository.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -1096,7 +1083,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getPostsFromStudyGroupShouldReturnPostsInOrder() throws Exception {
-        String uri = "/studyGroup/" + data.group1.getId() + "/forum/?page=0";
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum";
         PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
@@ -1118,8 +1105,167 @@ public class StudyGroupControllerTest extends AbstractTest{
 
         assertEquals(4, postDTOS.size());
         assertEquals(data.post1.getContent(), postDTOS.get(0).getContent());
-        assertEquals(data.post2.getCreationDateAndTime(), postDTOS.get(1).getCreationDateAndTime());
+        assertEquals(data.post2.getCreationDateTime(), postDTOS.get(1).getCreationDateAndTime());
     }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsByGivenDateShouldReturnThem() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("dateFrom", data.post1.getCreationDateTime().toString())
+                        .param("dateTo", LocalDateTime.of(2021, 9, 25, 3, 15).toString())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsByGivenDateAndTextShouldReturnThem() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("dateFrom", data.post1.getCreationDateTime().toString())
+                        .param("dateTo", LocalDateTime.of(2021, 9, 25, 3, 15).toString())
+                        .param("text", "is out")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsByGivenDateFromShouldReturnThem() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("dateFrom", data.post1.getCreationDateTime().toString())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsByGivenDateFromAndTextShouldReturnThem() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("dateFrom", data.post1.getCreationDateTime().toString())
+                        .param("text", "LO")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsByGivenDateToShouldReturnThem() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("dateTo", LocalDateTime.of(2021, 9, 25, 3, 15).toString())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(1).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsByGivenDateToAndTextShouldReturnThem() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("dateTo", LocalDateTime.of(2021, 9, 25, 3, 15).toString())
+                        .param("text", "is out")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsWithNoDateOrTextGivenShouldReturnAll() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(1).getContent());
+    }
+
+    @Test
+    @WithMockUser(value = "tolkien@gmail.com")
+    public void gettingPostsOnlyWithTextGivenShouldReturnTheSpecific() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/paged/?page=0";
+        MvcResult mvcGetResult = mvc.perform(
+                MockMvcRequestBuilders.get(uri)
+                        .param("text", "OTR")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int getStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getStatus);
+
+        String gottenStatus = mvcGetResult.getResponse().getContentAsString();
+        Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
+        List<PostDTO> gottenPostDTOs = postDTOS.getContent();
+
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(1).getContent());
+    }
+
 
     @Test
     @WithMockUser("tolkien@gmail.com")

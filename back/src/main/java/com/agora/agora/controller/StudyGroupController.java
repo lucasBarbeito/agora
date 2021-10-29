@@ -10,11 +10,13 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,14 +105,14 @@ public class StudyGroupController {
     }
 
     @GetMapping(value = "/{id}/forum")
-    public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId){
-        return getAllGroupMessages(studyGroupId,Optional.of(0)).getContent();
+    public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId, @RequestParam Optional<String> text){
+        return getAllGroupMessages(studyGroupId,Optional.of(0), Optional.empty(), Optional.empty(), text).getContent();
     }
 
     @GetMapping(value = "/{id}/forum/paged")
-    public Page<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page) {
-        Page<Post> posts = groupService.getStudyGroupPosts(studyGroupId, page.orElse(0));
-        return posts.map(post -> new PostDTO(post.getId(), post.getContent(), studyGroupId, post.getCreator().getId(), post.getCreationDateAndTime()));
+    public Page<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<LocalDateTime> dateFrom, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Optional<LocalDateTime> dateTo, @RequestParam Optional<String> text) {
+        Page<Post> posts = groupService.getStudyGroupPosts(studyGroupId, page.orElse(0), dateFrom, dateTo, text);
+        return posts.map(post -> new PostDTO(post.getId(), post.getContent(), studyGroupId, post.getCreator().getId(), post.getCreationDateTime()));
     }
 
     @DeleteMapping(value = "/{id}")
@@ -122,7 +124,7 @@ public class StudyGroupController {
     @GetMapping(value = "/{id}/forum/{postId}")
     public ResponseEntity getGroupPostById(@PathVariable("id") int studyGroupId, @PathVariable("postId") int postId){
         Optional<Post> post = groupService.getStudyGroupPostById(studyGroupId, postId);
-        Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateAndTime()));
+        Optional<PostDTO> postDTO = post.map(p -> new PostDTO(p.getId(), p.getContent(), p.getStudyGroup().getId(), p.getCreator().getId(), p.getCreationDateTime()));
         return postDTO.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

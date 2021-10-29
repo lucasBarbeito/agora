@@ -20,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -316,7 +318,7 @@ public class StudyGroupService {
         }
     }
 
-    public Page<Post> getStudyGroupPosts(int studyGroupId, int page){
+    public Page<Post> getStudyGroupPosts(int studyGroupId, int page, Optional<LocalDateTime> dateFrom, Optional<LocalDateTime> dateTo, Optional<String> text){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -326,9 +328,35 @@ public class StudyGroupService {
             Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
             if(groupOptional.isPresent()){
                 Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
-                Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.ASC,"creationDateAndTime"));
+                Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.ASC,"creationDateTime"));
                 if(optionalStudyGroupUser.isPresent()){
-                    return postRepository.findAllByStudyGroupId(request, studyGroupId);
+
+                    //Search with no text present
+                    if(!text.isPresent()) {
+                        if (dateFrom.isPresent() && dateTo.isPresent()) {
+                            return postRepository.findAllByCreationDateTimeIsBetweenAndStudyGroupId(request, dateFrom.get(), dateTo.get(), studyGroupId);
+                        } else if (dateFrom.isPresent()) {
+                            return postRepository.findAllByCreationDateTimeAfterAndStudyGroupId(request, dateFrom.get(), studyGroupId);
+                        } else if (dateTo.isPresent()) {
+                            return postRepository.findAllByCreationDateTimeBeforeAndStudyGroupId(request, dateTo.get(), studyGroupId);
+                        }else {
+                            return postRepository.findAllByStudyGroupId(request, studyGroupId);
+                        }
+                    }
+
+                    //Search with text present
+                    else {
+                        if (dateFrom.isPresent() && dateTo.isPresent()) {
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBetweenAndContentIsContainingIgnoreCase(request, studyGroupId, dateFrom.get(), dateTo.get(), text.get());
+                        } else if (dateFrom.isPresent()) {
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeAfterAndContentIsContainingIgnoreCase(request, studyGroupId, dateFrom.get(), text.get());
+                        } else if (dateTo.isPresent()) {
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBeforeAndContentIsContainingIgnoreCase(request, studyGroupId, dateTo.get(), text.get());
+                        }
+                        else{
+                            return postRepository.findAllByStudyGroupIdAndContentIsContainingIgnoreCase(request, studyGroupId,text.get());
+                        }
+                    }
                 }
                 throw new ForbiddenElementException("Only members can see posts.");
             }
