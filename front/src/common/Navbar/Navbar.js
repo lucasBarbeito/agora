@@ -13,20 +13,21 @@ import ProfileButton from "./ProfileButton";
 import SimpleSnackbar from "../SimpleSnackbar/SimpleSnackbar";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
-import {Badge} from '@material-ui/core';
-
+import { Badge } from "@material-ui/core";
+import NotificationDrawer from "../NotificationDrawer/NotificationDrawer";
 
 class Navbar extends Component {
   constructor(props) {
     super(props);
-    
-    this.state ={
+
+    this.state = {
       snackBarVisible: false,
-      notifications: 5
-    }
+      notifications: 5,
+      drawerIsOpen: false,
+    };
   }
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
   };
 
   isLoggedIn() {
@@ -39,13 +40,13 @@ class Navbar extends Component {
 
   handleLoginError = (newVisibility) => {
     this.setState({
-      snackBarVisible: newVisibility
-    })
-  }
+      snackBarVisible: newVisibility,
+    });
+  };
 
-  handleNotificationClick = () =>{
-    console.log(`Tienes ${this.state.notifications} notificaciones pendientes`)
-  }
+  handleNotificationClick = () => {
+    this.setState({ drawerIsOpen: true });
+  };
 
   render() {
     return (
@@ -66,17 +67,22 @@ class Navbar extends Component {
                   onClick={this.goHome}
                 />
               </Grid>
-              <SimpleSnackbar 
+              <SimpleSnackbar
                 open={this.state.snackBarVisible}
-                handleClose={() => this.setState({snackBarVisible: false})}
-                message="Error al cerrar sesión" 
-                />
+                handleClose={() => this.setState({ snackBarVisible: false })}
+                message="Error al cerrar sesión"
+              />
               {this.isLoggedIn() && (
                 <Grid item>
                   <Grid container direction="row" alignItems="center">
                     <Grid item xs={2}>
-                      <IconButton onClick = {() => this.handleNotificationClick()}>
-                        <Badge badgeContent={this.state.notifications} color="secondary">
+                      <IconButton
+                        onClick={() => this.handleNotificationClick()}
+                      >
+                        <Badge
+                          badgeContent={this.state.notifications}
+                          color="secondary"
+                        >
                           <NotificationsIcon />
                         </Badge>
                       </IconButton>
@@ -86,9 +92,11 @@ class Navbar extends Component {
                         <ProfileButton
                           name={this.context.userInfo.name}
                           surname={this.context.userInfo.surname}
-                          token = {this.context.token}
-                          setToken = {this.context.setToken}
-                          handleLoginError = {(newVisibility) => this.handleLoginError(newVisibility)}
+                          token={this.context.token}
+                          setToken={this.context.setToken}
+                          handleLoginError={(newVisibility) =>
+                            this.handleLoginError(newVisibility)
+                          }
                         />
                       </Container>
                     </Grid>
@@ -99,6 +107,12 @@ class Navbar extends Component {
           </Toolbar>
         </AppBar>
         <Toolbar />
+        {this.isLoggedIn() && (
+          <NotificationDrawer
+            open={this.state.drawerIsOpen}
+            onClose={() => this.setState({ drawerIsOpen: false })}
+          />
+        )}
       </div>
     );
   }

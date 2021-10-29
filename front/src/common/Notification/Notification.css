@@ -1,0 +1,20 @@
+#notification-icon {
+  fill: #c5b2a5;
+  font-size: xx-large;
+}
+
+#notification-read {
+  opacity: 0.4;
+}
+
+#notification-menu-item {
+  margin-left: 10px;
+  width: 80%;
+}
+
+#notification-message {
+  width: 250px;
+  white-space: normal;
+  margin-left: 20px;
+  padding-right: 60px;
+}

@@ -1,0 +1,14 @@
+.top-frame {
+  background-color: #c5b2a5;
+  height: 3%;
+}
+
+#drawer-header {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+}
+
+#drawer-header #notification-name {
+  color: #00000099;
+}
