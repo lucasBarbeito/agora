@@ -76,6 +76,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         Post post;
         Post post1;
         Post post2;
+        Post post3;
         Label label1;
         Label label2;
         Label label3;
@@ -124,8 +125,10 @@ public class StudyGroupControllerTest extends AbstractTest{
 
             post1 = new Post("LOTR 2 is out", group1, user1, LocalDateTime.of(2021, 9, 23, 3, 15));
             post2 = new Post("LOTR 2 is great", group1, user1, LocalDateTime.of(2021, 9, 24, 12, 3));
+            post3 = new Post("Aguante Dune!", group2, user1, LocalDateTime.of(2021, 9, 24, 12, 3));
             postRepository.save(post1);
             postRepository.save(post2);
+            postRepository.save(post3);
         }
 
         void rollback() {
@@ -1025,7 +1028,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @WithMockUser("tolkien@gmail.com")
     public void getPostsFromStudyGroupShouldReturnOk() throws Exception {
         StudyGroup studyGroup = data.group1;
-        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        String uri = "/studyGroup/" + studyGroup.getId() + "/forum/?page=0";
         PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
@@ -1069,7 +1072,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolk@gmail.com")
     public void getPostsFromStudyGroupWithNonExistingUserShouldReturnNotFound() throws Exception {
-        String uri = "/studyGroup/" + data.group1.getId() + "/forum";
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/?page=0";
         MvcResult mvcGetResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -1081,7 +1084,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("herbert@gmail.com")
     public void getPostsFromStudyGroupWithNonMemberUserShouldReturnForbidden() throws Exception {
-        String uri = "/studyGroup/" + data.group1.getId() + "/forum";
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/?page=0";
         MvcResult mvcGetResult = mvc.perform(
                 MockMvcRequestBuilders.get(uri)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -1093,8 +1096,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void getPostsFromStudyGroupShouldReturnPostsInOrder() throws Exception {
-        StudyGroup studyGroup = data.group1;
-        String uri = "/studyGroup/" + studyGroup.getId() + "/forum";
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/?page=0";
         PostForm groupForm = new PostForm("Aguante Tolkien", LocalDateTime.now());
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)

@@ -2,6 +2,8 @@ package com.agora.agora.repository;
 
 import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,10 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
             "where p.studyGroup.id = (:id)" +
             "ORDER BY p.creationDateAndTime ASC")
     List<Post> findAllByStudyGroupId(@Param("id")int id);
+
+    @Query(value = "select p from Post p " +
+            "where p.studyGroup.id = (:id)")
+    Page<Post> findAllByStudyGroupId(Pageable pageable, @Param("id") int id);
 
     void deleteAllByStudyGroupId(int studyGroupId);
 }

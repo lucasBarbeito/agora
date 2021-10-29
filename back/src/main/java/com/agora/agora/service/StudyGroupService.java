@@ -278,7 +278,7 @@ public class StudyGroupService {
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
         Pageable request = PageRequest.of(page,12);
-//
+
         if(optionalUser.isPresent()){
             User currentUser = optionalUser.get();
             Page<StudyGroup> studyGroups;
@@ -316,7 +316,7 @@ public class StudyGroupService {
         }
     }
 
-    public List<Post> getStudyGroupPosts(int studyGroupId){
+    public Page<Post> getStudyGroupPosts(int studyGroupId, int page){
         String email = ((org.springframework.security.core.userdetails.User)
                 SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -326,8 +326,9 @@ public class StudyGroupService {
             Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
             if(groupOptional.isPresent()){
                 Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
+                Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.ASC,"creationDateAndTime"));
                 if(optionalStudyGroupUser.isPresent()){
-                    return postRepository.findAllByStudyGroupId(studyGroupId);
+                    return postRepository.findAllByStudyGroupId(request, studyGroupId);
                 }
                 throw new ForbiddenElementException("Only members can see posts.");
             }

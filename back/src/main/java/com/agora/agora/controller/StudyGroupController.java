@@ -104,9 +104,13 @@ public class StudyGroupController {
 
     @GetMapping(value = "/{id}/forum")
     public List<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId){
-        List<Post> groupPosts = groupService.getStudyGroupPosts(studyGroupId);
-        List<PostDTO> postDTOS = groupPosts.stream().map(post -> new PostDTO(post.getId(), post.getContent(), post.getStudyGroup().getId(), post.getCreator().getId(), post.getCreationDateAndTime())).collect(Collectors.toList());
-        return postDTOS;
+        return getAllGroupMessages(studyGroupId,Optional.of(0)).getContent();
+    }
+
+    @GetMapping(value = "/{id}/forum/paged")
+    public Page<PostDTO> getAllGroupMessages(@PathVariable("id") int studyGroupId, @ApiParam(value = "Query param for page number") @RequestParam(value = "page") Optional<Integer> page) {
+        Page<Post> posts = groupService.getStudyGroupPosts(studyGroupId, page.orElse(0));
+        return posts.map(post -> new PostDTO(post.getId(), post.getContent(), studyGroupId, post.getCreator().getId(), post.getCreationDateAndTime()));
     }
 
     @DeleteMapping(value = "/{id}")
