@@ -14,10 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
 
     private UserRepository userRepository;
@@ -26,16 +28,20 @@ public class UserService {
     private EmailService emailService;
     private NewMemberNotificationRepository newMemberNotificationRepository;
     private NewPostNotificationRepository newPostNotificationRepository;
+    private GroupInviteNotificationRepository groupInviteNotificationRepository;
+    private PostRepository postRepository;
     private ContactLinkRepository contactLinkRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService, NewPostNotificationRepository newPostNotificationRepository, NewMemberNotificationRepository newMemberNotificationRepository, ContactLinkRepository contactLinkRepository) {
+    public UserService(PostRepository postRepository, UserRepository userRepository,StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService, NewPostNotificationRepository newPostNotificationRepository, NewMemberNotificationRepository newMemberNotificationRepository, GroupInviteNotificationRepository groupInviteNotificationRepository, ContactLinkRepository contactLinkRepository) {
         this.userRepository = userRepository;
         this.studyGroupRepository = studyGroupRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
         this.emailService = emailService;
         this.newMemberNotificationRepository = newMemberNotificationRepository;
         this.newPostNotificationRepository = newPostNotificationRepository;
+        this.groupInviteNotificationRepository = groupInviteNotificationRepository;
+        this.postRepository = postRepository;
         this.contactLinkRepository = contactLinkRepository;
     }
 
@@ -133,6 +139,20 @@ public class UserService {
         }
     }
 
+
+    public void deleteUser(int userId) {
+        groupInviteNotificationRepository.deleteAllByUserId(userId);
+        newMemberNotificationRepository.deleteAllByUserId(userId);
+        newMemberNotificationRepository.deleteAllByNewMemberId(userId);
+
+        newPostNotificationRepository.deleteAllByUserId(userId);
+
+        studyGroupUsersRepository.deleteAllByUserId(userId);
+
+        postRepository.deleteAllByCreatorId(userId);
+
+        userRepository.deleteById(userId);
+    }
 
     public int editUser(EditUserForm changedUserData) {
         String email = ((org.springframework.security.core.userdetails.User)

@@ -35,4 +35,6 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
     Page<Post> findAllByStudyGroupIdAndContentIsContainingIgnoreCase(Pageable pageable, @Param("id") int studyGroupId, @Param("text") String text);
 
     void deleteAllByStudyGroupId(int studyGroupId);
+
+    void deleteAllByCreatorId(int userId);
 }

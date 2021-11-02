@@ -4,6 +4,7 @@ import com.agora.agora.controller.UserController;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.repository.UserRepository;
 import com.agora.agora.service.EmailService;
+import com.agora.agora.service.StudyGroupService;
 import com.agora.agora.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

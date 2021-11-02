@@ -465,4 +465,21 @@ public class StudyGroupService {
             return groupRepository.findByLabelIdInAndText(labelIds, text, pageable);
         }
     }
+
+    public void moveOwnership(int userId) {
+        List<StudyGroup> studyGroups = groupRepository.findAllByCreatorId(userId);
+        studyGroups.forEach(studyGroup -> {
+            List<StudyGroupUser> users = findUsersInStudyGroup(studyGroup.getId());
+            if(users.get(0).getUser().getId() != userId){
+                studyGroup.setCreator(users.get(0).getUser());
+                groupRepository.save(studyGroup);
+            } else if(users.size() > 1){
+                studyGroup.setCreator(users.get(1).getUser());
+                groupRepository.save(studyGroup);
+            }
+            else{
+                deleteGroup(studyGroup.getId());
+            }
+        });
+    }
 }

@@ -89,6 +89,10 @@ public class UserControllerTest extends AbstractTest{
         Label label1;
         Label label2;
         NewPostNotification notification1;
+        NewMemberNotification notification2;
+        StudyGroupUser group1User1;
+        StudyGroupUser group2User2;
+        StudyGroupUser group1User4;
         ContactLink contactLink1;
 
         void setup() {
@@ -124,9 +128,9 @@ public class UserControllerTest extends AbstractTest{
             studyGroupLabelRepository.save(l1g1);
             studyGroupLabelRepository.save(l2g2);
 
-            StudyGroupUser group1User1 = new StudyGroupUser(user1, group1);
-            StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
-            StudyGroupUser group1User4 = new StudyGroupUser(user4, group1);
+            group1User1 = new StudyGroupUser(user1, group1);
+            group2User2 = new StudyGroupUser(user2, group2);
+            group1User4 = new StudyGroupUser(user4, group1);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
             studyGroupUsersRepository.save(group1User4);
@@ -141,6 +145,7 @@ public class UserControllerTest extends AbstractTest{
 
             notification1 = new NewPostNotification(user1, false, LocalDate.of(2021, 9, 23), post1, group1);
             newPostNotificationRepository.save(notification1);
+            notification2 = new NewMemberNotification(user2, false, LocalDate.of(2021, 9, 23),user1, group1);
         }
 
         void rollback() {
@@ -649,6 +654,37 @@ public class UserControllerTest extends AbstractTest{
         assertEquals(form.getName(), user.getName());
         assertEquals(form.getSurname(), user.getSurname());
         assertEquals(contactLinks.get(0).getId(), user.getContactLinks().get(0).getId());
+    }
+
+    @Test
+    @WithMockUser(username = "herbert@gmail.com")
+    public void whenDeletingUserShouldDeleteAllInformation() throws Exception {
+        String uri = "/user/me";
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+
+        assertFalse(userRepository.findById(data.user2.getId()).isPresent());
+        assertFalse(studyGroupUsersRepository.findById(data.group2User2.getId()).isPresent());
+        assertFalse(groupRepository.findById(data.group2.getId()).isPresent());
+        assertFalse(postRepository.findById(data.post.getId()).isPresent());
+        assertFalse(newMemberNotificationRepository.findById(data.notification2.getId()).isPresent());
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void whenDeletingCreatorUserGroupCreatorShouldPassToSecondUser() throws Exception {
+        String uri = "/user/me";
+
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+
+        assertTrue(groupRepository.findById(data.group1.getId()).isPresent());
+        assertEquals(data.user4.getId(), groupRepository.findById(data.group1.getId()).get().getCreator().getId());
     }
 }
 

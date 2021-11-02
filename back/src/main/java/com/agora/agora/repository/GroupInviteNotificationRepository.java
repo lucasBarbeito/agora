@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface GroupInviteNotificationRepository extends CrudRepository<GroupInviteNotification,Integer> {
     List<GroupInviteNotification> findAllByUserId(int userId);
+
+    void deleteAllByUserId(int userId);
 }

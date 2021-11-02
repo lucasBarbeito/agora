@@ -9,4 +9,6 @@ import java.util.List;
 public interface NewPostNotificationRepository extends CrudRepository<NewPostNotification, Integer> {
 
     List<NewPostNotification> findAllByUserId(int userId);
+
+    void deleteAllByUserId(int userId);
 }

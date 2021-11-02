@@ -93,4 +93,6 @@ public interface StudyGroupRepository extends PagingAndSortingRepository<StudyGr
                 "where lbl.id in (:ids) " +
                     "and sg_user.id = :id")
     Page<StudyGroup> findByUserAndLabelIdIn(@Param("id")int id, @Param("ids") List<Integer> labelIds, Pageable pageable);
+    List<StudyGroup> findAllByCreatorId(int creatorId);
+    void deleteAllByCreatorId(int creatorId);
 }

@@ -5,6 +5,7 @@ import com.agora.agora.model.dto.*;
 import com.agora.agora.model.form.EditUserForm;
 import com.agora.agora.model.form.UserForm;
 import com.agora.agora.model.form.UserVerificationForm;
+import com.agora.agora.service.StudyGroupService;
 import com.agora.agora.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private UserService userService;
+    @Autowired
+    private StudyGroupService studyGroupService;
     @Autowired
     public UserController(UserService userService){
         this.userService = userService;
@@ -78,5 +82,13 @@ public class UserController {
     public ResponseEntity editUser(@Valid @RequestBody EditUserForm editUserForm){
         int id = userService.editUser(editUserForm);
         return ResponseEntity.ok(id);
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity deleteUser(){
+        int userId = userService.findCurrentUser().orElseThrow(()-> new NoSuchElementException("User does not exist.")).getId();
+        studyGroupService.moveOwnership(userId);
+        userService.deleteUser(userId);
+        return ResponseEntity.ok().build();
     }
 }

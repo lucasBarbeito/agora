@@ -19,5 +19,5 @@ public interface StudyGroupUsersRepository extends PagingAndSortingRepository<St
     Optional<StudyGroupUser> findStudyGroupUserByStudyGroupIdAndAndUserId(int studyGroupId, int userId);
 
     void deleteAllByStudyGroupId(int studyGroupId);
-
+    void deleteAllByUserId(int userId);
 }
