@@ -15,6 +15,7 @@ import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 import { Badge } from "@material-ui/core";
 import NotificationDrawer from "../NotificationDrawer/NotificationDrawer";
+import baseUrl from "../../baseUrl";
 
 class Navbar extends Component {
   constructor(props) {
@@ -22,7 +23,6 @@ class Navbar extends Component {
 
     this.state = {
       snackBarVisible: false,
-      notifications: 5,
       drawerIsOpen: false,
     };
   }
@@ -47,6 +47,14 @@ class Navbar extends Component {
   handleNotificationClick = () => {
     this.setState({ drawerIsOpen: true });
   };
+
+  checkNotifications = () => {
+    let amount = 0;
+    this.context.notifications.map(item => {
+      if (!item.read) amount = amount + 1;
+    })
+    return amount;
+  }
 
   render() {
     return (
@@ -80,7 +88,7 @@ class Navbar extends Component {
                         onClick={() => this.handleNotificationClick()}
                       >
                         <Badge
-                          badgeContent={this.state.notifications}
+                          badgeContent={this.checkNotifications()}
                           color="secondary"
                         >
                           <NotificationsIcon />

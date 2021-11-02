@@ -50,6 +50,7 @@ class App extends Component {
         localStorage.setItem("token", newToken);
         this.getUserInfo(newToken, redirectTo);
         this.getLabels(newToken);
+        this.getNotifications(newToken);
       } else {
         localStorage.removeItem("token");
         history.push(redirectTo || "/");
@@ -61,6 +62,7 @@ class App extends Component {
       userInfo: null,
       logingIn: true,
       labels: [],
+      notifications: [],
       setToken: this.setToken,
     };
   }
@@ -103,6 +105,20 @@ class App extends Component {
       alert("Error, no es posible conectarse al back-end");
     }
   }
+
+  getNotifications = async (newToken) => {
+    try {
+      const response = await fetch(`${baseUrl}/user/notification/me`, {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${newToken}`,
+        },
+      });
+      this.setState({ notifications: await response.json() });
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  };
 
   componentDidMount() {
     console.log(history.location.pathname);
