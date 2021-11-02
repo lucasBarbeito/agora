@@ -230,3 +230,42 @@
 #submit-invitation.Mui-disabled:hover {
   cursor: not-allowed;
 }
+
+.search-comments-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 800px;
+  margin-left: 8px;
+  margin-bottom: 10px;
+}
+
+#search-comment {
+  width: 250px;
+}
+
+.date-form {
+padding-bottom: 10px;
+}
+
+#date-input {
+  width: 150px;
+}
+
+#date-selection {
+  text-transform: none;
+  background-color: #c5b2a5;
+  color: #ffffff;
+  height: 20px;
+  margin-top: 10px;
+}
+
+.dialog-date-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+#confirm-dates {
+ color: #c5b2a5;
+}

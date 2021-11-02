@@ -13,7 +13,7 @@ import {
   IconButton,
   Paper,
   Typography,
-  TextField,
+  TextField, Input,
 } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
@@ -27,6 +27,10 @@ import baseUrl from "../../baseUrl";
 import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js";
 import InvitationForm from "../../common/InvitationForm/InvitationForm";
+import { DateRangePicker } from "materialui-daterange-picker";
+import SearchIcon from "@material-ui/icons/Search";
+import moment from "moment";
+import TodayIcon from "@material-ui/icons/Today";
 
 class Group extends Component {
   constructor(props) {
@@ -51,6 +55,10 @@ class Group extends Component {
       announcements: [],
       deletingAnnouncements: [],
       openAnnouncementDeletionErrorSnack: false,
+      selectedDate: [],
+      announcementSearch: "",
+      datePicker: false,
+      dateRange: [],
     };
   }
 
@@ -112,7 +120,7 @@ class Group extends Component {
           return {
             name: user.name,
             date: new Date(item.creationDateAndTime).toLocaleDateString(
-              "es-AR"
+              "es-AR",
             ),
             content: item.content,
             creatorId: item.creatorId,
@@ -183,7 +191,7 @@ class Group extends Component {
       let res = await this.getGroupData(groupId);
 
       const userInGroup = res.userContacts.find(
-        (item) => item.id === this.context.userInfo.id
+        (item) => item.id === this.context.userInfo.id,
       );
       if (!userInGroup) {
         await this.addUserToGroup(groupId);
@@ -294,11 +302,11 @@ class Group extends Component {
             "Content-type": "application/json; charset=UTF-8",
             Authorization: `Bearer ${this.context.token}`,
           },
-        }
+        },
       );
 
       updatedDeletingAnnouncements = this.state.deletingAnnouncements.filter(
-        (an) => an.id === id
+        (an) => an.id === id,
       );
       this.setState({ deletingAnnouncements: updatedDeletingAnnouncements });
 
@@ -306,7 +314,7 @@ class Group extends Component {
         this.setState({ openAnnouncementDeletionErrorSnack: true });
       } else {
         const updatedAnnouncements = this.state.announcements.filter(
-          (an) => an.id !== id
+          (an) => an.id !== id,
         );
         this.setState({ announcements: updatedAnnouncements });
       }
@@ -316,7 +324,6 @@ class Group extends Component {
   }
 
   compareDates(date1, date2) {
-    console.log(date1);
 
     const date1Components = date1.split("/");
     const date2Components = date2.split("/");
@@ -324,15 +331,25 @@ class Group extends Component {
     const newDate1 = new Date(
       date1Components[2],
       date1Components[1] - 1,
-      date1Components[0]
+      date1Components[0],
     );
     const newDate2 = new Date(
       date2Components[2],
       date2Components[1] - 1,
-      date2Components[0]
+      date2Components[0],
     );
 
     return newDate2 - newDate1;
+  }
+
+  //need to check specific date format
+  handleDateConfirmation(date) {
+    const start = moment(date.startDate).calendar();
+    const end = moment(date.endDate).calendar();
+    this.setState({
+      dateRange: [start, end],
+      datePicker: false
+    });
   }
 
   render() {
@@ -373,7 +390,7 @@ class Group extends Component {
                             initialDescription={this.state.description}
                             tags={this.context.labels}
                             groupLabel={this.state.labels.map(
-                              (index) => index.name
+                              (index) => index.name,
                             )}
                             onChange={() => this.handleOnChange()}
                           />
@@ -464,7 +481,54 @@ class Group extends Component {
                 </Grid>
               </Grid>
             </Grid>
+
             <Grid container item xs={6}>
+              <div className="search-comments-div">
+                <TextField
+                  id="search-comment"
+                  label="Buscar anuncio"
+                  variant="outlined"
+                  value={this.state.announcementSearch}
+                  onChange={(text) => this.setState({ announcementSearch: text.target.value })}
+                />
+                <div className="date-form">
+                  <TextField id="date-input"
+                             variant="outlined"
+                             label="Rango de fechas"
+                             value={this.state.dateRange}
+                             onClick={() => this.setState({ datePicker: true })}
+                             InputProps={{
+                               endAdornment: (
+                                 <IconButton>
+                                   <TodayIcon />
+                                 </IconButton>
+                               ),
+                             }}
+                  />
+                </div>
+                <Dialog open={this.state.datePicker} maxWidth={"xl"}>
+                  <DialogContent>
+                    <DateRangePicker
+                      style={{ width: 100 }}
+                      open={true}
+                      toggle={() => this.setState({ datePicker: false })}
+                      onChange={range => this.setState({ selectedDate: range })}
+                      closeOnClickOutside={true}
+                      maxDate={moment()}
+                    />
+                    <div className="dialog-date-buttons">
+                      <Button id="confirm-dates"
+                              onClick={() => this.setState({ datePicker: !this.state.datePicker })}>Cancelar</Button>
+                      <Button id="confirm-dates"
+                              onClick={() => this.handleDateConfirmation(this.state.selectedDate)}>Confirmar</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <IconButton id="search-button">
+                  <SearchIcon />
+                </IconButton>
+              </div>
+
               <Grid container direction="column">
                 <Grid
                   item
@@ -518,26 +582,26 @@ class Group extends Component {
                 </Grid>
                 <Container id="announcement">
                   {!this.state.isFetching &&
-                    this.state.announcements
-                      .sort((a1, a2) => this.compareDates(a1.date, a2.date))
-                      .map((announcement, index) => (
-                        <GroupAnnouncement
-                          key={index}
-                          canDelete={
-                            this.state.isAdmin ||
-                            this.context.userInfo.id === announcement.creatorId
-                          }
-                          handleDelete={() =>
-                            this.deleteAnnouncement(announcement.id)
-                          }
-                          name={announcement.name}
-                          date={announcement.date}
-                          content={announcement.content}
-                          isBeingRemoved={this.state.deletingAnnouncements.includes(
-                            announcement.id
-                          )}
-                        />
-                      ))}
+                  this.state.announcements
+                    .sort((a1, a2) => this.compareDates(a1.date, a2.date))
+                    .map((announcement, index) => (
+                      <GroupAnnouncement
+                        key={index}
+                        canDelete={
+                          this.state.isAdmin ||
+                          this.context.userInfo.id === announcement.creatorId
+                        }
+                        handleDelete={() =>
+                          this.deleteAnnouncement(announcement.id)
+                        }
+                        name={announcement.name}
+                        date={announcement.date}
+                        content={announcement.content}
+                        isBeingRemoved={this.state.deletingAnnouncements.includes(
+                          announcement.id,
+                        )}
+                      />
+                    ))}
                 </Container>
               </Grid>
             </Grid>
