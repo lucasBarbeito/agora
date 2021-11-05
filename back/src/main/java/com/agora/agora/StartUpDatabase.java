@@ -32,19 +32,33 @@ public class StartUpDatabase {
     private final LabelRepository labelRepository;
     private final PostRepository postRepository;
     private final ContactLinkRepository contactLinkRepository;
+    private final NewPostNotificationRepository newPostNotificationRepository;
 
     @Autowired
 
-    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository, ContactLinkRepository contactLinkRepository) {
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository, ContactLinkRepository contactLinkRepository, NewPostNotificationRepository newPostNotificationRepository) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
         this.labelRepository = labelRepository;
         this.postRepository = postRepository;
         this.contactLinkRepository = contactLinkRepository;
+        this.newPostNotificationRepository = newPostNotificationRepository;
     }
 
     private void addManyToGroup(int groupId, List<Integer> userId){
         userId.forEach(user -> studyGroupService.addUserToStudyGroup(groupId, user));
+    }
+
+    private void postNotificationsToUsersInGroup(StudyGroup studyGroup, List<User> users, List<Post> posts){
+        for (int i = 0; i < users.size(); i++) {
+            for (Post post : posts) {
+                if (Math.random() > 0.5) {
+                    newPostNotificationRepository.save(new NewPostNotification(users.get(i), true, posts.get(i).getCreationDateTime().toLocalDate(), post, studyGroup));
+                } else {
+                    newPostNotificationRepository.save(new NewPostNotification(users.get(i), false, posts.get(i).getCreationDateTime().toLocalDate(), post, studyGroup));
+                }
+            }
+        }
     }
 
     @EventListener
@@ -401,7 +415,7 @@ public class StartUpDatabase {
                 Post post19 = new Post("Limita con Chile, Paraguay, Bolivia, Uruguay y Brasil", sg6, u7, LocalDateTime.of(2021, 4,23, 0, 0));
                 Post post20 = new Post("La ley 27546 claramente dice que esta mal", sg8, u8, LocalDateTime.of(2019, 4,15, 0, 0));
                 Post post21 = new Post("Pero el inciso 4 dice otra cosa", sg8, u9, LocalDateTime.of(2019, 4,15, 0, 0));
-                Post post22 = new Post("Asi es, parecec que e contradice...", sg8, u10, LocalDateTime.of(2019, 4,15, 0, 0));
+                Post post22 = new Post("Asi es, parece que se contradice...", sg8, u10, LocalDateTime.of(2019, 4,15, 0, 0));
                 Post post23 = new Post("Entonces hay que buscar otra forma para resolver el caso de estudio", sg8, u8, LocalDateTime.of(2019, 4,15, 0, 0));
                 Post post24 = new Post("No creo que haya otra cosa", sg8, u9, LocalDateTime.of(2019, 4,15, 0, 0));
                 Post post25 = new Post("Cuando ocurre la Fotosintesis?", sg11, u11, LocalDateTime.of(2021, 7,2, 0, 0));
@@ -440,7 +454,7 @@ public class StartUpDatabase {
                 Post post58 = new Post("Muchas gracias!", sg17, u3, LocalDateTime.of(2020, 4,29, 0, 0));
                 Post post59 = new Post("Las rosas tienen espinas, cuidado!", sg10, u10, LocalDateTime.of(2021, 5,30, 0, 0));
                 Post post60 = new Post("Como se hace para cortarlas?", sg10, u11, LocalDateTime.of(2021, 5,30, 0, 0));
-                Post post61 = new Post("Tenes que conseguir guantes gruesos.", sg12, u10, LocalDateTime.of(2021, 5,30, 0, 0));
+                Post post61 = new Post("Tenes que conseguir guantes gruesos.", sg10, u10, LocalDateTime.of(2021, 5,30, 0, 0));
                 Post post62 = new Post("El area de un circulo es pi*r^2", sg5, u5, LocalDateTime.of(2021, 2,2, 0, 0));
                 Post post63 = new Post("Su diametro = r x 2", sg5, u6, LocalDateTime.of(2021, 2,2, 0, 0));
                 Post post64 = new Post("Podemos ver que la corriente fluye hacia el norte", sg12, u12, LocalDateTime.of(2020, 6,12, 0, 0));
@@ -523,6 +537,101 @@ public class StartUpDatabase {
                 postRepository.save(post69);
                 postRepository.save(post70);
                 postRepository.save(post71);
+
+                Post p1 = postRepository.findById(post1.getId()).get();
+                Post p2 = postRepository.findById(post2.getId()).get();
+                Post p3 = postRepository.findById(post3.getId()).get();
+                Post p4 = postRepository.findById(post4.getId()).get();
+                Post p5 = postRepository.findById(post5.getId()).get();
+                Post p6 = postRepository.findById(post6.getId()).get();
+                Post p7 = postRepository.findById(post7.getId()).get();
+                Post p8 = postRepository.findById(post8.getId()).get();
+                Post p9 = postRepository.findById(post9.getId()).get();
+                Post p10 = postRepository.findById(post10.getId()).get();
+                Post p11 = postRepository.findById(post11.getId()).get();
+                Post p12 = postRepository.findById(post12.getId()).get();
+                Post p13 = postRepository.findById(post13.getId()).get();
+                Post p14 = postRepository.findById(post14.getId()).get();
+                Post p15 = postRepository.findById(post15.getId()).get();
+                Post p16 = postRepository.findById(post16.getId()).get();
+                Post p17 = postRepository.findById(post17.getId()).get();
+                Post p18 = postRepository.findById(post18.getId()).get();
+                Post p19 = postRepository.findById(post19.getId()).get();
+                Post p20 = postRepository.findById(post20.getId()).get();
+                Post p21 = postRepository.findById(post21.getId()).get();
+                Post p22 = postRepository.findById(post22.getId()).get();
+                Post p23 = postRepository.findById(post23.getId()).get();
+                Post p24 = postRepository.findById(post24.getId()).get();
+                Post p25 = postRepository.findById(post25.getId()).get();
+                Post p26 = postRepository.findById(post26.getId()).get();
+                Post p27 = postRepository.findById(post27.getId()).get();
+                Post p28 = postRepository.findById(post28.getId()).get();
+                Post p29 = postRepository.findById(post29.getId()).get();
+                Post p30 = postRepository.findById(post30.getId()).get();
+                Post p31 = postRepository.findById(post31.getId()).get();
+                Post p32 = postRepository.findById(post32.getId()).get();
+                Post p33 = postRepository.findById(post33.getId()).get();
+                Post p34 = postRepository.findById(post34.getId()).get();
+                Post p35 = postRepository.findById(post35.getId()).get();
+                Post p36 = postRepository.findById(post36.getId()).get();
+                Post p37 = postRepository.findById(post37.getId()).get();
+                Post p38 = postRepository.findById(post38.getId()).get();
+                Post p39 = postRepository.findById(post39.getId()).get();
+                Post p40 = postRepository.findById(post40.getId()).get();
+                Post p41 = postRepository.findById(post41.getId()).get();
+                Post p42 = postRepository.findById(post42.getId()).get();
+                Post p43 = postRepository.findById(post43.getId()).get();
+                Post p44 = postRepository.findById(post44.getId()).get();
+                Post p45 = postRepository.findById(post45.getId()).get();
+                Post p46 = postRepository.findById(post46.getId()).get();
+                Post p47 = postRepository.findById(post47.getId()).get();
+                Post p48 = postRepository.findById(post48.getId()).get();
+                Post p49 = postRepository.findById(post49.getId()).get();
+                Post p50 = postRepository.findById(post50.getId()).get();
+                Post p51 = postRepository.findById(post51.getId()).get();
+                Post p52 = postRepository.findById(post52.getId()).get();
+                Post p53 = postRepository.findById(post53.getId()).get();
+                Post p54 = postRepository.findById(post54.getId()).get();
+                Post p55 = postRepository.findById(post55.getId()).get();
+                Post p56 = postRepository.findById(post56.getId()).get();
+                Post p57 = postRepository.findById(post57.getId()).get();
+                Post p58 = postRepository.findById(post58.getId()).get();
+                Post p59 = postRepository.findById(post59.getId()).get();
+                Post p60 = postRepository.findById(post60.getId()).get();
+                Post p61 = postRepository.findById(post61.getId()).get();
+                Post p62 = postRepository.findById(post62.getId()).get();
+                Post p63 = postRepository.findById(post63.getId()).get();
+                Post p64 = postRepository.findById(post64.getId()).get();
+                Post p65 = postRepository.findById(post65.getId()).get();
+                Post p66 = postRepository.findById(post66.getId()).get();
+                Post p67 = postRepository.findById(post67.getId()).get();
+                Post p68 = postRepository.findById(post68.getId()).get();
+                Post p69 = postRepository.findById(post69.getId()).get();
+                Post p70 = postRepository.findById(post70.getId()).get();
+                Post p71 = postRepository.findById(post71.getId()).get();
+
+                //Post Notifications
+                postNotificationsToUsersInGroup(sg1, Arrays.asList(u1, u2, u3), Arrays.asList(p1, p2, p3));
+                postNotificationsToUsersInGroup(sg2, Arrays.asList(u2, u3, u4), Arrays.asList(p4, p5, p6, p7));
+                postNotificationsToUsersInGroup(sg3, Arrays.asList(u3, u4, u5), Arrays.asList(p8, p9, p10, p11));
+                postNotificationsToUsersInGroup(sg4, Arrays.asList(u4, u5, u6), Arrays.asList(p12, p13, p14));
+                postNotificationsToUsersInGroup(sg6, Arrays.asList(u8, u6, u7), Arrays.asList(p15, p16, p17, p18, p19));
+                postNotificationsToUsersInGroup(sg8, Arrays.asList(u8, u9, u10), Arrays.asList(p20, p21, p22, p23, p24));
+                postNotificationsToUsersInGroup(sg11, Arrays.asList(u11, u12, u1), Arrays.asList(p25, p26, p27));
+                postNotificationsToUsersInGroup(sg9, Arrays.asList(u9, u10, u11), Arrays.asList(p28, p29, p30, p31));
+                postNotificationsToUsersInGroup(sg13, Arrays.asList(u1, u2, u3), Arrays.asList(p32, p33, p34));
+                postNotificationsToUsersInGroup(sg18, Arrays.asList(u3, u7, u8), Arrays.asList(p35, p36, p37, p38));
+                postNotificationsToUsersInGroup(sg16, Arrays.asList(u4, u5, u6), Arrays.asList(p39, p40, p41, p42, p43, p44));
+                postNotificationsToUsersInGroup(sg19, Arrays.asList(u1, u2, u3), Arrays.asList(p45, p46));
+                postNotificationsToUsersInGroup(sg20, Arrays.asList(u3, u9, u10), Arrays.asList(p47, p48));
+                postNotificationsToUsersInGroup(sg21, Arrays.asList(u3, u10, u11), Arrays.asList(p49, p50, p51, p52));
+                postNotificationsToUsersInGroup(sg7, Arrays.asList(u7, u8, u9), Arrays.asList(p53, p54, p55));
+                postNotificationsToUsersInGroup(sg17, Arrays.asList(u3, u6, u7), Arrays.asList(p56, p57, p58));
+                postNotificationsToUsersInGroup(sg10, Arrays.asList(u10, u11, u12), Arrays.asList(p59, p60, p61));
+                postNotificationsToUsersInGroup(sg5, Arrays.asList(u5, u6, u7), Arrays.asList(p62, p63));
+                postNotificationsToUsersInGroup(sg12, Arrays.asList(u12, u1, u2), Arrays.asList(p64, p65, p66));
+                postNotificationsToUsersInGroup(sg14, Arrays.asList(u2, u3, u4), Arrays.asList(p67, p68, p69));
+                postNotificationsToUsersInGroup(sg15, Arrays.asList(u3, u4, u5), Arrays.asList(p70, p71));
 
             } catch (Exception ignored){}
         }
