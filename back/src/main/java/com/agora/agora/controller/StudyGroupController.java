@@ -140,4 +140,10 @@ public class StudyGroupController {
         List<LabelDTO> labelDTO = labels.stream().map(label -> new LabelDTO(label.getId(), label.getName())).collect(Collectors.toList());
         return labelDTO;
     }
+
+    @PostMapping(value = "/{id}/invite/{userId}")
+    public ResponseEntity userInvitation(@PathVariable("id") int studyGroupId, @PathVariable("userId") int userId) {
+        groupService.sendUserJoinStudyGroupNotification(studyGroupId, userId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -20,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,11 +39,12 @@ public class StudyGroupService {
     private LabelRepository labelRepository;
     private NewMemberNotificationRepository newMemberNotificationRepository;
     private NewPostNotificationRepository newPostNotificationRepository;
+    private UserInviteNotificationRepository userInviteNotificationRepository;
 
     private UserService userService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService, NewMemberNotificationRepository newMemberNotificationRepository, NewPostNotificationRepository newPostNotificationRepository) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService, NewMemberNotificationRepository newMemberNotificationRepository, NewPostNotificationRepository newPostNotificationRepository, UserInviteNotificationRepository userInviteNotificationRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
@@ -54,6 +54,7 @@ public class StudyGroupService {
         this.newMemberNotificationRepository = newMemberNotificationRepository;
         this.newPostNotificationRepository = newPostNotificationRepository;
         this.userService = userService;
+        this.userInviteNotificationRepository = userInviteNotificationRepository;
     }
 
     public int create(StudyGroupForm studyGroup) {
@@ -481,5 +482,32 @@ public class StudyGroupService {
                 deleteGroup(studyGroup.getId());
             }
         });
+    }
+
+    public void sendUserJoinStudyGroupNotification(int studyGroupId, int userId) {
+        String email = ((org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        Optional<User> optionalUserNotificationMaker = userRepository.findUserByEmail(email);
+        if (optionalUserNotificationMaker.isPresent()){
+            Optional<StudyGroup> groupOptional = groupRepository.findById(studyGroupId);
+            if (groupOptional.isPresent()) {
+                Optional<StudyGroupUser> studyGroupUserByStudyGroupIdAndAndUserId = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, optionalUserNotificationMaker.get().getId());
+                if (studyGroupUserByStudyGroupIdAndAndUserId.isPresent()) {
+                    Optional<User> optionalUser = userRepository.findById(userId);
+                    if (optionalUser.isPresent()) {
+                            userInviteNotificationRepository.save(new UserInviteNotification(optionalUser.get(), false, LocalDate.now(), groupOptional.get()));
+                    } else {
+                        throw new NoSuchElementException("User does not exist");
+                    }
+                }else {
+                    throw new ForbiddenElementException("User is not in group");
+                }
+            } else {
+                throw new NoSuchElementException("Group does not exist");
+            }
+        } else {
+            throw new NoSuchElementException("User does not exist");
+        }
+
     }
 }

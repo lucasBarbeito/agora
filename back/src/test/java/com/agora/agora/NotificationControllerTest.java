@@ -20,6 +20,9 @@ import static org.junit.Assert.*;
 public class NotificationControllerTest extends AbstractTest{
 
     @Autowired
+    private UserInviteNotificationRepository userInviteNotificationRepository;
+
+    @Autowired
     private NewMemberNotificationRepository newMemberNotificationRepository;
 
     @Autowired
@@ -33,6 +36,9 @@ public class NotificationControllerTest extends AbstractTest{
 
     @Autowired
     private StudyGroupRepository studyGroupRepository;
+
+    @Autowired
+    private StudyGroupUsersRepository studyGroupUsersRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -61,6 +67,8 @@ public class NotificationControllerTest extends AbstractTest{
             group1 = new StudyGroup("Lord of the rings", "...", user1, LocalDate.of(2021, 8, 17));
             studyGroupRepository.save(group1);
 
+            studyGroupUsersRepository.save(new StudyGroupUser(user1, group1));
+
             post = new Post("...", group1, user2, LocalDateTime.now());
             post1 = new Post("LOTR 2 is out", group1, user1, LocalDateTime.of(2021, 9, 23, 3, 15));
             postRepository.save(post);
@@ -83,6 +91,8 @@ public class NotificationControllerTest extends AbstractTest{
         }
 
         void rollback() {
+            studyGroupUsersRepository.deleteAll();
+            userInviteNotificationRepository.deleteAll();
             newMemberNotificationRepository.deleteAll();
             newPostNotificationRepository.deleteAll();
             groupInviteNotificationRepository.deleteAll();
@@ -152,5 +162,54 @@ public class NotificationControllerTest extends AbstractTest{
         assertEquals(404,status);
         boolean isRead = newMemberNotificationRepository.findById(data.newMemberNotification1.getId()).get().isRead();
         assertFalse(isRead);
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void senderNotInStudyGroupNotAllow() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/invite/" + data.user2.getId();
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(403, status);
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void sendNonExistingUserStudyGroupInviteNotificationShouldFail() throws Exception {
+        String uri = "/studyGroup/"+ data.group1.getId() + "/invite/-1";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void sendUserNonExistingStudyGroupInviteNotificationShouldFail() throws Exception {
+        String uri = "/studyGroup/-1/invite/" + data.user2.getId();
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void sendUserStudyGroupInviteNotificationShouldSucceed() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/invite/" + data.user2.getId();
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        assertEquals(1, userInviteNotificationRepository.findAllByUserId(data.user2.getId()).size());
     }
 }
