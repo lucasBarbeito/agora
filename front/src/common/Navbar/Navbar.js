@@ -50,11 +50,11 @@ class Navbar extends Component {
 
   checkNotifications = () => {
     let amount = 0;
-    this.context.notifications.map(item => {
+    this.context.notifications.map((item) => {
       if (!item.read) amount = amount + 1;
-    })
+    });
     return amount;
-  }
+  };
 
   render() {
     return (

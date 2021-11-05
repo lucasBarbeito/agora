@@ -2,7 +2,6 @@ package com.agora.agora.repository;
 
 import com.agora.agora.model.Post;
 import com.agora.agora.model.StudyGroup;
-import jdk.vm.ci.meta.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

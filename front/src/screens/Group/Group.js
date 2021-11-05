@@ -13,7 +13,9 @@ import {
   IconButton,
   Paper,
   Typography,
-  TextField, Input,
+  TextField,
+  Box,
+  Input,
 } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
@@ -27,6 +29,7 @@ import baseUrl from "../../baseUrl";
 import GroupAnnouncement from "../../common/GroupAnnouncement/GroupAnnouncement.js";
 import SimpleSnackbar from "../../common/SimpleSnackbar/SimpleSnackbar.js";
 import InvitationForm from "../../common/InvitationForm/InvitationForm";
+import { Pagination } from "@material-ui/lab";
 import { DateRangePicker } from "materialui-daterange-picker";
 import SearchIcon from "@material-ui/icons/Search";
 import moment from "moment";
@@ -55,6 +58,10 @@ class Group extends Component {
       announcements: [],
       deletingAnnouncements: [],
       openAnnouncementDeletionErrorSnack: false,
+      loadingGroup: true,
+      currentPage: 1,
+      totalPages: 0,
+      userContacts: [],
       selectedDate: [],
       announcementSearch: "",
       datePicker: false,
@@ -79,6 +86,12 @@ class Group extends Component {
     this.fetchGroupInformation();
   };
 
+  handlePageChange = (_, page) => {
+    this.setState({ currentPage: page }, () =>
+      this.getAnnouncements(this.state.userContacts)
+    );
+  };
+
   componentDidMount() {
     this.fetchGroupInformation();
   }
@@ -86,20 +99,25 @@ class Group extends Component {
   getAnnouncements = async (contacts) => {
     const groupId = this.props.match.params.id;
 
+    let text = `?page=${this.state.currentPage - 1}`;
+
     try {
-      const response = await fetch(`${baseUrl}/studyGroup/${groupId}/forum`, {
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${this.context.token}`,
-        },
-      });
+      const response = await fetch(
+        `${baseUrl}/studyGroup/${groupId}/forum/paged` + text,
+        {
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         this.setState({ getAnnouncementErrorSnack: true });
       } else {
         const res = await response.json();
 
-        const announcementFormatPromises = res.map(async (item) => {
+        const announcementFormatPromises = res.content.map(async (item) => {
           const userId = item.creatorId;
           let user = contacts.find((user) => user.id === userId);
           if (!user) {
@@ -120,7 +138,7 @@ class Group extends Component {
           return {
             name: user.name,
             date: new Date(item.creationDateAndTime).toLocaleDateString(
-              "es-AR",
+              "es-AR"
             ),
             content: item.content,
             creatorId: item.creatorId,
@@ -130,7 +148,10 @@ class Group extends Component {
         const announcementFormat = await Promise.all(
           announcementFormatPromises
         );
-        this.setState({ announcements: announcementFormat });
+        this.setState({
+          announcements: announcementFormat,
+          totalPages: res.totalPages,
+        });
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -191,7 +212,7 @@ class Group extends Component {
       let res = await this.getGroupData(groupId);
 
       const userInGroup = res.userContacts.find(
-        (item) => item.id === this.context.userInfo.id,
+        (item) => item.id === this.context.userInfo.id
       );
       if (!userInGroup) {
         await this.addUserToGroup(groupId);
@@ -302,11 +323,11 @@ class Group extends Component {
             "Content-type": "application/json; charset=UTF-8",
             Authorization: `Bearer ${this.context.token}`,
           },
-        },
+        }
       );
 
       updatedDeletingAnnouncements = this.state.deletingAnnouncements.filter(
-        (an) => an.id === id,
+        (an) => an.id === id
       );
       this.setState({ deletingAnnouncements: updatedDeletingAnnouncements });
 
@@ -314,7 +335,7 @@ class Group extends Component {
         this.setState({ openAnnouncementDeletionErrorSnack: true });
       } else {
         const updatedAnnouncements = this.state.announcements.filter(
-          (an) => an.id !== id,
+          (an) => an.id !== id
         );
         this.setState({ announcements: updatedAnnouncements });
       }
@@ -324,19 +345,18 @@ class Group extends Component {
   }
 
   compareDates(date1, date2) {
-
     const date1Components = date1.split("/");
     const date2Components = date2.split("/");
 
     const newDate1 = new Date(
       date1Components[2],
       date1Components[1] - 1,
-      date1Components[0],
+      date1Components[0]
     );
     const newDate2 = new Date(
       date2Components[2],
       date2Components[1] - 1,
-      date2Components[0],
+      date2Components[0]
     );
 
     return newDate2 - newDate1;
@@ -348,7 +368,7 @@ class Group extends Component {
     const end = moment(date.endDate).calendar();
     this.setState({
       dateRange: [start, end],
-      datePicker: false
+      datePicker: false,
     });
   }
 
@@ -390,7 +410,7 @@ class Group extends Component {
                             initialDescription={this.state.description}
                             tags={this.context.labels}
                             groupLabel={this.state.labels.map(
-                              (index) => index.name,
+                              (index) => index.name
                             )}
                             onChange={() => this.handleOnChange()}
                           />
@@ -489,21 +509,24 @@ class Group extends Component {
                   label="Buscar anuncio"
                   variant="outlined"
                   value={this.state.announcementSearch}
-                  onChange={(text) => this.setState({ announcementSearch: text.target.value })}
+                  onChange={(text) =>
+                    this.setState({ announcementSearch: text.target.value })
+                  }
                 />
                 <div className="date-form">
-                  <TextField id="date-input"
-                             variant="outlined"
-                             label="Rango de fechas"
-                             value={this.state.dateRange}
-                             onClick={() => this.setState({ datePicker: true })}
-                             InputProps={{
-                               endAdornment: (
-                                 <IconButton>
-                                   <TodayIcon />
-                                 </IconButton>
-                               ),
-                             }}
+                  <TextField
+                    id="date-input"
+                    variant="outlined"
+                    label="Rango de fechas"
+                    value={this.state.dateRange}
+                    onClick={() => this.setState({ datePicker: true })}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton>
+                          <TodayIcon />
+                        </IconButton>
+                      ),
+                    }}
                   />
                 </div>
                 <Dialog open={this.state.datePicker} maxWidth={"xl"}>
@@ -512,15 +535,29 @@ class Group extends Component {
                       style={{ width: 100 }}
                       open={true}
                       toggle={() => this.setState({ datePicker: false })}
-                      onChange={range => this.setState({ selectedDate: range })}
+                      onChange={(range) =>
+                        this.setState({ selectedDate: range })
+                      }
                       closeOnClickOutside={true}
                       maxDate={moment()}
                     />
                     <div className="dialog-date-buttons">
-                      <Button id="confirm-dates"
-                              onClick={() => this.setState({ datePicker: !this.state.datePicker })}>Cancelar</Button>
-                      <Button id="confirm-dates"
-                              onClick={() => this.handleDateConfirmation(this.state.selectedDate)}>Confirmar</Button>
+                      <Button
+                        id="confirm-dates"
+                        onClick={() =>
+                          this.setState({ datePicker: !this.state.datePicker })
+                        }
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        id="confirm-dates"
+                        onClick={() =>
+                          this.handleDateConfirmation(this.state.selectedDate)
+                        }
+                      >
+                        Confirmar
+                      </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -582,26 +619,40 @@ class Group extends Component {
                 </Grid>
                 <Container id="announcement">
                   {!this.state.isFetching &&
-                  this.state.announcements
-                    .sort((a1, a2) => this.compareDates(a1.date, a2.date))
-                    .map((announcement, index) => (
-                      <GroupAnnouncement
-                        key={index}
-                        canDelete={
-                          this.state.isAdmin ||
-                          this.context.userInfo.id === announcement.creatorId
-                        }
-                        handleDelete={() =>
-                          this.deleteAnnouncement(announcement.id)
-                        }
-                        name={announcement.name}
-                        date={announcement.date}
-                        content={announcement.content}
-                        isBeingRemoved={this.state.deletingAnnouncements.includes(
-                          announcement.id,
-                        )}
-                      />
-                    ))}
+                    this.state.announcements
+                      .sort((a1, a2) => this.compareDates(a1.date, a2.date))
+                      .map((announcement, index) => (
+                        <GroupAnnouncement
+                          key={index}
+                          canDelete={
+                            this.state.isAdmin ||
+                            this.context.userInfo.id === announcement.creatorId
+                          }
+                          handleDelete={() =>
+                            this.deleteAnnouncement(announcement.id)
+                          }
+                          name={announcement.name}
+                          date={announcement.date}
+                          content={announcement.content}
+                          isBeingRemoved={this.state.deletingAnnouncements.includes(
+                            announcement.id
+                          )}
+                        />
+                      ))}
+                  <Box
+                    display="flex"
+                    height={80}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Pagination
+                      id="sigle-group-pagination"
+                      count={this.state.totalPages}
+                      page={this.state.currentPage}
+                      variant="outlined"
+                      onChange={this.handlePageChange}
+                    />
+                  </Box>
                 </Container>
               </Grid>
             </Grid>

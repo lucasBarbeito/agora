@@ -13,7 +13,7 @@ class NotificationDrawer extends Component {
   readNotification = (id) => {
     const updatedNotifications = this.context.notifications;
     const notificationIndex = updatedNotifications.findIndex(
-      (n) => n.notificationTypeId === id,
+      (n) => n.notificationTypeId === id
     );
     updatedNotifications[notificationIndex].read = true;
     this.setState({ notifications: updatedNotifications });
@@ -34,26 +34,24 @@ class NotificationDrawer extends Component {
         <div className="top-frame" />
         <Grid id="drawer-header" container item direction="column">
           <Typography variant="h6">Mis Notificaciones</Typography>
-          <Typography
-            id="notification-name">{`${this.context.userInfo.name} ${this.context.userInfo.surname}`}</Typography>
+          <Typography id="notification-name">{`${this.context.userInfo.name} ${this.context.userInfo.surname}`}</Typography>
         </Grid>
         <Divider />
         <MenuList>
           {this.context.notifications.map((notification, index) => {
-              return (
-                <Notification
-                  key={index}
-                  read={notification.read}
-                  id={notification.notificationTypeId}
-                  userId={notification.userRecipientId}
-                  groupId={notification.studyGroupId}
-                  type={notification.notificationType}
-                  handleNotificationClick={this.handleNotificationClick}
-                  readNotification={this.readNotification}
-                />
-              );
-            },
-          )}
+            return (
+              <Notification
+                key={index}
+                read={notification.read}
+                id={notification.notificationTypeId}
+                userId={notification.userRecipientId}
+                groupId={notification.studyGroupId}
+                type={notification.notificationType}
+                handleNotificationClick={this.handleNotificationClick}
+                readNotification={this.readNotification}
+              />
+            );
+          })}
         </MenuList>
       </Drawer>
     );

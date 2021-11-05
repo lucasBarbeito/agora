@@ -109,7 +109,7 @@
 }
 
 #new-announcement-button.Mui-disabled {
-  background-color: #0000001F;
+  background-color: #0000001f;
   color: #00000052;
   margin-left: 0.1%;
 }
@@ -188,26 +188,26 @@
   max-height: 56px;
 }
 
-#copy-link-button{
+#copy-link-button {
   height: 7ch;
   font-size: 1.5ch;
   width: 350px;
   letter-spacing: 0.15ch;
   font-weight: 400;
   font-family: "Roboto";
-  background-color: #C5B2A5;
+  background-color: #c5b2a5;
   margin-top: 70px;
 }
 
-.dialog-submit-button{
+.dialog-submit-button {
   margin-top: 50px;
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
 }
 
-#cancel-invitation{
-  color: #E8A5A5;
+#cancel-invitation {
+  color: #e8a5a5;
   margin-left: 10px;
   letter-spacing: 1.25px;
   text-align: right;
@@ -218,12 +218,11 @@
   margin-right: 10px;
   text-align: right;
   letter-spacing: 1.25px;
-  color: #C5B2A5;
+  color: #c5b2a5;
   font-family: Roboto, serif;
-
 }
 #submit-invitation.Mui-disabled {
-  color: #C5B2A5;
+  color: #c5b2a5;
   opacity: 0.5;
 }
 
@@ -245,7 +244,7 @@
 }
 
 .date-form {
-padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 #date-input {
@@ -267,5 +266,5 @@ padding-bottom: 10px;
 }
 
 #confirm-dates {
- color: #c5b2a5;
+  color: #c5b2a5;
 }

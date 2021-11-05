@@ -89,6 +89,8 @@ class GroupsPage extends Component {
         this.setState({ openGetGroupsErrorSnack: true });
       } else {
         const res = await response.json();
+        console.log(response);
+        console.log(res);
         this.setState({
           studyGroups: res.content,
           totalPages: res.totalPages,

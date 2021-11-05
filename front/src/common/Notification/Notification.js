@@ -40,14 +40,13 @@ class Notification extends Component {
     const res = await response.json();
     if (res.length !== 0) {
       this.setState({
-        name: res.find(item => item.id === this.props.userId).name,
-        surname: res.find(item => item.id === this.props.userId).surname
+        name: res.find((item) => item.id === this.props.userId).name,
+        surname: res.find((item) => item.id === this.props.userId).surname,
       });
     }
   };
 
   getGroup = async () => {
-
     const response = await fetch(`${baseUrl}/studyGroup/paged?page=0`, {
       method: "GET",
       headers: {
@@ -66,7 +65,11 @@ class Notification extends Component {
     });
     const page2 = await res.json();
 
-    this.setState({ group: page1.content.concat(page2.content).find(item => item.id === this.props.groupId).name });
+    this.setState({
+      group: page1.content
+        .concat(page2.content)
+        .find((item) => item.id === this.props.groupId).name,
+    });
   };
 
   message = {
@@ -93,7 +96,7 @@ class Notification extends Component {
           </Grid>
           <Grid item xs={8} zeroMinWidth>
             <Typography id="notification-message">
-              {this.state.name + " " +this.state.surname}
+              {this.state.name + " " + this.state.surname}
               {this.message[this.props.type]}
               {this.state.group}
             </Typography>
