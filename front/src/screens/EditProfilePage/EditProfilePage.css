@@ -1,35 +1,35 @@
-.edit-profile-page-warning-box{
-    background: #e8a5a5;
-    height: 54px;
-    margin-top: 5px;
-    margin-left: 5px;
-    width: 98%;
+.edit-profile-page-warning-box {
+  background: #e8a5a5;
+  height: 54px;
+  margin-top: 5px;
+  margin-left: 5px;
+  width: 98%;
 }
-.edit-profile-page-ghost-warning-box{
-    height: 54px;
-    margin-top: 5px;
-    margin-left: 5px;
-    width: 98%;
+.edit-profile-page-ghost-warning-box {
+  height: 54px;
+  margin-top: 5px;
+  margin-left: 5px;
+  width: 98%;
 }
-.edit-profile-page-warning-msg{
-    margin-left: 16px;
-    font-family: "Roboto";
-    font-size: 14px;
-    align-items: center;
-    line-height: 20px;
-    letter-spacing: 0.25px;
-    color: #00000099;
-    opacity: 1;
-}
-
-.edit-profile-page-button-position{
-    display: flex;
-    flex-direction: row-reverse;
-    margin-top: 5%;
-    width: 100%;
+.edit-profile-page-warning-msg {
+  margin-left: 16px;
+  font-family: "Roboto";
+  font-size: 14px;
+  align-items: center;
+  line-height: 20px;
+  letter-spacing: 0.25px;
+  color: #00000099;
+  opacity: 1;
 }
 
-.edit-profile-page-button{
+.edit-profile-page-button-position {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-top: 5%;
+  width: 100%;
+}
+
+.edit-profile-page-button {
   text-align: center;
   font-family: "Roboto";
   letter-spacing: 1.25px;
@@ -41,4 +41,15 @@
   cursor: pointer;
   overflow: hidden;
   outline: none;
+}
+
+#userpage-back-button {
+  height: 6ch;
+  font-size: 2ch;
+  letter-spacing: 0.15ch;
+  font-weight: 400;
+  font-family: "Roboto";
+  background-color: #e8a5a5;
+  margin-left: 200px;
+  width: 300px;
 }
