@@ -32,7 +32,7 @@ import InvitationForm from "../../common/InvitationForm/InvitationForm";
 import { Pagination } from "@material-ui/lab";
 import { DateRangePicker } from "materialui-daterange-picker";
 import SearchIcon from "@material-ui/icons/Search";
-import moment from "moment";
+import moment from "moment-timezone";
 import TodayIcon from "@material-ui/icons/Today";
 
 class Group extends Component {
@@ -66,6 +66,7 @@ class Group extends Component {
       announcementSearch: "",
       datePicker: false,
       dateRange: [],
+      range: [],
     };
   }
 
@@ -364,13 +365,61 @@ class Group extends Component {
 
   //need to check specific date format
   handleDateConfirmation(date) {
-    const start = moment(date.startDate).calendar();
-    const end = moment(date.endDate).calendar();
+   /* Hable con los del back y dijieron que dateFrom no inlcuye el dia de inicio */
+    const start = moment(date.startDate).toISOString();
+    const end = moment(date.endDate).toISOString();
     this.setState({
       dateRange: [start, end],
+      range: [moment(date.startDate).toDate().toLocaleDateString("es-AR"), moment(date.endDate).toDate().toLocaleDateString("es-AR")],
       datePicker: false,
     });
   }
+
+  async searchAnnouncement() {
+    const groupId = this.props.match.params.id;
+    const esc = encodeURIComponent;
+
+    let text = baseUrl + "/studyGroup/" + groupId + "/forum/paged?text=" + esc(this.state.announcementSearch);
+    if (this.state.dateRange.length !== 0) text = text + "&dateFrom=" + esc(this.state.dateRange[0]) + "&dateTo=" + esc(this.state.dateRange[1]);
+
+    try {
+      const response = await fetch(text, {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        },
+      });
+
+      const res = await response.json();
+      const content = res.content;
+      const announcementFormatPromises = content.map(async (item) => {
+        const userId = item.creatorId;
+        let user = this.state.userContacts.find((user) => user.id === userId);
+        return {
+          name: user.name,
+          date: new Date(item.creationDateAndTime).toLocaleDateString(
+            "es-AR",
+          ),
+          content: item.content,
+          creatorId: item.creatorId,
+          id: item.id,
+        };
+      });
+      const announcementFormat = await Promise.all(
+        announcementFormatPromises,
+      );
+
+      if (announcementFormat.length !== 0) {
+        this.setState({ announcements: announcementFormat });
+      } else {
+        this.setState({ announcements: [] });
+      }
+
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  }
+
 
   render() {
     return (
@@ -502,69 +551,60 @@ class Group extends Component {
               </Grid>
             </Grid>
 
-            <Grid container item xs={6}>
+            <Grid item xs={6}>
               <div className="search-comments-div">
-                <TextField
-                  id="search-comment"
-                  label="Buscar anuncio"
-                  variant="outlined"
-                  value={this.state.announcementSearch}
-                  onChange={(text) =>
-                    this.setState({ announcementSearch: text.target.value })
-                  }
-                />
-                <div className="date-form">
+                <div>
                   <TextField
-                    id="date-input"
+                    id="search-comment"
+                    label="Buscar anuncio"
                     variant="outlined"
-                    label="Rango de fechas"
-                    value={this.state.dateRange}
-                    onClick={() => this.setState({ datePicker: true })}
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton>
-                          <TodayIcon />
-                        </IconButton>
-                      ),
-                    }}
+                    value={this.state.announcementSearch}
+                    onChange={(text) => this.setState({ announcementSearch: text.target.value })}
                   />
                 </div>
-                <Dialog open={this.state.datePicker} maxWidth={"xl"}>
-                  <DialogContent>
-                    <DateRangePicker
-                      style={{ width: 100 }}
-                      open={true}
-                      toggle={() => this.setState({ datePicker: false })}
-                      onChange={(range) =>
-                        this.setState({ selectedDate: range })
-                      }
-                      closeOnClickOutside={true}
-                      maxDate={moment()}
-                    />
-                    <div className="dialog-date-buttons">
-                      <Button
-                        id="confirm-dates"
-                        onClick={() =>
-                          this.setState({ datePicker: !this.state.datePicker })
-                        }
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        id="confirm-dates"
-                        onClick={() =>
-                          this.handleDateConfirmation(this.state.selectedDate)
-                        }
-                      >
-                        Confirmar
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <IconButton id="search-button">
-                  <SearchIcon />
-                </IconButton>
+
+                <div className="date-form">
+                  <TextField id="date-input"
+                             variant="outlined"
+                             label="Rango de fechas"
+                             value={this.state.range}
+                             onClick={() => this.setState({ datePicker: true })}
+                             InputProps={{
+                               endAdornment: (
+                                 <IconButton>
+                                   <TodayIcon />
+                                 </IconButton>
+                               ),
+                             }}
+                  />
+                </div>
+                <div>
+                  <IconButton id="search-announcement-button" onClick={() => this.searchAnnouncement()}>
+                    <SearchIcon />
+                  </IconButton>
+                </div>
               </div>
+              <Dialog open={this.state.datePicker} maxWidth={"xl"}>
+                <DialogContent>
+                  <DateRangePicker
+                    style={{ width: 100 }}
+                    open={true}
+                    toggle={() => this.setState({ datePicker: false })}
+                    onChange={range => this.setState({ selectedDate: range })}
+                    closeOnClickOutside={true}
+                    maxDate={moment()}
+                  />
+                  <div className="dialog-date-buttons">
+                    <Button id="confirm-dates"
+                            onClick={() => this.setState({
+                              datePicker: !this.state.datePicker,
+                              dateRange: [],
+                            })}>Cancelar</Button>
+                    <Button id="confirm-dates"
+                            onClick={() => this.handleDateConfirmation(this.state.selectedDate)}>Confirmar</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
 
               <Grid container direction="column">
                 <Grid
