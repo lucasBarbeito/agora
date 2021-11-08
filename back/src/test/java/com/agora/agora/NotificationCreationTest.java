@@ -25,7 +25,7 @@ public class NotificationCreationTest {
 
     @Test
     public void testNotificationDTOSerialization() throws Exception {
-        NotificationDTO notificationDTO = new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, 1, 1, true, 1);
+        NotificationDTO notificationDTO = new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, 1, 1, 1, true, 1);
         String expectedJson = "{\"notificationType\":\"NEW_MEMBER_NOTIFICATION\",\"studyGroupId\":1,\"notificationTypeId\":1,\"userRecipientId\":1,\"read\":true}";
 
         assertEquals(expectedJson,json.write(notificationDTO).getJson());
@@ -33,7 +33,7 @@ public class NotificationCreationTest {
 
     @Test
     public void testNotificationDTODeserialization() throws Exception {
-        NotificationDTO notificationDTO = new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, 1, 1, true, 1);
+        NotificationDTO notificationDTO = new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, 1, 1, 1, true, 1);
         String expectedJson = "{\"notificationType\":\"NEW_MEMBER_NOTIFICATION\",\"studyGroupId\":1,\"notificationTypeId\":1,\"userRecipientId\":1,\"read\":true}";
 
         NotificationDTO notificationObtained = json.parse(expectedJson).getObject();

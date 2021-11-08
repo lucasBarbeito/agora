@@ -117,18 +117,18 @@ public class UserService {
 
             if(!memberNotifications.isEmpty() && !postNotifications.isEmpty()){
                 List<NotificationDTO> notifications = new ArrayList<>();
-                List<NotificationDTO> memberDTO = memberNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, notification.getStudyGroup().getId(), notification.getNewMember().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
-                List<NotificationDTO> postDTO = postNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_POST_NOTIFICATION, notification.getGroup().getId(), notification.getNewPost().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
+                List<NotificationDTO> memberDTO = memberNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, notification.getId(), notification.getStudyGroup().getId(), notification.getNewMember().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
+                List<NotificationDTO> postDTO = postNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_POST_NOTIFICATION, notification.getId(), notification.getGroup().getId(), notification.getNewPost().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
                 notifications.addAll(memberDTO);
                 notifications.addAll(postDTO);
                 return notifications;
             }
             else if(memberNotifications.isEmpty() && !postNotifications.isEmpty()){
-                List<NotificationDTO> postDTO = postNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_POST_NOTIFICATION, notification.getGroup().getId(), notification.getNewPost().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
+                List<NotificationDTO> postDTO = postNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_POST_NOTIFICATION, notification.getId(), notification.getGroup().getId(), notification.getNewPost().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
                 return new ArrayList<>(postDTO);
             }
             else if(postNotifications.isEmpty() && !memberNotifications.isEmpty()){
-                List<NotificationDTO> memberDTO = memberNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, notification.getStudyGroup().getId(), notification.getNewMember().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
+                List<NotificationDTO> memberDTO = memberNotifications.stream().map(notification -> new NotificationDTO(NotificationType.NEW_MEMBER_NOTIFICATION, notification.getId(), notification.getStudyGroup().getId(), notification.getNewMember().getId(), notification.isRead(), notification.getUser().getId())).collect(Collectors.toList());
                 return new ArrayList<>(memberDTO);
             }
             else {
