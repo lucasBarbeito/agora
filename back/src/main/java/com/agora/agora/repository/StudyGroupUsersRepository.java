@@ -11,6 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +21,6 @@ public interface StudyGroupUsersRepository extends PagingAndSortingRepository<St
 
     void deleteAllByStudyGroupId(int studyGroupId);
     void deleteAllByUserId(int userId);
+    @Transactional
+    void deleteByStudyGroupIdAndUserId(int studyGroupId, int userId);
 }

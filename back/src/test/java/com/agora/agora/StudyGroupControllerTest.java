@@ -60,6 +60,9 @@ public class StudyGroupControllerTest extends AbstractTest{
         StudyGroup group2;
         StudyGroup group3;
         StudyGroup group4;
+        StudyGroupUser group1User1;
+        StudyGroupUser group2User1;
+        StudyGroupUser group2User2;
         Post post;
         Post post1;
         Post post2;
@@ -102,10 +105,12 @@ public class StudyGroupControllerTest extends AbstractTest{
             studyGroupLabelRepository.save(l3g3);
             studyGroupLabelRepository.save(l2g3);
 
-            StudyGroupUser group1User1 = new StudyGroupUser(user1, group1);
-            StudyGroupUser group2User2 = new StudyGroupUser(user2, group2);
+            group1User1 = new StudyGroupUser(user1, group1);
+            group2User2 = new StudyGroupUser(user2, group2);
+            group2User1 = new StudyGroupUser(user1, group2);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
+            studyGroupUsersRepository.save(group2User1);
 
             post = new Post("...", group1, user2, LocalDateTime.now());
             postRepository.save(post);
@@ -1816,5 +1821,27 @@ public class StudyGroupControllerTest extends AbstractTest{
         for (StudyGroupDTO studyGroup : allStudyGroups) {
             assertThat(expectedStudyGroupsNames, hasItems(studyGroup.getName()));
         }
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deleteGroupCreatorAndLastUserShouldDeleteGroup() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/" + data.user1.getId();
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        assertEquals(200, mvcResult.getResponse().getStatus());
+        assertFalse(groupRepository.findById(data.group1.getCreator().getId()).isPresent());
+    }
+
+    @Test
+    @WithMockUser("tolkien@gmail.com")
+    public void deleteGroupUserShouldDelete() throws Exception{
+        String uri = "/studyGroup/" + data.group2.getId() + "/" + data.user1.getId();
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        assertEquals(200, mvcResult.getResponse().getStatus());
+        assertFalse(studyGroupUsersRepository.findById(data.group2User1.getId()).isPresent());
     }
 }

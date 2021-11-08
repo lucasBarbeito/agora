@@ -76,6 +76,12 @@ public class StudyGroupController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping(value= "/{id}/{userId}")
+    public ResponseEntity deleteUserFromStudyGroup(@PathVariable("id") int studyGroupId, @PathVariable("userId") int userId){
+        groupService.deleteUserFromStudyGroup(studyGroupId, userId);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(value = "/{id}")
     public ResponseEntity modifyStudyGroupById(@PathVariable("id") int id, @Valid @RequestBody EditStudyGroupForm editGroupForm) {
         return groupService.update(id, editGroupForm) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();

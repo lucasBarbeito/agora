@@ -470,18 +470,22 @@ public class StudyGroupService {
     public void moveOwnership(int userId) {
         List<StudyGroup> studyGroups = groupRepository.findAllByCreatorId(userId);
         studyGroups.forEach(studyGroup -> {
-            List<StudyGroupUser> users = findUsersInStudyGroup(studyGroup.getId());
-            if(users.get(0).getUser().getId() != userId){
-                studyGroup.setCreator(users.get(0).getUser());
-                groupRepository.save(studyGroup);
-            } else if(users.size() > 1){
-                studyGroup.setCreator(users.get(1).getUser());
-                groupRepository.save(studyGroup);
-            }
-            else{
-                deleteGroup(studyGroup.getId());
-            }
+            moveOwnershipFromGroup(userId, studyGroup);
         });
+    }
+
+    private void moveOwnershipFromGroup(int userId, StudyGroup studyGroup){
+        List<StudyGroupUser> users = findUsersInStudyGroup(studyGroup.getId());
+        if(users.get(0).getUser().getId() != userId){
+            studyGroup.setCreator(users.get(0).getUser());
+            groupRepository.save(studyGroup);
+        } else if(users.size() > 1){
+            studyGroup.setCreator(users.get(1).getUser());
+            groupRepository.save(studyGroup);
+        }
+        else{
+            deleteGroup(studyGroup.getId());
+        }
     }
 
     public void sendUserJoinStudyGroupNotification(int studyGroupId, int userId) {
@@ -509,5 +513,11 @@ public class StudyGroupService {
             throw new NoSuchElementException("User does not exist");
         }
 
+    }
+
+    public void deleteUserFromStudyGroup(int studyGroupId, int userId) {
+        StudyGroup group = groupRepository.findById(studyGroupId).orElseThrow(NoSuchElementException::new);
+        if(group.getCreator().getId() == userId) moveOwnershipFromGroup(userId, group);
+        studyGroupUsersRepository.deleteByStudyGroupIdAndUserId(studyGroupId, userId);
     }
 }
