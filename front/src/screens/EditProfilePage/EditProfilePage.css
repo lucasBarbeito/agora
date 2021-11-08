@@ -43,13 +43,22 @@
   outline: none;
 }
 
-#userpage-back-button {
+.delete-account-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#delete-account-progress {
+  margin-right: 15px;
+  color: #e8a5a5;
+}
+
+#delete-account-button {
   height: 6ch;
   font-size: 2ch;
   letter-spacing: 0.15ch;
   font-weight: 400;
   font-family: "Roboto";
   background-color: #e8a5a5;
-  margin-left: 200px;
-  width: 300px;
 }

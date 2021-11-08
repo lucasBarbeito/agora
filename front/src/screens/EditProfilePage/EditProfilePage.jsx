@@ -16,6 +16,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import "./EditProfilePage.css";
 import ClearIcon from "@material-ui/icons/Clear";
+import baseUrl from "../../baseUrl";
 
 function EditProfilePage(props) {
   const [name, setName] = useState(props.context.userInfo.name);
@@ -136,14 +137,43 @@ function EditProfilePage(props) {
     }
   };
 
-  const deleteAccount = () => {
-    console.log("Delete account button pressed");
+  const logOut = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/auth`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${props.context.token}`,
+        },
+      });
+
+      if (response.ok) {
+        props.context.setToken(null, "/");
+      }
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  };
+
+  const deleteAccount = async () => {
+    logOut();
+    try {
+      const response = await fetch(`${baseUrl}/user/me`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${props.context.token}`,
+        },
+      });
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
   };
 
   return (
     <HomeStructure>
       <Grid container>
-        <Grid item xs={5}>
+        <Grid item xs={8}>
           <Box className="creategroup-form-box" boxShadow={2}>
             <Grid container xs={12} id="creategroup-box-grid" spacing={1}>
               <Grid item>
@@ -322,17 +352,19 @@ function EditProfilePage(props) {
             </Grid>
           </Box>
         </Grid>
-        <Grid item xs={7}>
-          <Button
-            fullWidth
-            id="userpage-back-button"
-            variant="contained"
-            color="primary"
-            onClick={() => deleteAccount()}
-          >
-            <ClearIcon id="userpage-back-icon" />
-            ELIMINAR CUENTA
-          </Button>
+        <Grid item xs={4}>
+          <div className="delete-account-button-container">
+            <Button
+              fullWidth
+              id="delete-account-button"
+              variant="contained"
+              color="primary"
+              onClick={() => deleteAccount()}
+            >
+              <ClearIcon id="delete-account-button-icon" />
+              ELIMINAR CUENTA
+            </Button>
+          </div>
         </Grid>
       </Grid>
     </HomeStructure>
