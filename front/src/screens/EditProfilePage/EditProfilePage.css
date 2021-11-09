@@ -43,6 +43,40 @@
   outline: none;
 }
 
+#member-contact-select {
+  box-sizing: content-box;
+}
+
+#member-contact-add-button {
+  color: #c5b2a5;
+  padding: 0;
+  margin-right: 15px;
+}
+
+.editprofile-members-contact-box {
+  background: #ffffff;
+  width: 444px;
+  margin-top: 20px;
+}
+
+#editprofile-save-members-contact-button {
+  text-align: center;
+  font-family: "Roboto";
+  letter-spacing: 1.25px;
+  color: #c5b2a5;
+  text-transform: uppercase;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+}
+
+#editprofile-email-contact .MuiInputBase-root.Mui-disabled {
+  color: unset;
+}
+
 .delete-account-button-container {
   display: flex;
   align-items: center;
@@ -54,11 +88,13 @@
   color: #e8a5a5;
 }
 
-#delete-account-button {
+#userpage-back-button {
   height: 6ch;
   font-size: 2ch;
   letter-spacing: 0.15ch;
   font-weight: 400;
   font-family: "Roboto";
   background-color: #e8a5a5;
+  margin-left: 200px;
+  width: 300px;
 }

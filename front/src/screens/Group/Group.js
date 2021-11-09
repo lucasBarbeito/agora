@@ -365,12 +365,15 @@ class Group extends Component {
 
   //need to check specific date format
   handleDateConfirmation(date) {
-   /* Hable con los del back y dijieron que dateFrom no inlcuye el dia de inicio */
+    /* Hable con los del back y dijieron que dateFrom no inlcuye el dia de inicio */
     const start = moment(date.startDate).toISOString();
     const end = moment(date.endDate).toISOString();
     this.setState({
       dateRange: [start, end],
-      range: [moment(date.startDate).toDate().toLocaleDateString("es-AR"), moment(date.endDate).toDate().toLocaleDateString("es-AR")],
+      range: [
+        moment(date.startDate).toDate().toLocaleDateString("es-AR"),
+        moment(date.endDate).toDate().toLocaleDateString("es-AR"),
+      ],
       datePicker: false,
     });
   }
@@ -379,8 +382,19 @@ class Group extends Component {
     const groupId = this.props.match.params.id;
     const esc = encodeURIComponent;
 
-    let text = baseUrl + "/studyGroup/" + groupId + "/forum/paged?text=" + esc(this.state.announcementSearch);
-    if (this.state.dateRange.length !== 0) text = text + "&dateFrom=" + esc(this.state.dateRange[0]) + "&dateTo=" + esc(this.state.dateRange[1]);
+    let text =
+      baseUrl +
+      "/studyGroup/" +
+      groupId +
+      "/forum/paged?text=" +
+      esc(this.state.announcementSearch);
+    if (this.state.dateRange.length !== 0)
+      text =
+        text +
+        "&dateFrom=" +
+        esc(this.state.dateRange[0]) +
+        "&dateTo=" +
+        esc(this.state.dateRange[1]);
 
     try {
       const response = await fetch(text, {
@@ -397,29 +411,23 @@ class Group extends Component {
         let user = this.state.userContacts.find((user) => user.id === userId);
         return {
           name: user.name,
-          date: new Date(item.creationDateAndTime).toLocaleDateString(
-            "es-AR",
-          ),
+          date: new Date(item.creationDateAndTime).toLocaleDateString("es-AR"),
           content: item.content,
           creatorId: item.creatorId,
           id: item.id,
         };
       });
-      const announcementFormat = await Promise.all(
-        announcementFormatPromises,
-      );
+      const announcementFormat = await Promise.all(announcementFormatPromises);
 
       if (announcementFormat.length !== 0) {
         this.setState({ announcements: announcementFormat });
       } else {
         this.setState({ announcements: [] });
       }
-
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
   }
-
 
   render() {
     return (
@@ -559,27 +567,33 @@ class Group extends Component {
                     label="Buscar anuncio"
                     variant="outlined"
                     value={this.state.announcementSearch}
-                    onChange={(text) => this.setState({ announcementSearch: text.target.value })}
+                    onChange={(text) =>
+                      this.setState({ announcementSearch: text.target.value })
+                    }
                   />
                 </div>
 
                 <div className="date-form">
-                  <TextField id="date-input"
-                             variant="outlined"
-                             label="Rango de fechas"
-                             value={this.state.range}
-                             onClick={() => this.setState({ datePicker: true })}
-                             InputProps={{
-                               endAdornment: (
-                                 <IconButton>
-                                   <TodayIcon />
-                                 </IconButton>
-                               ),
-                             }}
+                  <TextField
+                    id="date-input"
+                    variant="outlined"
+                    label="Rango de fechas"
+                    value={this.state.range}
+                    onClick={() => this.setState({ datePicker: true })}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton>
+                          <TodayIcon />
+                        </IconButton>
+                      ),
+                    }}
                   />
                 </div>
                 <div>
-                  <IconButton id="search-announcement-button" onClick={() => this.searchAnnouncement()}>
+                  <IconButton
+                    id="search-announcement-button"
+                    onClick={() => this.searchAnnouncement()}
+                  >
                     <SearchIcon />
                   </IconButton>
                 </div>
@@ -590,18 +604,30 @@ class Group extends Component {
                     style={{ width: 100 }}
                     open={true}
                     toggle={() => this.setState({ datePicker: false })}
-                    onChange={range => this.setState({ selectedDate: range })}
+                    onChange={(range) => this.setState({ selectedDate: range })}
                     closeOnClickOutside={true}
                     maxDate={moment()}
                   />
                   <div className="dialog-date-buttons">
-                    <Button id="confirm-dates"
-                            onClick={() => this.setState({
-                              datePicker: !this.state.datePicker,
-                              dateRange: [],
-                            })}>Cancelar</Button>
-                    <Button id="confirm-dates"
-                            onClick={() => this.handleDateConfirmation(this.state.selectedDate)}>Confirmar</Button>
+                    <Button
+                      id="confirm-dates"
+                      onClick={() =>
+                        this.setState({
+                          datePicker: !this.state.datePicker,
+                          dateRange: [],
+                        })
+                      }
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      id="confirm-dates"
+                      onClick={() =>
+                        this.handleDateConfirmation(this.state.selectedDate)
+                      }
+                    >
+                      Confirmar
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>

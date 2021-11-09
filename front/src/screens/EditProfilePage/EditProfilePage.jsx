@@ -8,12 +8,16 @@ import {
   InputLabel,
   OutlinedInput,
   TextField,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import React, { useState } from "react";
 import HomeStructure from "../../common/HomeStructure/HomeStructure";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import CancelIcon from "@material-ui/icons/Cancel";
+import AddIcon from "@material-ui/icons/Add";
 import "./EditProfilePage.css";
 import ClearIcon from "@material-ui/icons/Clear";
 import baseUrl from "../../baseUrl";
@@ -31,7 +35,9 @@ function EditProfilePage(props) {
   const [password, setPassword] = useState("");
   const [confirmedPassword, setConfirmedPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [contactErrorMsg, setContactErrorMsg] = useState("");
   const [showErrorMsg, setShowErrorMsg] = useState(false);
+  const [showContactErrorMsg, setShowContactErrorMsg] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = (e) => {
@@ -95,6 +101,44 @@ function EditProfilePage(props) {
       return false;
     } else {
       return true;
+    }
+  };
+
+  const addNewContact = () => {
+    setContactLinks([...contactLinks, { id: "", linkType: "", link: "" }]);
+  };
+
+  const handleContactTypeChange = (index, value) => {
+    const contact = contactLinks[index];
+    const newContactLink = { ...contact, linkType: value };
+    const newContactLinks = [...contactLinks];
+    newContactLinks[index] = newContactLink;
+    setContactLinks(newContactLinks);
+  };
+
+  const handleContactLinkChange = (index, value) => {
+    const contact = contactLinks[index];
+    const newContactLink = { ...contact, link: value };
+    const newContactLinks = [...contactLinks];
+    newContactLinks[index] = newContactLink;
+    setContactLinks(newContactLinks);
+  };
+
+  const handleDeleteContact = (index) => {
+    setContactLinks(contactLinks.filter((value, idx) => idx !== index));
+  };
+
+  const handleSaveMemberContacts = () => {
+    let success = true;
+    contactLinks.forEach(({ linkType, link }) => {
+      if (!linkType || !link) success = false;
+    });
+    if (success) {
+      setShowContactErrorMsg(false);
+      console.log(contactLinks);
+    } else {
+      setShowContactErrorMsg(true);
+      setContactErrorMsg("No es posible crear un link de contacto vacío.");
     }
   };
 
@@ -173,199 +217,271 @@ function EditProfilePage(props) {
   return (
     <HomeStructure>
       <Grid container>
-        <Grid item xs={8}>
-          <Box className="creategroup-form-box" boxShadow={2}>
-            <Grid container xs={12} id="creategroup-box-grid" spacing={1}>
-              <Grid item>
-                <h1 className="creategroup-title">
-                  Actualizar mis datos de cuenta
-                </h1>
-              </Grid>
-              <Grid item>
-                <div className="creategroup-subtitle">
-                  Actualiza tus datos en caso de que no esten al día. Modifica
-                  tu nombre, correo electrónico y contraseña!
-                </div>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  id="edit-profile-NameForm"
-                  style={{ marginTop: 10 }}
-                  label="Nombre"
-                  value={name}
-                  variant="outlined"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  id="edit-profile-LastNameForm"
-                  style={{ marginTop: 10 }}
-                  label="Apellido"
-                  value={lastName}
-                  variant="outlined"
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  id="edit-profile-emailField"
-                  label="Correo electrónico"
-                  value={email}
-                  variant="outlined"
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={{ width: "100%", marginTop: 10 }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  id="edit-profile-confirmedEmailField"
-                  label="Confirmar correo electrónico"
-                  value={confirmedEmail}
-                  variant="outlined"
-                  onChange={(e) => setConfirmedEmail(e.target.value)}
-                  style={{ width: "100%", marginTop: 10 }}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl variant="outlined">
-                  <InputLabel
-                    style={{ marginTop: 10 }}
-                    htmlFor="outlined-adornment-password"
-                  >
-                    Contraseña
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password-1"
-                    style={{ marginTop: 10 }}
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => handleClickShowPassword()}
-                          edge="end"
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    labelWidth={80}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl variant="outlined">
-                  <InputLabel
-                    style={{ marginTop: 10 }}
-                    htmlFor="outlined-adornment-password"
-                  >
-                    Confirmar Contraseña
-                  </InputLabel>
-                  <OutlinedInput
-                    id="outlined-adornment-password-2"
-                    style={{ marginTop: 10 }}
-                    type={showPassword ? "text" : "password"}
-                    value={confirmedPassword}
-                    onChange={(e) => setConfirmedPassword(e.target.value)}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          iconSize={1}
-                          aria-label="toggle password visibility"
-                          onClick={() => handleClickShowPassword()}
-                          edge="end"
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    labelWidth={160}
-                  />
-                </FormControl>
-              </Grid>
-              {showErrorMsg ? (
-                <div className="edit-profile-page-warning-box">
-                  <p className="edit-profile-page-warning-msg">{errorMsg}</p>
-                </div>
-              ) : (
-                <div className="edit-profile-page-ghost-warning-box" />
-              )}
-
-              <div className="edit-profile-page-button-position">
-                <button
-                  className="edit-profile-page-button"
-                  onClick={() => handleConfirmEditClick()}
-                >
-                  Guardar Cambios
-                </button>
+        <Box className="creategroup-form-box" boxShadow={2}>
+          <Grid container xs={12} id="creategroup-box-grid" spacing={1}>
+            <Grid item>
+              <h1 className="creategroup-title">
+                Actualizar mis datos de cuenta
+              </h1>
+            </Grid>
+            <Grid item>
+              <div className="creategroup-subtitle">
+                Actualiza tus datos en caso de que no esten al día. Modifica tu
+                nombre, correo electrónico y contraseña!
               </div>
             </Grid>
-          </Box>
-          <br />
-          <br />
-          <Box className="creategroup-form-box" boxShadow={2}>
-            <Grid container xs={12} id="creategroup-box-grid" spacing={1}>
-              <Grid item>
-                <h1 className="creategroup-title">Mis medios de Contacto</h1>
-              </Grid>
-              <Grid item>
-                <div className="creategroup-subtitle">
-                  Incluye medios de contactos para que los miembros de los
-                  grupos puedan comunicarse!
-                </div>
-              </Grid>
+            <Grid item xs={6}>
+              <TextField
+                id="edit-profile-NameForm"
+                style={{ marginTop: 10 }}
+                label="Nombre"
+                value={name}
+                variant="outlined"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                id="edit-profile-LastNameForm"
+                style={{ marginTop: 10 }}
+                label="Apellido"
+                value={lastName}
+                variant="outlined"
+                onChange={(e) => setLastName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="edit-profile-emailField"
+                label="Correo electrónico"
+                value={email}
+                variant="outlined"
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ width: "100%", marginTop: 10 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="edit-profile-confirmedEmailField"
+                label="Confirmar correo electrónico"
+                value={confirmedEmail}
+                variant="outlined"
+                onChange={(e) => setConfirmedEmail(e.target.value)}
+                style={{ width: "100%", marginTop: 10 }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl variant="outlined">
+                <InputLabel
+                  style={{ marginTop: 10 }}
+                  htmlFor="outlined-adornment-password"
+                >
+                  Contraseña
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password-1"
+                  style={{ marginTop: 10 }}
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => handleClickShowPassword()}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={80}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl variant="outlined">
+                <InputLabel
+                  style={{ marginTop: 10 }}
+                  htmlFor="outlined-adornment-password"
+                >
+                  Confirmar Contraseña
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password-2"
+                  style={{ marginTop: 10 }}
+                  type={showPassword ? "text" : "password"}
+                  value={confirmedPassword}
+                  onChange={(e) => setConfirmedPassword(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        iconSize={1}
+                        aria-label="toggle password visibility"
+                        onClick={() => handleClickShowPassword()}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  labelWidth={160}
+                />
+              </FormControl>
+            </Grid>
+            {showErrorMsg ? (
+              <div className="edit-profile-page-warning-box">
+                <p className="edit-profile-page-warning-msg">{errorMsg}</p>
+              </div>
+            ) : (
+              <div className="edit-profile-page-ghost-warning-box" />
+            )}
 
-              {contactLinks.map((contact, index) => (
-                <Grid item xs={6}>
+            <div className="edit-profile-page-button-position">
+              <button
+                className="edit-profile-page-button"
+                onClick={() => handleConfirmEditClick()}
+              >
+                Guardar Cambios
+              </button>
+            </div>
+          </Grid>
+        </Box>
+        <Grid item xs={4}>
+          <Button
+            fullWidth
+            id="userpage-back-button"
+            variant="contained"
+            color="primary"
+            onClick={() => deleteAccount()}
+          >
+            <ClearIcon id="userpage-back-icon" />
+            ELIMINAR CUENTA
+          </Button>
+        </Grid>
+        <br />
+        <br />
+        <Box className="editprofile-members-contact-box" boxShadow={2}>
+          <Grid container xs={12} id="creategroup-box-grid" spacing={1}>
+            <Grid item>
+              <h1 className="creategroup-title">Mis medios de Contacto</h1>
+            </Grid>
+            <Grid item>
+              <div className="creategroup-subtitle">
+                Incluye medios de contactos para que los miembros de los grupos
+                puedan comunicarse!
+              </div>
+            </Grid>
+
+            <Grid container item direction="column" spacing={2}>
+              <Grid id="editprofile-email-contact" container item spacing={4}>
+                <Grid item xs={4}>
+                  <FormControl fullWidth variant="outlined">
+                    <InputLabel id="member-contact-select-label-email">
+                      Tipo
+                    </InputLabel>
+                    <Select
+                      id="member-contact-select-email"
+                      labelId="member-contact-select-label-email"
+                      value={"EMAIL"}
+                      label="Tipo"
+                      disabled
+                    >
+                      <MenuItem value={"EMAIL"}>Email</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={5}>
                   <TextField
-                    id="edit-profile-NameForm"
-                    style={{ marginTop: 10 }}
-                    label="Nombre"
-                    value={contact.link}
+                    id="edit-profile-NameForm-email"
+                    label="Link"
+                    value={props.context.userInfo.email}
                     variant="outlined"
-                    onChange={(e) => setName(e.target.value)}
+                    disabled
                   />
                 </Grid>
+              </Grid>
+              {contactLinks.map((contact, index) => (
+                <Grid container item spacing={4}>
+                  <Grid item xs={4}>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel id={`member-contact-select-label${index}`}>
+                        Tipo
+                      </InputLabel>
+                      <Select
+                        id={`member-contact-select${index}`}
+                        labelId={`member-contact-select-label${index}`}
+                        value={contact.linkType}
+                        label="Tipo"
+                        onChange={(e) =>
+                          handleContactTypeChange(index, e.target.value)
+                        }
+                      >
+                        <MenuItem value={"EMAIL"}>Email</MenuItem>
+                        <MenuItem value={"PHONE"}>Celular</MenuItem>
+                        <MenuItem value={"INSTAGRAM"}>Instagram</MenuItem>
+                        <MenuItem value={"FACEBOOK"}>Facebook</MenuItem>
+                        <MenuItem value={"TWITTER"}>Twitter</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={5}>
+                    <TextField
+                      id={`edit-profile-NameForm${index}`}
+                      label="Link"
+                      value={contact.link}
+                      variant="outlined"
+                      onChange={(e) =>
+                        handleContactLinkChange(index, e.target.value)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <IconButton
+                      id="delete-button"
+                      onClick={() => handleDeleteContact(index)}
+                    >
+                      <CancelIcon id="delete-icon" />
+                    </IconButton>
+                  </Grid>
+                </Grid>
               ))}
+            </Grid>
 
-              {showErrorMsg ? (
-                <div className="edit-profile-page-warning-box">
-                  <p className="edit-profile-page-warning-msg">{errorMsg}</p>
-                </div>
-              ) : (
-                <div className="edit-profile-page-ghost-warning-box" />
-              )}
+            <Grid item container direction="column" alignContent="center">
+              <Grid item>
+                <IconButton
+                  id="member-contact-add-button"
+                  onClick={() => addNewContact()}
+                >
+                  <AddIcon id="delete-icon" />
+                </IconButton>
+              </Grid>
+            </Grid>
 
-              <div className="edit-profile-page-button-position">
-                <button
-                  className="edit-profile-page-button"
+            {showContactErrorMsg && (
+              <div className="edit-profile-page-warning-box">
+                <p className="edit-profile-page-warning-msg">
+                  {contactErrorMsg}
+                </p>
+              </div>
+            )}
+            <Grid item container justifyContent="flex-end">
+              <Grid item>
+                <Button
+                  id="editprofile-save-members-contact-button"
                   onClick={() => {
-                    console.log(props.context.userInfo);
+                    handleSaveMemberContacts();
                   }}
                 >
                   Guardar Cambios
-                </button>
-              </div>
+                </Button>
+              </Grid>
             </Grid>
-          </Box>
-        </Grid>
-        <Grid item xs={4}>
-          <div className="delete-account-button-container">
-            <Button
-              fullWidth
-              id="delete-account-button"
-              variant="contained"
-              color="primary"
-              onClick={() => deleteAccount()}
-            >
-              <ClearIcon id="delete-account-button-icon" />
-              ELIMINAR CUENTA
-            </Button>
-          </div>
-        </Grid>
+          </Grid>
+        </Box>
       </Grid>
     </HomeStructure>
   );
