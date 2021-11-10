@@ -112,7 +112,7 @@ public class StudyGroupControllerTest extends AbstractTest{
             studyGroupUsersRepository.save(group2User2);
             studyGroupUsersRepository.save(group2User1);
 
-            post = new Post("...", group1, user2, LocalDateTime.now());
+            post = new Post("...", group1, user1, LocalDateTime.of(2021, 9, 23, 10, 15));
             postRepository.save(post);
 
             post1 = new Post("LOTR 2 is out", group1, user1, LocalDateTime.of(2021, 9, 23, 3, 15));
@@ -1109,7 +1109,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         List<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<List<PostDTO>>(){});
 
         assertEquals(4, postDTOS.size());
-        assertEquals(data.post1.getContent(), postDTOS.get(0).getContent());
+        assertEquals("Aguante Tolkien", postDTOS.get(0).getContent());
         assertEquals(data.post2.getCreationDateTime(), postDTOS.get(1).getCreationDateAndTime());
     }
 
@@ -1130,7 +1130,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
         List<PostDTO> gottenPostDTOs = postDTOS.getContent();
 
-        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
     }
 
     @Test
@@ -1171,6 +1171,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         List<PostDTO> gottenPostDTOs = postDTOS.getContent();
 
         assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(2).getContent());
     }
 
     @Test
@@ -1191,6 +1192,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         List<PostDTO> gottenPostDTOs = postDTOS.getContent();
 
         assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(1).getContent());
     }
 
     @Test
@@ -1209,7 +1211,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
         List<PostDTO> gottenPostDTOs = postDTOS.getContent();
 
-        assertEquals(data.post2.getContent(), gottenPostDTOs.get(1).getContent());
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
     }
 
     @Test
@@ -1247,8 +1249,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
         List<PostDTO> gottenPostDTOs = postDTOS.getContent();
 
-        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
-        assertEquals(data.post2.getContent(), gottenPostDTOs.get(1).getContent());
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post.getContent(), gottenPostDTOs.get(1).getContent());
     }
 
     @Test
@@ -1267,8 +1269,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         Page<PostDTO> postDTOS = super.mapFromJson(gottenStatus, new TypeReference<CustomPageImpl<PostDTO>>(){});
         List<PostDTO> gottenPostDTOs = postDTOS.getContent();
 
-        assertEquals(data.post1.getContent(), gottenPostDTOs.get(0).getContent());
-        assertEquals(data.post2.getContent(), gottenPostDTOs.get(1).getContent());
+        assertEquals(data.post2.getContent(), gottenPostDTOs.get(0).getContent());
+        assertEquals(data.post1.getContent(), gottenPostDTOs.get(1).getContent());
     }
 
 

@@ -330,32 +330,35 @@ public class StudyGroupService {
             if(groupOptional.isPresent()){
                 Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
                 Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.ASC,"creationDateTime"));
+
+                LocalDateTime modifiedFrom = dateFrom.get().minusDays(1);
+
                 if(optionalStudyGroupUser.isPresent()){
 
                     //Search with no text present
                     if(!text.isPresent()) {
                         if (dateFrom.isPresent() && dateTo.isPresent()) {
-                            return postRepository.findAllByCreationDateTimeIsBetweenAndStudyGroupId(request, dateFrom.get(), dateTo.get(), studyGroupId);
+                            return postRepository.findAllByCreationDateTimeIsBetweenAndStudyGroupIdOrderByCreationDateTimeDesc(request, modifiedFrom, dateTo.get(), studyGroupId);
                         } else if (dateFrom.isPresent()) {
-                            return postRepository.findAllByCreationDateTimeAfterAndStudyGroupId(request, dateFrom.get(), studyGroupId);
+                            return postRepository.findAllByCreationDateTimeAfterAndStudyGroupIdOrderByCreationDateTimeDesc(request, modifiedFrom, studyGroupId);
                         } else if (dateTo.isPresent()) {
-                            return postRepository.findAllByCreationDateTimeBeforeAndStudyGroupId(request, dateTo.get(), studyGroupId);
+                            return postRepository.findAllByCreationDateTimeBeforeAndStudyGroupIdOrderByCreationDateTimeDesc(request, dateTo.get(), studyGroupId);
                         }else {
-                            return postRepository.findAllByStudyGroupId(request, studyGroupId);
+                            return postRepository.findAllByStudyGroupIdOrderByCreationDateTimeDesc(request, studyGroupId);
                         }
                     }
 
                     //Search with text present
                     else {
                         if (dateFrom.isPresent() && dateTo.isPresent()) {
-                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBetweenAndContentIsContainingIgnoreCase(request, studyGroupId, dateFrom.get(), dateTo.get(), text.get());
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBetweenAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, modifiedFrom, dateTo.get(), text.get());
                         } else if (dateFrom.isPresent()) {
-                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeAfterAndContentIsContainingIgnoreCase(request, studyGroupId, dateFrom.get(), text.get());
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeAfterAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, modifiedFrom, text.get());
                         } else if (dateTo.isPresent()) {
-                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBeforeAndContentIsContainingIgnoreCase(request, studyGroupId, dateTo.get(), text.get());
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBeforeAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, dateTo.get(), text.get());
                         }
                         else{
-                            return postRepository.findAllByStudyGroupIdAndContentIsContainingIgnoreCase(request, studyGroupId,text.get());
+                            return postRepository.findAllByStudyGroupIdAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId,text.get());
                         }
                     }
                 }
