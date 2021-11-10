@@ -56,6 +56,32 @@ function EditProfilePage(props) {
     }
   };
 
+  const editUserRequest = async () =>{
+    try{
+      const response = await fetch(
+        `${baseUrl}/user/me`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            name: name,
+            password: password,
+            surname: lastName,
+          }),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      );
+      if(!response.ok){
+        setShowErrorMsg(true);
+        setErrorMsg("Ha ocurrido un error. Por favor, intente nuevamente.");
+      }
+    }catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  }
+
   const stopError = () => {
     if (
       handleUncompleteFields() &&
@@ -67,6 +93,7 @@ function EditProfilePage(props) {
       setShowErrorMsg(false);
       alert("Se hicieron cambios");
       console.log(name, lastName, email, password);
+      editUserRequest()
     }
   };
 
