@@ -63,3 +63,13 @@
   margin-right: 10%;
   margin-left: 4%;
 }
+
+#user-back-button {
+  height: 6ch;
+  font-size: 2ch;
+  letter-spacing: 0.15ch;
+  font-weight: 400;
+  font-family: "Roboto";
+  background-color: #c5b2a5;
+  justify-content: flex-start;
+}

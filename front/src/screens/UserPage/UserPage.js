@@ -77,7 +77,7 @@ class UserPage extends Component {
                   <Grid item>
                     <Button
                       fullWidth
-                      id="userpage-back-button"
+                      id="user-back-button"
                       variant="contained"
                       color="primary"
                       onClick={() => this.props.history.goBack()}
@@ -93,7 +93,7 @@ class UserPage extends Component {
                           <Typography id="userpage-user-name" variant="h5">
                             {`${this.state.userData.name} ${this.state.userData.surname}`}
                           </Typography>
-                          <Typography id="userpage-user-creation"></Typography>
+                          <Typography id="userpage-user-creation" />
                         </Grid>
                       </Grid>
                       <Divider />
@@ -110,7 +110,7 @@ class UserPage extends Component {
                           value={this.state.userData.email}
                         />
                       </Grid>
-                      <br></br>
+                      <br />
                     </Paper>
                   </Grid>
                 </Grid>
