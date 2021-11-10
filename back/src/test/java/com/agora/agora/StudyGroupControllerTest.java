@@ -56,12 +56,13 @@ public class StudyGroupControllerTest extends AbstractTest{
         User user1;
         User user2;
         User user3;
+        User user4;
         StudyGroup group1;
         StudyGroup group2;
         StudyGroup group3;
         StudyGroup group4;
         StudyGroupUser group1User1;
-        StudyGroupUser group2User1;
+        StudyGroupUser group2User3;
         StudyGroupUser group2User2;
         Post post;
         Post post1;
@@ -75,9 +76,11 @@ public class StudyGroupControllerTest extends AbstractTest{
             user1 = new User("J. R. R.", "Tolkien", "tolkien@gmail.com", "Jrrtolkien2021", false, UserType.USER);
             user2 = new User("Frank", "Herbert", "herbert@gmail.com", "Frankherbert2021", false, UserType.USER);
             user3 = new User("Carlos", "Gimenez", "carlos@mail.com", "Carlos123", false, UserType.USER);
+            user4 = new User("Juan", "Perez", "juan@mail.com", "Juan123", false, UserType.USER);
             userRepository.save(user1);
             userRepository.save(user2);
             userRepository.save(user3);
+            userRepository.save(user4);
 
             label1 = new Label("SciFi");
             label2 = new Label("History");
@@ -107,10 +110,10 @@ public class StudyGroupControllerTest extends AbstractTest{
 
             group1User1 = new StudyGroupUser(user1, group1);
             group2User2 = new StudyGroupUser(user2, group2);
-            group2User1 = new StudyGroupUser(user1, group2);
+            group2User3 = new StudyGroupUser(user3, group2);
             studyGroupUsersRepository.save(group1User1);
             studyGroupUsersRepository.save(group2User2);
-            studyGroupUsersRepository.save(group2User1);
+            studyGroupUsersRepository.save(group2User3);
 
             post = new Post("...", group1, user1, LocalDateTime.of(2021, 9, 23, 10, 15));
             postRepository.save(post);
@@ -283,9 +286,9 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(gottenStudyGroup.getCreatorId(), studyGroup.getCreator().getId());
 
         //Contact of members in group check.
-        assertEquals(gottenStudyGroup.getUserContacts().get(1).getId(), data.user1.getId());
-        assertEquals(gottenStudyGroup.getUserContacts().get(1).getEmail(), data.user1.getEmail());
-        assertEquals(gottenStudyGroup.getUserContacts().get(1).getName(), data.user1.getName());
+        assertEquals(gottenStudyGroup.getUserContacts().get(1).getId(), data.user3.getId());
+        assertEquals(gottenStudyGroup.getUserContacts().get(2).getEmail(), data.user1.getEmail());
+        assertEquals(gottenStudyGroup.getUserContacts().get(2).getName(), data.user1.getName());
     }
 
     @Test
@@ -448,8 +451,8 @@ public class StudyGroupControllerTest extends AbstractTest{
         assertEquals(gottenStudyGroup.getDescription(), studyGroup.getDescription());
 
         //User in StudyGroup Check
-        assertEquals(gottenStudyGroup.getUserContacts().get(1).getId(), user.getId());
-        assertEquals(gottenStudyGroup.getUserContacts().get(1).getEmail(), user.getEmail());
+        assertEquals(gottenStudyGroup.getUserContacts().get(2).getId(), user.getId());
+        assertEquals(gottenStudyGroup.getUserContacts().get(2).getEmail(), user.getEmail());
     }
 
     @Test
@@ -655,7 +658,7 @@ public class StudyGroupControllerTest extends AbstractTest{
         String status = mvcGETResult.getResponse().getContentAsString();
         FullStudyGroupDTO gottenStudyGroup = super.mapFromJson(status, FullStudyGroupDTO.class);
 
-        assertEquals(1, gottenStudyGroup.getUserContacts().size());
+        assertEquals(2, gottenStudyGroup.getUserContacts().size());
     }
 
     @Test
@@ -1358,7 +1361,7 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("carlos@mail.com")
+    @WithMockUser("juan@mail.com")
     public void getUserWithNoGroupsShouldReturnEmptyList() throws Exception {
         String uri = "/studyGroup/me/paged";
 
@@ -1839,11 +1842,11 @@ public class StudyGroupControllerTest extends AbstractTest{
     @Test
     @WithMockUser("tolkien@gmail.com")
     public void deleteGroupUserShouldDelete() throws Exception{
-        String uri = "/studyGroup/" + data.group2.getId() + "/" + data.user1.getId();
+        String uri = "/studyGroup/" + data.group2.getId() + "/" + data.user3.getId();
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.delete(uri)
         ).andReturn();
         assertEquals(200, mvcResult.getResponse().getStatus());
-        assertFalse(studyGroupUsersRepository.findById(data.group2User1.getId()).isPresent());
+        assertFalse(studyGroupUsersRepository.findById(data.group2User3.getId()).isPresent());
     }
 }
