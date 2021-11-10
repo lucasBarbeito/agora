@@ -19,11 +19,6 @@ class NotificationDrawer extends Component {
     this.setState({ notifications: updatedNotifications });
   };
 
-  handleNotificationClick = (id) => {
-    this.readNotification(id);
-    console.log(`Notification ${id} has been clicked`);
-  };
-
   render() {
     return (
       <Drawer
@@ -47,8 +42,9 @@ class NotificationDrawer extends Component {
                 userId={notification.userRecipientId}
                 groupId={notification.studyGroupId}
                 type={notification.notificationType}
-                handleNotificationClick={this.handleNotificationClick}
                 readNotification={this.readNotification}
+                history={this.props.history}
+                closeDrawer={this.props.closeDrawer}
               />
             );
           })}

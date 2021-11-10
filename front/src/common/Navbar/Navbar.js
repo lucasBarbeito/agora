@@ -119,6 +119,8 @@ class Navbar extends Component {
           <NotificationDrawer
             open={this.state.drawerIsOpen}
             onClose={() => this.setState({ drawerIsOpen: false })}
+            history={this.props.history}
+            closeDrawer={() => this.setState({ drawerIsOpen: false })}
           />
         )}
       </div>

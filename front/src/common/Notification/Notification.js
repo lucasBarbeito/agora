@@ -72,10 +72,15 @@ class Notification extends Component {
     });
   };
 
+  acceptInviteToGroup = (groupId) => {
+    this.props.history.push(`/group/${groupId}`);
+    this.props.closeDrawer();
+  };
+
   message = {
-    groupInvite: " ,has sido invitado al grupo ",
+    USER_INVITE_NOTIFICATION: ", has sido invitado al grupo ",
     NEW_MEMBER_NOTIFICATION: " se ha unido al grupo ",
-    newPost: " ha enviado un nuevo anuncio al grupo ",
+    NEW_POST_NOTIFICATION: " ha enviado un nuevo anuncio al grupo ",
   };
 
   render() {
@@ -89,7 +94,12 @@ class Notification extends Component {
       >
         <MenuItem
           id="notification-menu-item"
-          onClick={() => this.props.handleNotificationClick(this.props.id)}
+          onClick={() => {
+            this.props.readNotification(this.props.id);
+            if (this.props.type === "USER_INVITE_NOTIFICATION") {
+              this.acceptInviteToGroup(this.props.groupId);
+            }
+          }}
         >
           <Grid item xs={2}>
             {notificationsIcons[this.props.type]}
@@ -104,7 +114,9 @@ class Notification extends Component {
         </MenuItem>
         <Grid item xs={2}>
           <IconButton
-            onClick={() => this.props.readNotification(this.props.id)}
+            onClick={() => {
+              this.props.readNotification(this.props.id);
+            }}
           >
             <DraftsIcon id="notification-icon" />
           </IconButton>
