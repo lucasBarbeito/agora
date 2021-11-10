@@ -26,9 +26,7 @@ function EditProfilePage(props) {
   const [name, setName] = useState(props.context.userInfo.name);
   const [lastName, setLastName] = useState(props.context.userInfo.surname);
   const [email, setEmail] = useState(props.context.userInfo.email);
-  const [confirmedEmail, setConfirmedEmail] = useState(
-    props.context.userInfo.email
-  );
+
   const [contactLinks, setContactLinks] = useState(
     props.context.userInfo.contactLinks
   );
@@ -49,7 +47,7 @@ function EditProfilePage(props) {
   };
 
   const handleUncompleteFields = (e) => {
-    if (!name || !lastName || !email || !confirmedEmail) {
+    if (!name || !lastName) {
       setShowErrorMsg(true);
       setErrorMsg("Todos los campos deben ser completados");
       return false;
@@ -61,8 +59,6 @@ function EditProfilePage(props) {
   const stopError = () => {
     if (
       handleUncompleteFields() &&
-      checkSameEmail() &&
-      validateEmailFunction() &&
       validatePasswordFunction() &&
       validateNameFunction() &&
       validateLastNameFunction() &&
@@ -78,26 +74,6 @@ function EditProfilePage(props) {
     if (password !== confirmedPassword) {
       setShowErrorMsg(true);
       setErrorMsg("Las contraseñas no coinciden");
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const checkSameEmail = (e) => {
-    if (email !== confirmedEmail || email === "" || confirmedEmail === "") {
-      setShowErrorMsg(true);
-      setErrorMsg("Los Correos Electrónicos no coinciden");
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const validateEmailFunction = (e) => {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setShowErrorMsg(true);
-      setErrorMsg("El correo electrónico no es valido");
       return false;
     } else {
       return true;
@@ -217,7 +193,7 @@ function EditProfilePage(props) {
   return (
     <HomeStructure>
       <Grid container>
-        <Box className="creategroup-form-box" boxShadow={2}>
+        <Box className="edit-profile-form-box" boxShadow={2}>
           <Grid container xs={12} id="creategroup-box-grid" spacing={1}>
             <Grid item>
               <h1 className="creategroup-title">
@@ -227,7 +203,7 @@ function EditProfilePage(props) {
             <Grid item>
               <div className="creategroup-subtitle">
                 Actualiza tus datos en caso de que no esten al día. Modifica tu
-                nombre, correo electrónico y contraseña!
+                nombre y contraseña!
               </div>
             </Grid>
             <Grid item xs={6}>
@@ -256,17 +232,7 @@ function EditProfilePage(props) {
                 label="Correo electrónico"
                 value={email}
                 variant="outlined"
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ width: "100%", marginTop: 10 }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                id="edit-profile-confirmedEmailField"
-                label="Confirmar correo electrónico"
-                value={confirmedEmail}
-                variant="outlined"
-                onChange={(e) => setConfirmedEmail(e.target.value)}
+                disabled
                 style={{ width: "100%", marginTop: 10 }}
               />
             </Grid>
