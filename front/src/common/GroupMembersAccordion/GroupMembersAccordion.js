@@ -17,8 +17,6 @@ class GroupMembersAccordion extends Component {
     super(props);
   }
 
-  kickMember = () => {};
-
   render() {
     return (
       <>
@@ -30,7 +28,9 @@ class GroupMembersAccordion extends Component {
               aria-controls="panel1a-content"
               id="panel1a-header"
             >
-              <Typography id="member-name-typography">{member.name} {member.surname}</Typography>
+              <Typography id="member-name-typography">
+                {member.name} {member.surname}
+              </Typography>
               {this.props.creatorId == member.id && (
                 <Typography id="admin-typography"> admin </Typography>
               )}
@@ -58,7 +58,7 @@ class GroupMembersAccordion extends Component {
                   <Box id="kick-member-button-container">
                     <Button
                       id="kick-member-button"
-                      onClick={() => this.kickMember()}
+                      onClick={() => this.props.kickMember(member.id)}
                     >
                       Echar del grupo
                     </Button>

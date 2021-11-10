@@ -429,6 +429,28 @@ class Group extends Component {
     }
   }
 
+  kickMember = async (userId) => {
+    const groupId = this.props.match.params.id;
+
+    try {
+      const response = await fetch(
+        `${baseUrl}/studyGroup/${groupId}/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${this.context.token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        this.fetchGroupInformation();
+      }
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  };
+
   render() {
     return (
       <div className="main-div">
@@ -757,6 +779,9 @@ class Group extends Component {
                       creatorId={this.state.creatorId}
                       isAdmin={this.state.isAdmin}
                       history={this.props.history}
+                      groupId={this.props.match.params.id}
+                      token={this.context.token}
+                      kickMember={this.kickMember}
                     />
                   )}
                 </Grid>
