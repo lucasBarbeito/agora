@@ -31,7 +31,7 @@ export default function InvitationForm(props) {
   const [searchError, setSearchError] = useState(false);
   const [search, setSearch] = useState(true);
   const [users, setUsers] = useState([]);
-  const [selectedMember, setSelectedMember] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
   async function getInvitationLink() {
     const response = await fetch(
@@ -86,6 +86,38 @@ export default function InvitationForm(props) {
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
+  };
+
+  const handleNewMemberCheckBoxChanged = (checked, member) => {
+    if (checked) {
+      setSelectedMembers([...selectedMembers, member]);
+    } else {
+      setSelectedMembers(
+        selectedMembers.filter((value, idx) => value !== member)
+      );
+    }
+  };
+
+  const sendInvitations = async () => {
+    selectedMembers.forEach(async (member, index) => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/studyGroup/${props.groupId}/invite/${member.id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              Authorization: `Bearer ${props.token}`,
+            },
+          }
+        );
+      } catch (e) {
+        alert("Error conectando con el back-end");
+        console.log(e);
+      }
+    });
+
+    props.onClose();
   };
 
   return (
@@ -151,7 +183,12 @@ export default function InvitationForm(props) {
                     control={
                       <Checkbox
                         color="default"
-                        onClick={() => setSelectedMember(member)}
+                        onChange={(e) => {
+                          handleNewMemberCheckBoxChanged(
+                            e.target.checked,
+                            member
+                          );
+                        }}
                       />
                     }
                     label={
@@ -213,7 +250,11 @@ export default function InvitationForm(props) {
           <Button id="cancel-invitation" onClick={() => props.onClose()}>
             Cancelar
           </Button>
-          <Button id="submit-invitation" disabled={selectedMember.length === 0}>
+          <Button
+            id="submit-invitation"
+            disabled={selectedMembers.length === 0}
+            onClick={sendInvitations}
+          >
             Enviar invitaciones
           </Button>
         </div>
