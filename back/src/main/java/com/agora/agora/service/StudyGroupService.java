@@ -331,16 +331,14 @@ public class StudyGroupService {
                 Optional<StudyGroupUser> optionalStudyGroupUser = studyGroupUsersRepository.findStudyGroupUserByStudyGroupIdAndAndUserId(studyGroupId, user.getId());
                 Pageable request = PageRequest.of(page,12,Sort.by(Sort.Direction.ASC,"creationDateTime"));
 
-                LocalDateTime modifiedFrom = dateFrom.get().minusDays(1);
-
                 if(optionalStudyGroupUser.isPresent()){
 
                     //Search with no text present
                     if(!text.isPresent()) {
                         if (dateFrom.isPresent() && dateTo.isPresent()) {
-                            return postRepository.findAllByCreationDateTimeIsBetweenAndStudyGroupIdOrderByCreationDateTimeDesc(request, modifiedFrom, dateTo.get(), studyGroupId);
+                            return postRepository.findAllByCreationDateTimeIsBetweenAndStudyGroupIdOrderByCreationDateTimeDesc(request, dateFrom.get().minusDays(1), dateTo.get(), studyGroupId);
                         } else if (dateFrom.isPresent()) {
-                            return postRepository.findAllByCreationDateTimeAfterAndStudyGroupIdOrderByCreationDateTimeDesc(request, modifiedFrom, studyGroupId);
+                            return postRepository.findAllByCreationDateTimeAfterAndStudyGroupIdOrderByCreationDateTimeDesc(request, dateFrom.get().minusDays(1), studyGroupId);
                         } else if (dateTo.isPresent()) {
                             return postRepository.findAllByCreationDateTimeBeforeAndStudyGroupIdOrderByCreationDateTimeDesc(request, dateTo.get(), studyGroupId);
                         }else {
@@ -351,9 +349,9 @@ public class StudyGroupService {
                     //Search with text present
                     else {
                         if (dateFrom.isPresent() && dateTo.isPresent()) {
-                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBetweenAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, modifiedFrom, dateTo.get(), text.get());
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeBetweenAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, dateFrom.get().minusDays(1), dateTo.get(), text.get());
                         } else if (dateFrom.isPresent()) {
-                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeAfterAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, modifiedFrom, text.get());
+                            return postRepository.findAllByStudyGroupIdAndCreationDateTimeAfterAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, dateFrom.get().minusDays(1), text.get());
                         } else if (dateTo.isPresent()) {
                             return postRepository.findAllByStudyGroupIdAndCreationDateTimeBeforeAndContentIsContainingIgnoreCaseOrderByCreationDateTimeDesc(request, studyGroupId, dateTo.get(), text.get());
                         }
