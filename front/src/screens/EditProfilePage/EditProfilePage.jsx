@@ -120,7 +120,6 @@ function EditProfilePage(props) {
     ) {
       setShowErrorMsg(false);
       alert("Se hicieron cambios");
-      console.log(name, lastName, email, password);
       editUserRequest();
     }
   };
@@ -166,7 +165,6 @@ function EditProfilePage(props) {
     });
     if (success) {
       setShowContactErrorMsg(false);
-      console.log(contactLinks);
       saveContactChanges();
     } else {
       setShowContactErrorMsg(true);
@@ -176,16 +174,21 @@ function EditProfilePage(props) {
 
   const validatePasswordFunction = (e) => {
     const CapitalRegex = /[A-Z]/;
+    const NonCapitalRegex = /[a-z]/;
     const NumberRegex = /[0-9]/;
     if (password.length === 0) return true;
-    if (password.length <= 8) {
+    if (password.length < 8) {
       setShowErrorMsg(true);
-      setErrorMsg("La contraseña debe tener más de 8 caracteres");
+      setErrorMsg("La contraseña debe tener 8 caracteres o más");
       return false;
-    } else if (!CapitalRegex.test(password) || !NumberRegex.test(password)) {
+    } else if (
+      !CapitalRegex.test(password) ||
+      !NonCapitalRegex.test(password) ||
+      !NumberRegex.test(password)
+    ) {
       setShowErrorMsg(true);
       setErrorMsg(
-        "La contraseña debe tener al menos una mayúscula y un número"
+        "La contraseña debe tener al menos una mayúscula, una minúscula y un número"
       );
       return false;
     } else {

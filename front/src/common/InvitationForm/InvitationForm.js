@@ -10,7 +10,8 @@ import {
   DialogContentText,
   DialogTitle,
   FormControlLabel,
-  IconButton, MenuItem,
+  IconButton,
+  MenuItem,
   MenuList,
   Snackbar,
   TextField,
@@ -122,7 +123,7 @@ export default function InvitationForm(props) {
   };
 
   const handleClick = (value) => {
-    window.open('mailto:' + value, "_blank");
+    window.open("mailto:" + value, "_blank");
   };
 
   return (
@@ -206,7 +207,9 @@ export default function InvitationForm(props) {
                 <AccordionDetails id="accordion-detail">
                   <MenuList>
                     <MenuItem onClick={() => handleClick(member.email)}>
-                      <Typography id="icon"><EmailIcon /></Typography>
+                      <Typography id="icon">
+                        <EmailIcon />
+                      </Typography>
                       <Typography id="value" noWrap>
                         {member.email}
                       </Typography>

@@ -4,7 +4,8 @@ import {
   CircularProgress,
   Container,
   Divider,
-  Grid, MenuItem,
+  Grid,
+  MenuItem,
   Paper,
   Typography,
 } from "@material-ui/core";
@@ -63,7 +64,7 @@ class UserPage extends Component {
   };
 
   handleClick = (value) => {
-    window.open('mailto:' + value, "_blank");
+    window.open("mailto:" + value, "_blank");
   };
 
   render() {
@@ -110,9 +111,14 @@ class UserPage extends Component {
                         direction="column"
                         id="userpage-user-contacts-grid"
                       >
-
-                        <MenuItem onClick={() => this.handleClick(this.state.userData.email)}>
-                          <Typography id="icon"><EmailIcon /></Typography>
+                        <MenuItem
+                          onClick={() =>
+                            this.handleClick(this.state.userData.email)
+                          }
+                        >
+                          <Typography id="icon">
+                            <EmailIcon />
+                          </Typography>
                           <Typography id="value" noWrap>
                             {this.state.userData.email}
                           </Typography>

@@ -12,7 +12,7 @@ import baseUrl from "../../baseUrl";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 
- class RegisterPage extends Component {
+class RegisterPage extends Component {
   constructor(props) {
     super(props);
 
@@ -36,7 +36,7 @@ import PropTypes from "prop-types";
     };
   }
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
   };
 
   handleCreateAccountClick = () => {
@@ -186,26 +186,25 @@ import PropTypes from "prop-types";
   };
   validatePassword = (e) => {
     const CapitalRegex = /[A-Z]/;
+    const NonCapitalRegex = /[a-z]/;
     const NumberRegex = /[0-9]/;
-    if (this.state.password.length <= 8) {
+    if (this.state.password.length < 8) {
       this.setState({
         validatePassword: false,
         showErrorMsg: true,
-        errorMsg: "La contraseña debe tener más de 8 caracteres",
+        errorMsg: "La contraseña debe tener 8 caracteres o más",
       });
     } else if (
       !CapitalRegex.test(this.state.password) ||
+      !NonCapitalRegex.test(this.state.password) ||
       !NumberRegex.test(this.state.password)
     ) {
-      this.setState(
-        {
-          validatePassword: false,
-          showErrorMsg: true,
-          errorMsg:
-            "La contraseña debe tener al menos una mayúscula y un número",
-        },
-        () => console.log("Mayusc")
-      );
+      this.setState({
+        validatePassword: false,
+        showErrorMsg: true,
+        errorMsg:
+          "La contraseña debe tener al menos una mayúscula, una minúscula y un número",
+      });
     } else {
       this.setState(
         {
@@ -385,7 +384,8 @@ import PropTypes from "prop-types";
 
             <button
               className="CreateAccountButton"
-              onClick={() => this.handleCreateAccountClick()}>
+              onClick={() => this.handleCreateAccountClick()}
+            >
               Crear mi Cuenta
             </button>
           </div>
@@ -395,4 +395,4 @@ import PropTypes from "prop-types";
     );
   }
 }
-export default withRouter(RegisterPage)
+export default withRouter(RegisterPage);
