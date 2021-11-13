@@ -251,20 +251,17 @@ public class StartUpDatabase {
                 User u12 = userService.findById(userId12).get();
 
 
-                //ContactLinks
                 ContactLink u1l1 = new ContactLink(LinkType.INSTAGRAM, "@pepPerez_");
                 ContactLink u1l2 = new ContactLink(LinkType.FACEBOOK, "@pepPerez");
                 ContactLink u1l3 = new ContactLink(LinkType.TWITTER, "@pep_Perez");
                 ContactLink u1l4 = new ContactLink(LinkType.PHONE, "1133090807");
                 ContactLink u2l1 = new ContactLink(LinkType.INSTAGRAM, "@TomG");
                 ContactLink u2l2 = new ContactLink(LinkType.FACEBOOK, "@TomasG");
-                ContactLink u2l3 = new ContactLink(LinkType.EMAIL, "gomez@gmail.com");
                 ContactLink u2l4 = new ContactLink(LinkType.PHONE, "1144090807");
                 ContactLink u3l1 = new ContactLink(LinkType.INSTAGRAM, "@ARod");
                 ContactLink u3l2 = new ContactLink(LinkType.FACEBOOK, "@agustinR");
                 ContactLink u3l3 = new ContactLink(LinkType.TWITTER, "@Arod");
                 ContactLink u3l4 = new ContactLink(LinkType.PHONE, "1122090807");
-                ContactLink u3l5 = new ContactLink(LinkType.EMAIL, "rodriguez@gmail.com");
                 ContactLink u4l1 = new ContactLink(LinkType.INSTAGRAM, "@delfAl");
                 ContactLink u4l2 = new ContactLink(LinkType.FACEBOOK, "@delfinaA");
                 ContactLink u4l3 = new ContactLink(LinkType.TWITTER, "@delAlo");
@@ -272,7 +269,6 @@ public class StartUpDatabase {
                 ContactLink u5l1 = new ContactLink(LinkType.INSTAGRAM, "@agusL");
                 ContactLink u5l2 = new ContactLink(LinkType.FACEBOOK, "@agustinaL");
                 ContactLink u5l3 = new ContactLink(LinkType.TWITTER, "@aLopez");
-                ContactLink u5l4 = new ContactLink(LinkType.EMAIL, "lopez@gmail.com");
                 ContactLink u6l1 = new ContactLink(LinkType.INSTAGRAM, "@RoDiaz");
                 ContactLink u6l2 = new ContactLink(LinkType.FACEBOOK, "@RomiD");
                 ContactLink u6l3 = new ContactLink(LinkType.TWITTER, "@roDiaz");
@@ -280,7 +276,6 @@ public class StartUpDatabase {
                 ContactLink u7l1 = new ContactLink(LinkType.INSTAGRAM, "@mLop");
                 ContactLink u7l2 = new ContactLink(LinkType.FACEBOOK, "@matiL");
                 ContactLink u7l3 = new ContactLink(LinkType.TWITTER, "@matLop");
-                ContactLink u7l4 = new ContactLink(LinkType.EMAIL, "matias@gmail.com");
                 ContactLink u8l1 = new ContactLink(LinkType.INSTAGRAM, "@carlosM");
                 ContactLink u8l2 = new ContactLink(LinkType.FACEBOOK, "@carlMendez");
                 ContactLink u9l1 = new ContactLink(LinkType.TWITTER, "@sofiG");
@@ -288,7 +283,7 @@ public class StartUpDatabase {
                 ContactLink u10l1 = new ContactLink(LinkType.INSTAGRAM, "@micaDi");
                 ContactLink u10l2 = new ContactLink(LinkType.TWITTER, "@micaDiaz");
                 ContactLink u11l1 = new ContactLink(LinkType.FACEBOOK, "@FernandoRojas");
-                ContactLink u11l2 = new ContactLink(LinkType.EMAIL, "rojas@gmail.com");
+                ContactLink u11l2 = new ContactLink(LinkType.TWITTER, "@Fer_Rojas");
                 ContactLink u12l1 = new ContactLink(LinkType.INSTAGRAM, "@juanC");
                 ContactLink u12l2 = new ContactLink(LinkType.FACEBOOK, "@JuanCruz");
                 ContactLink u12l3 = new ContactLink(LinkType.TWITTER, "@jc");
@@ -299,13 +294,11 @@ public class StartUpDatabase {
                 contactLinkRepository.save(u1l4);
                 contactLinkRepository.save(u2l1);
                 contactLinkRepository.save(u2l2);
-                contactLinkRepository.save(u2l3);
                 contactLinkRepository.save(u2l4);
                 contactLinkRepository.save(u3l1);
                 contactLinkRepository.save(u3l2);
                 contactLinkRepository.save(u3l3);
                 contactLinkRepository.save(u3l4);
-                contactLinkRepository.save(u3l5);
                 contactLinkRepository.save(u4l1);
                 contactLinkRepository.save(u4l2);
                 contactLinkRepository.save(u4l3);
@@ -313,7 +306,6 @@ public class StartUpDatabase {
                 contactLinkRepository.save(u5l1);
                 contactLinkRepository.save(u5l2);
                 contactLinkRepository.save(u5l3);
-                contactLinkRepository.save(u5l4);
                 contactLinkRepository.save(u6l1);
                 contactLinkRepository.save(u6l2);
                 contactLinkRepository.save(u6l3);
@@ -321,7 +313,6 @@ public class StartUpDatabase {
                 contactLinkRepository.save(u7l1);
                 contactLinkRepository.save(u7l2);
                 contactLinkRepository.save(u7l3);
-                contactLinkRepository.save(u7l4);
                 contactLinkRepository.save(u8l1);
                 contactLinkRepository.save(u8l2);
                 contactLinkRepository.save(u9l1);
@@ -337,22 +328,22 @@ public class StartUpDatabase {
                 List<ContactLink> list1 = Arrays.asList(u1l1, u1l2, u1l3, u1l4);
                 u1.setContactLinks(list1);
                 userService.justSave(u1);
-                List<ContactLink> list2 = Arrays.asList(u2l1, u2l2, u2l3, u2l4);
+                List<ContactLink> list2 = Arrays.asList(u2l1, u2l2, u2l4);
                 u2.setContactLinks(list2);
                 userService.justSave(u2);
-                List<ContactLink> list3 = Arrays.asList(u3l1, u3l2, u3l3, u3l4, u3l5);
+                List<ContactLink> list3 = Arrays.asList(u3l1, u3l2, u3l3, u3l4);
                 u3.setContactLinks(list3);
                 userService.justSave(u3);
                 List<ContactLink> list4 = Arrays.asList(u4l1, u4l2, u4l3, u4l4);
                 u3.setContactLinks(list4);
                 userService.justSave(u4);
-                List<ContactLink> list5 = Arrays.asList(u5l1, u5l2, u5l3, u5l4);
+                List<ContactLink> list5 = Arrays.asList(u5l1, u5l2, u5l3);
                 u5.setContactLinks(list5);
                 userService.justSave(u5);
                 List<ContactLink> list6 = Arrays.asList(u6l1, u6l2, u6l3, u6l4);
                 u6.setContactLinks(list6);
                 userService.justSave(u6);
-                List<ContactLink> list7 = Arrays.asList(u7l1, u7l2, u7l3, u7l4);
+                List<ContactLink> list7 = Arrays.asList(u7l1, u7l2, u7l3);
                 u7.setContactLinks(list7);
                 userService.justSave(u7);
                 List<ContactLink> list8 = Arrays.asList(u8l1, u8l2);
