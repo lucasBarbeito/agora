@@ -6,7 +6,7 @@ public class NotificationDTO {
 
     private NotificationType notificationType;
 
-    private int id;
+    private int notificationId;
 
     private int studyGroupId;
 
@@ -16,7 +16,8 @@ public class NotificationDTO {
 
     private int userRecipientId;
 
-    public NotificationDTO(NotificationType notificationType, int id, int studyGroupId, int notificationTypeId, boolean isRead, int userRecipientId) {
+    public NotificationDTO(NotificationType notificationType, int notificationId, int studyGroupId, int notificationTypeId, boolean isRead, int userRecipientId) {
+        this.notificationId = notificationId;
         this.notificationType = notificationType;
         this.studyGroupId = studyGroupId;
         this.notificationTypeId = notificationTypeId;
@@ -34,6 +35,8 @@ public class NotificationDTO {
     public void setNotificationType(NotificationType notificationType) {
         this.notificationType = notificationType;
     }
+
+    public int getNotificationId() {return notificationId;}
 
     public int getStudyGroupId() {
         return studyGroupId;
