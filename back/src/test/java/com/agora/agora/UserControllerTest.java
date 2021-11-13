@@ -543,7 +543,12 @@ public class UserControllerTest extends AbstractTest{
                 .with(user("frankgimenez@gmail.com"))
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int statusCode = mvcGETResult.getResponse().getStatus();
-        assertEquals(404, statusCode);
+        assertEquals(200, statusCode);
+
+        String getStatus = mvcGETResult.getResponse().getContentAsString();
+        List<NotificationDTO> notificationDTO = super.mapFromJson(getStatus, new TypeReference<List<NotificationDTO>>(){});
+
+        assertEquals(0, notificationDTO.size());
     }
 
     @Test
@@ -562,7 +567,12 @@ public class UserControllerTest extends AbstractTest{
         MvcResult mvcGETResult = mvc.perform(MockMvcRequestBuilders.get(uri2)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
         int statusCode = mvcGETResult.getResponse().getStatus();
-        assertEquals(404, statusCode);
+        assertEquals(200, statusCode);
+
+        String getStatus = mvcGETResult.getResponse().getContentAsString();
+        List<NotificationDTO> notificationDTO = super.mapFromJson(getStatus, new TypeReference<List<NotificationDTO>>(){});
+
+        assertEquals(0, notificationDTO.size());
     }
 
     @Test

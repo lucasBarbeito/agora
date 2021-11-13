@@ -137,7 +137,7 @@ public class UserService {
                 return new ArrayList<>(memberDTO);
             }
             else {
-                throw new NoSuchElementException("No new notifications");
+                return new ArrayList<>();
             }
         }else{
             throw new NoSuchElementException("User does not exist.");
