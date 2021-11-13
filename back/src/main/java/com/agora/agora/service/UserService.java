@@ -190,7 +190,7 @@ public class UserService {
                 user.setSurname(changedUserData.getSurname());
             }
             if (changedUserData.getPassword() != null) {
-                user.setPassword(changedUserData.getPassword());
+                user.setPassword(BCrypt.hashpw(changedUserData.getPassword(), BCrypt.gensalt()));
             }
             userRepository.save(user);
             return user.getId();
