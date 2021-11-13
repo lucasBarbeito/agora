@@ -6,16 +6,21 @@ import {
   Typography,
   Accordion,
   AccordionSummary,
-  AccordionDetails,
+  AccordionDetails, MenuItem,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MemberContact from "..//MemberContact/MemberContact";
 import "./GroupMembersAccordion.css";
+import EmailIcon from "@material-ui/icons/Email";
 
 class GroupMembersAccordion extends Component {
   constructor(props) {
     super(props);
   }
+
+   handleClick = (value) => {
+    window.open('mailto:' + value, "_blank");
+  };
 
   render() {
     return (
@@ -38,6 +43,12 @@ class GroupMembersAccordion extends Component {
             <AccordionDetails id="accordion-details">
               <Box>
                 <MenuList>
+                  <MenuItem onClick={() => this.handleClick(member.email)}>
+                    <Typography id="icon"><EmailIcon /></Typography>
+                    <Typography id="value" noWrap>
+                      {member.email}
+                    </Typography>
+                  </MenuItem>
                   {member.contactLinks.map((link, index) => (
                     <MemberContact
                       key={index}

@@ -4,7 +4,7 @@ import {
   CircularProgress,
   Container,
   Divider,
-  Grid,
+  Grid, MenuItem,
   Paper,
   Typography,
 } from "@material-ui/core";
@@ -15,6 +15,7 @@ import { withRouter } from "react-router-dom";
 import baseUrl from "../../baseUrl";
 import MemberContact from "../../common/MemberContact/MemberContact";
 import GroupCard from "../../common/GroupCard/GroupCard";
+import EmailIcon from "@material-ui/icons/Email";
 
 class UserPage extends Component {
   constructor(props) {
@@ -61,6 +62,10 @@ class UserPage extends Component {
     }
   };
 
+  handleClick = (value) => {
+    window.open('mailto:' + value, "_blank");
+  };
+
   render() {
     return (
       <div className="userpage-main-div">
@@ -105,10 +110,20 @@ class UserPage extends Component {
                         direction="column"
                         id="userpage-user-contacts-grid"
                       >
-                        <MemberContact
-                          type={"email"}
-                          value={this.state.userData.email}
-                        />
+
+                        <MenuItem onClick={() => this.handleClick(this.state.userData.email)}>
+                          <Typography id="icon"><EmailIcon /></Typography>
+                          <Typography id="value" noWrap>
+                            {this.state.userData.email}
+                          </Typography>
+                        </MenuItem>
+                        {this.state.userData.contactLinks.map((link, index) => (
+                          <MemberContact
+                            key={index}
+                            type={link.linkType.toLowerCase()}
+                            value={link.link}
+                          />
+                        ))}
                       </Grid>
                       <br />
                     </Paper>

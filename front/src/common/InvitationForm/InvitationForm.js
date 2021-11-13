@@ -10,7 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   FormControlLabel,
-  IconButton,
+  IconButton, MenuItem,
   MenuList,
   Snackbar,
   TextField,
@@ -24,6 +24,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MemberContact from "../MemberContact/MemberContact";
 import "./InvitationForm.css";
+import EmailIcon from "@material-ui/icons/Email";
 
 export default function InvitationForm(props) {
   const [searchMsg, setSearchMsg] = useState("");
@@ -120,6 +121,10 @@ export default function InvitationForm(props) {
     props.onClose();
   };
 
+  const handleClick = (value) => {
+    window.open('mailto:' + value, "_blank");
+  };
+
   return (
     <div>
       <Dialog
@@ -200,6 +205,12 @@ export default function InvitationForm(props) {
                 </AccordionSummary>
                 <AccordionDetails id="accordion-detail">
                   <MenuList>
+                    <MenuItem onClick={() => handleClick(member.email)}>
+                      <Typography id="icon"><EmailIcon /></Typography>
+                      <Typography id="value" noWrap>
+                        {member.email}
+                      </Typography>
+                    </MenuItem>
                     {member.contactLinks.map((link, index) => (
                       <MemberContact
                         key={index}
