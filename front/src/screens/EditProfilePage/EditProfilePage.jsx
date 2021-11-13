@@ -10,6 +10,7 @@ import {
   TextField,
   Select,
   MenuItem,
+  Snackbar,
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import React, { useState } from "react";
@@ -35,6 +36,8 @@ function EditProfilePage(props) {
   const [errorMsg, setErrorMsg] = useState("");
   const [contactErrorMsg, setContactErrorMsg] = useState("");
   const [showErrorMsg, setShowErrorMsg] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackBarMsg, setSnackBarMsg] = useState("");
   const [showContactErrorMsg, setShowContactErrorMsg] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -56,31 +59,56 @@ function EditProfilePage(props) {
     }
   };
 
-  const editUserRequest = async () =>{
-    try{
-      const response = await fetch(
-        `${baseUrl}/user/me`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            name: name,
-            password: password,
-            surname: lastName,
-          }),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      );
-      if(!response.ok){
+  const editUserRequest = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/user/me`, {
+        method: "PUT",
+        body: JSON.stringify({
+          name: name,
+          password: password,
+          surname: lastName,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+      if (!response.ok) {
         setShowErrorMsg(true);
         setErrorMsg("Ha ocurrido un error. Por favor, intente nuevamente.");
       }
-    }catch (e) {
+    } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
-  }
+  };
+
+  const saveContactChanges = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/user/me`, {
+        method: "POST",
+        body: JSON.stringify({
+          contactLinks: contactLinks,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${props.context.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        setShowContactErrorMsg(true);
+        setContactErrorMsg(
+          "Ha ocurrido un error. Por favor, intente nuevamente."
+        );
+      } else {
+        setSnackBarMsg("¡Medios de contacto actualizados con éxito!");
+        setOpenSnackbar(true);
+      }
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+      console.log(e);
+    }
+  };
 
   const stopError = () => {
     if (
@@ -93,7 +121,7 @@ function EditProfilePage(props) {
       setShowErrorMsg(false);
       alert("Se hicieron cambios");
       console.log(name, lastName, email, password);
-      editUserRequest()
+      editUserRequest();
     }
   };
 
@@ -139,6 +167,7 @@ function EditProfilePage(props) {
     if (success) {
       setShowContactErrorMsg(false);
       console.log(contactLinks);
+      saveContactChanges();
     } else {
       setShowContactErrorMsg(true);
       setContactErrorMsg("No es posible crear un link de contacto vacío.");
@@ -476,6 +505,12 @@ function EditProfilePage(props) {
           </Grid>
         </Box>
       </Grid>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={() => setOpenSnackbar(false)}
+        message={snackBarMsg}
+      />
     </HomeStructure>
   );
 }
