@@ -666,6 +666,7 @@ class Group extends Component {
                         this.setState({
                           datePicker: !this.state.datePicker,
                           dateRange: [],
+                          range: []
                         })
                       }
                     >
