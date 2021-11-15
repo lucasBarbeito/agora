@@ -14,7 +14,7 @@ export default function CustomizedDialogs(props) {
   const [waringMsg, setWarningMsg] = useState("");
   const [waitingResponse, setWaitingResponse] = useState(false);
   const [editUnsuccessfully, setEditUnsuccessfully] = useState(false);
-  const [label, setLabel] = useState([]);
+  const [label, setLabel] = useState(props.tags.filter((item) => props.groupLabel.includes(item.name)));
 
   const handleSaveChanges = () => {
     props.onChange(name, description);
@@ -65,8 +65,9 @@ export default function CustomizedDialogs(props) {
         }
       }
     } else {
-      alert("El grupo debe tener al menos una etiqueta");
-    }
+      setWarningMsg("Por favor seleccione al menos una etiqueta");
+      setWaitingResponse(false);
+      setEditUnsuccessfully(true);    }
   };
   return (
     <div>

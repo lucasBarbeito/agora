@@ -155,8 +155,7 @@ class Group extends Component {
         this.setState({
           announcements: announcementFormat,
           totalPages: res.totalPages,
-        });
-      }
+        });      }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }

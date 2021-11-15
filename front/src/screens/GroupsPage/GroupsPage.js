@@ -121,7 +121,7 @@ class GroupsPage extends Component {
             <div className="search-content">
               <TextField
                 id="group-name-field"
-                label="Buscar nombre de grupo"
+                label="Buscar"
                 variant="outlined"
                 value={this.state.groupName}
                 onChange={(value) =>
