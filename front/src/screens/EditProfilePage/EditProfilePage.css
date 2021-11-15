@@ -18,6 +18,7 @@
   margin-left: 5px;
   width: 98%;
 }
+
 .edit-profile-page-warning-msg {
   margin-left: 16px;
   font-family: "Roboto";
@@ -105,4 +106,8 @@
   background-color: #e8a5a5;
   margin-left: 200px;
   width: 300px;
+}
+
+#delete-account-modal-button {
+  color: #e8a5a5;
 }

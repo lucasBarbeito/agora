@@ -1,6 +1,10 @@
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   Grid,
   IconButton,
@@ -40,6 +44,7 @@ function EditProfilePage(props) {
   const [snackBarMsg, setSnackBarMsg] = useState("");
   const [showContactErrorMsg, setShowContactErrorMsg] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [openDeleteAccountModal, setOpenDeleteAccountModal] = useState(false);
 
   const handleClickShowPassword = (e) => {
     setShowPassword(!showPassword);
@@ -378,7 +383,7 @@ function EditProfilePage(props) {
             id="userpage-back-button"
             variant="contained"
             color="primary"
-            onClick={() => deleteAccount()}
+            onClick={() => setOpenDeleteAccountModal(true)}
           >
             <ClearIcon id="userpage-back-icon" />
             ELIMINAR CUENTA
@@ -514,6 +519,28 @@ function EditProfilePage(props) {
         onClose={() => setOpenSnackbar(false)}
         message={snackBarMsg}
       />
+      <Dialog
+        onClose={() => setOpenDeleteAccountModal(false)}
+        open={openDeleteAccountModal}
+        fullWidth
+      >
+        <DialogTitle>¿Estás seguro que deseas eliminar tu cuenta?</DialogTitle>
+        <DialogContent scroll="paper">
+          Esta acción no se puede deshacer
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => setOpenDeleteAccountModal(false)}>
+            Cancelar
+          </Button>
+          <Button
+            id="delete-account-modal-button"
+            autoFocus
+            onClick={() => deleteAccount()}
+          >
+            Eliminar cuenta
+          </Button>
+        </DialogActions>
+      </Dialog>
     </HomeStructure>
   );
 }

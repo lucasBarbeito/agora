@@ -347,49 +347,6 @@ class Group extends Component {
     }
   }
 
-  compareDates(date1, date2) {
-    const date1Components = date1.split("/");
-    const date2Components = date2.split("/");
-
-    const newDate1 = new Date(
-      date1Components[2],
-      date1Components[1] - 1,
-      date1Components[0]
-    );
-    const newDate2 = new Date(
-      date2Components[2],
-      date2Components[1] - 1,
-      date2Components[0]
-    );
-
-    return newDate2 - newDate1;
-  }
-
-  compareTimes(time1, time2) {
-    const time1Components = time1.split(":");
-    const time2Components = time2.split(":");
-
-    const newTime1 = new Date(
-      time1Components[2],
-      time1Components[1] - 1,
-      time1Components[0]
-    );
-    const newTime2 = new Date(
-      time2Components[2],
-      time2Components[1] - 1,
-      time2Components[0]
-    );
-
-    return newTime2 - newTime1;
-  }
-
-  compareDatesAndTimes(a1, a2) {
-    const dateComparisonResult = this.compareDates(a1.date, a2.date);
-    return dateComparisonResult == 0
-      ? this.compareTimes(a1.time, a2.time)
-      : dateComparisonResult;
-  }
-
   //need to check specific date format
   handleDateConfirmation(date) {
     /* Hable con los del back y dijieron que dateFrom no inlcuye el dia de inicio */
@@ -736,26 +693,24 @@ class Group extends Component {
                 </Grid>
                 <Container id="announcement">
                   {!this.state.isFetching &&
-                    this.state.announcements
-                      .sort((a1, a2) => this.compareDatesAndTimes(a1, a2))
-                      .map((announcement, index) => (
-                        <GroupAnnouncement
-                          key={index}
-                          canDelete={
-                            this.state.isAdmin ||
-                            this.context.userInfo.id === announcement.creatorId
-                          }
-                          handleDelete={() =>
-                            this.deleteAnnouncement(announcement.id)
-                          }
-                          name={announcement.name}
-                          date={announcement.date}
-                          content={announcement.content}
-                          isBeingRemoved={this.state.deletingAnnouncements.includes(
-                            announcement.id
-                          )}
-                        />
-                      ))}
+                    this.state.announcements.map((announcement, index) => (
+                      <GroupAnnouncement
+                        key={index}
+                        canDelete={
+                          this.state.isAdmin ||
+                          this.context.userInfo.id === announcement.creatorId
+                        }
+                        handleDelete={() =>
+                          this.deleteAnnouncement(announcement.id)
+                        }
+                        name={announcement.name}
+                        date={announcement.date}
+                        content={announcement.content}
+                        isBeingRemoved={this.state.deletingAnnouncements.includes(
+                          announcement.id
+                        )}
+                      />
+                    ))}
                   <Box
                     display="flex"
                     height={80}
