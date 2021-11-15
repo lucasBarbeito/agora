@@ -67,20 +67,25 @@ function EditProfilePage(props) {
   const editUserRequest = async () => {
     try {
       const response = await fetch(`${baseUrl}/user/me`, {
-        method: "PUT",
+        method: "POST",
         body: JSON.stringify({
           name: name,
-          password: password,
           surname: lastName,
+          password: password ? password : null,
         }),
         headers: {
           "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${props.token}`,
+          Authorization: `Bearer ${props.context.token}`,
         },
       });
+
       if (!response.ok) {
         setShowErrorMsg(true);
         setErrorMsg("Ha ocurrido un error. Por favor, intente nuevamente.");
+      } else {
+        props.context.reloadUser();
+        setSnackBarMsg("¡Usuario actualizado con éxito!");
+        setOpenSnackbar(true);
       }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
@@ -124,7 +129,7 @@ function EditProfilePage(props) {
       checkSamePassword()
     ) {
       setShowErrorMsg(false);
-      alert("Se hicieron cambios");
+      console.log(name, lastName, email, password);
       editUserRequest();
     }
   };

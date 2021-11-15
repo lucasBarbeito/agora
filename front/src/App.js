@@ -57,6 +57,10 @@ class App extends Component {
       }
     };
 
+    this.reloadUser = () => {
+      this.getUserInfoNoRedirect();
+    };
+
     this.state = {
       token: null,
       userInfo: null,
@@ -64,6 +68,7 @@ class App extends Component {
       labels: [],
       notifications: [],
       setToken: this.setToken,
+      reloadUser: this.reloadUser,
     };
   }
 
@@ -83,6 +88,28 @@ class App extends Component {
       } else {
         this.setToken(null);
         history.push("/login");
+      }
+    } catch (e) {
+      console.log(e);
+      this.setToken(null);
+      history.push("/login");
+    }
+  }
+
+  async getUserInfoNoRedirect() {
+    try {
+      const response = await fetch(`${baseUrl}/user/me`, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.state.token}`,
+        },
+      });
+      if (response.ok) {
+        const userInfo = await response.json();
+        this.setState({ userInfo });
+      } else {
+        this.setToken(null);
       }
     } catch (e) {
       console.log(e);
