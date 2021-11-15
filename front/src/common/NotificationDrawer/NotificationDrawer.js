@@ -4,19 +4,71 @@ import "./NotificationDrawer.css";
 import { AppContext } from "../../app-context";
 import { withRouter } from "react-router";
 import Notification from "../Notification/Notification";
+import SimpleSnackbar from "../SimpleSnackbar/SimpleSnackbar";
+import baseUrl from "../../baseUrl";
 
 class NotificationDrawer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      notifications: [],
+      openReadNotificationErrorSnack: false,
+    };
   }
 
-  readNotification = (id) => {
+  componentDidMount() {
+    this.getNotifications();
+  }
+
+  getNotifications = async () => {
+    try {
+      const response = await fetch(`${baseUrl}/user/notification/me`, {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        this.setState({ openReadNotificationErrorSnack: true });
+      } else {
+        const res = await response.json();
+        this.setState({ notifications: res });
+      }
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  };
+
+  readNotification = async (id) => {
     const updatedNotifications = this.context.notifications;
-    const notificationIndex = updatedNotifications.findIndex(
-      (n) => n.notificationTypeId === id
-    );
-    updatedNotifications[notificationIndex].read = true;
-    this.setState({ notifications: updatedNotifications });
+
+    try {
+      const response = await fetch(`${baseUrl}/notification/${id}/read`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        this.setState({ openReadNotificationErrorSnack: true });
+      } else {
+        const notificationIndex = updatedNotifications.findIndex(
+          (n) => n.notificationId === id
+        );
+        updatedNotifications[notificationIndex].read = true;
+        this.setState({ notifications: updatedNotifications });
+      }
+    } catch (e) {
+      alert("Error, no es posible conectarse al back-end");
+    }
+  };
+
+  handleNotificationClick = (id) => {
+    this.readNotification(id);
   };
 
   render() {
@@ -33,22 +85,26 @@ class NotificationDrawer extends Component {
         </Grid>
         <Divider />
         <MenuList>
-          {this.context.notifications.map((notification, index) => {
-            return (
-              <Notification
-                key={index}
-                read={notification.read}
-                id={notification.notificationTypeId}
-                userId={notification.userRecipientId}
-                groupId={notification.studyGroupId}
-                type={notification.notificationType}
-                readNotification={this.readNotification}
-                history={this.props.history}
-                closeDrawer={this.props.closeDrawer}
-              />
-            );
-          })}
+          {this.state.notifications.map((notification, index) => (
+            <Notification
+              key={index}
+              read={notification.read}
+              id={notification.notificationId}
+              userId={notification.notificationTypeId}
+              groupId={notification.studyGroupId}
+              type={notification.notificationType}
+              handleNotificationClick={this.handleNotificationClick}
+              readNotification={this.readNotification}
+            />
+          ))}
         </MenuList>
+        <SimpleSnackbar
+          open={this.state.openReadNotificationErrorSnack}
+          handleClose={() =>
+            this.setState({ openReadNotificationErrorSnack: false })
+          }
+          message="Hubo un error al marcar la notificación como leída"
+        />
       </Drawer>
     );
   }

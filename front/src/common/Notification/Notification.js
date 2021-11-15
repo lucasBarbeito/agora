@@ -1,5 +1,11 @@
 import { Component } from "react";
-import { Grid, IconButton, MenuItem, Typography } from "@material-ui/core";
+import {
+  CircularProgress,
+  Grid,
+  IconButton,
+  MenuItem,
+  Typography,
+} from "@material-ui/core";
 import "./Notification.css";
 import { AppContext } from "../../app-context";
 import { withRouter } from "react-router";
@@ -10,9 +16,9 @@ import DraftsIcon from "@material-ui/icons/Drafts";
 import baseUrl from "../../baseUrl";
 
 const notificationsIcons = {
-  groupInvite: <AddCommentIcon id="notification-icon" />,
+  USER_INVITE_NOTIFICATION: <AddCommentIcon id="notification-icon" />,
   NEW_MEMBER_NOTIFICATION: <AddIcon id="notification-icon" />,
-  newPost: <BookmarkIcon id="notification-icon" />,
+  NEW_POST_NOTIFICATION: <BookmarkIcon id="notification-icon" />,
 };
 
 class Notification extends Component {
@@ -22,16 +28,25 @@ class Notification extends Component {
       name: "",
       surname: "",
       group: "",
+      fetchingData: false,
     };
   }
 
   componentDidMount() {
-    this.getUser();
+    if (this.props.type === "NEW_MEMBER_NOTIFICATION") {
+      this.getUser();
+    } else if (this.props.type === "USER_INVITE_NOTIFICATION") {
+      this.setState({
+        name: this.context.userInfo.name,
+        surname: this.context.userInfo.surname,
+      });
+    }
     this.getGroup();
   }
 
   getUser = async () => {
-    const response = await fetch(`${baseUrl}/user`, {
+    this.setState({ fetchingData: true });
+    const response = await fetch(`${baseUrl}/user/${this.props.userId}`, {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
         Authorization: `Bearer ${this.context.token}`,
@@ -40,8 +55,8 @@ class Notification extends Component {
     const res = await response.json();
     if (res.length !== 0) {
       this.setState({
-        name: res.find((item) => item.id === this.props.userId).name,
-        surname: res.find((item) => item.id === this.props.userId).surname,
+        name: res.name,
+        surname: res.surname,
       });
     }
   };
@@ -70,6 +85,7 @@ class Notification extends Component {
         .concat(page2.content)
         .find((item) => item.id === this.props.groupId).name,
     });
+    this.setState({ fetchingData: false });
   };
 
   acceptInviteToGroup = (groupId) => {
@@ -80,8 +96,15 @@ class Notification extends Component {
   message = {
     USER_INVITE_NOTIFICATION: ", has sido invitado al grupo ",
     NEW_MEMBER_NOTIFICATION: " se ha unido al grupo ",
-    NEW_POST_NOTIFICATION: " ha enviado un nuevo anuncio al grupo ",
+    NEW_POST_NOTIFICATION: "Nuevo anuncio en el grupo ",
   };
+
+  ifNotificationsHasNotBeenReaded(func) {
+    const notificationHasNotBeenReaded = !this.props.read;
+    if (notificationHasNotBeenReaded) {
+      func(this.props.id);
+    }
+  }
 
   render() {
     return (
@@ -92,35 +115,51 @@ class Notification extends Component {
         alignItems="center"
         justifyContent="space-between"
       >
-        <MenuItem
-          id="notification-menu-item"
-          onClick={() => {
-            this.props.readNotification(this.props.id);
-            if (this.props.type === "USER_INVITE_NOTIFICATION") {
-              this.acceptInviteToGroup(this.props.groupId);
-            }
-          }}
-        >
-          <Grid item xs={2}>
-            {notificationsIcons[this.props.type]}
-          </Grid>
-          <Grid item xs={8} zeroMinWidth>
-            <Typography id="notification-message">
-              {this.state.name + " " + this.state.surname}
-              {this.message[this.props.type]}
-              {this.state.group}
-            </Typography>
-          </Grid>
-        </MenuItem>
-        <Grid item xs={2}>
-          <IconButton
-            onClick={() => {
-              this.props.readNotification(this.props.id);
-            }}
+        {this.state.fetchingData && (
+          <Grid
+            item
+            xs={12}
+            align="center"
+            id="notification-progress-container"
           >
-            <DraftsIcon id="notification-icon" />
-          </IconButton>
-        </Grid>
+            <CircularProgress id="notification-progress" size={20} />
+          </Grid>
+        )}
+        {!this.state.fetchingData && (
+          <>
+            <MenuItem
+              id="notification-menu-item"
+              onClick={() =>
+                this.ifNotificationsHasNotBeenReaded(
+                  this.props.handleNotificationClick
+                )
+              }
+            >
+              <Grid item xs={2}>
+                {notificationsIcons[this.props.type]}
+              </Grid>
+              <Grid item xs={8} zeroMinWidth>
+                <Typography id="notification-message">
+                  {this.message[this.props.type] !== "NEW_POST_NOTIFICATION" &&
+                    this.state.name + " " + this.state.surname}
+                  {this.message[this.props.type]}
+                  {this.state.group}
+                </Typography>
+              </Grid>
+            </MenuItem>
+            <Grid item xs={2}>
+              <IconButton
+                onClick={() =>
+                  this.ifNotificationsHasNotBeenReaded(
+                    this.props.readNotification
+                  )
+                }
+              >
+                <DraftsIcon id="notification-icon" />
+              </IconButton>
+            </Grid>
+          </>
+        )}
       </Grid>
     );
   }

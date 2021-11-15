@@ -7,6 +7,16 @@
   opacity: 0.4;
 }
 
+#notification-progress-container {
+  width: 460px;
+}
+
+#notification-progress {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  color: #c5b2a5;
+}
+
 #notification-menu-item {
   margin-left: 10px;
   width: 80%;
