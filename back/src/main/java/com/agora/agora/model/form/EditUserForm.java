@@ -1,14 +1,16 @@
 package com.agora.agora.model.form;
 
 import com.agora.agora.model.ContactLink;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class EditUserForm {
 
+    @Nullable
     private String name, surname, password;
-    @NotNull
+    @Nullable
     private List<ContactLink> contactLinks;
 
     public EditUserForm(String name, String surname, String password, List<ContactLink> contactLinks) {

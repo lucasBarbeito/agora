@@ -166,22 +166,12 @@ public class UserService {
 
         if(userOptional.isPresent()){
             User user = userOptional.get();
-            if (!changedUserData.getContactLinks().isEmpty()) {
-                List<ContactLink> finalContactLinks = new ArrayList<>();
-                for (ContactLink newContactLink : changedUserData.getContactLinks()) {
-                    for (ContactLink contactLink : user.getContactLinks()) {
-                        if (newContactLink.getId() == contactLink.getId()) {
-                            finalContactLinks.add(newContactLink);
-                            break;
-                        }
-                    }
+            if (changedUserData.getContactLinks() != null) {
+                for (ContactLink contactLink: user.getContactLinks()) {
+                    contactLinkRepository.deleteById(contactLink.getId());
                 }
-                if (finalContactLinks.size() != changedUserData.getContactLinks().size()){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-                }
-                for (ContactLink contactLink : changedUserData.getContactLinks()) {
-                    contactLinkRepository.save(contactLink);
-                }
+                user.setContactLinks(changedUserData.getContactLinks());
+                contactLinkRepository.saveAll(changedUserData.getContactLinks());
             }
             if (changedUserData.getName() != null) {
                 user.setName(changedUserData.getName());
