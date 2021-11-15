@@ -53,7 +53,7 @@ public class NotificationCreationTest {
         notificationDTO.setNotificationTypeId(1);
         notificationDTO.setRead(true);
         notificationDTO.setUserRecipientId(1);
-        String expectedJson = "{\"notificationType\":\"NEW_MEMBER_NOTIFICATION\",\"studyGroupId\":1,\"notificationTypeId\":1,\"userRecipientId\":1,\"read\":true}";
+        String expectedJson = "{\"notificationType\":\"NEW_MEMBER_NOTIFICATION\",\"notificationId\":0,\"studyGroupId\":1,\"notificationTypeId\":1,\"userRecipientId\":1,\"read\":true}";
 
         assertEquals(expectedJson,json.write(notificationDTO).getJson());
     }

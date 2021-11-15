@@ -1452,14 +1452,25 @@ public class StudyGroupControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("herbert@gmail.com")
-    public void deletePostWithPostCreatorShould() throws Exception {
+    @WithMockUser("tolkien@gmail.com")
+    public void deletePostWithPostCreatorShouldReturnOk() throws Exception {
         String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
         MvcResult deleteResult = mvc.perform(
                 MockMvcRequestBuilders.delete(uri)
         ).andReturn();
         int status = deleteResult.getResponse().getStatus();
         assertEquals(204, status);
+    }
+
+    @Test
+    @WithMockUser("herbert@gmail.com")
+    public void deletePostWithNonPostCreatorShouldReturnForbidden() throws Exception {
+        String uri = "/studyGroup/" + data.group1.getId() + "/forum/" + data.post.getId();
+        MvcResult deleteResult = mvc.perform(
+                MockMvcRequestBuilders.delete(uri)
+        ).andReturn();
+        int status = deleteResult.getResponse().getStatus();
+        assertEquals(403, status);
     }
 
     @Test

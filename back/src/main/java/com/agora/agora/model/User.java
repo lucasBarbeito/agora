@@ -2,6 +2,8 @@ package com.agora.agora.model;
 
 import com.agora.agora.model.type.UserType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -37,7 +39,9 @@ public class User implements Identifiable {
     @Column
     private String userVerificationToken;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id")
     private List<ContactLink> contactLinks;
 
     @OneToMany(fetch = FetchType.LAZY,

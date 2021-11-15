@@ -116,7 +116,7 @@ public class NotificationControllerTest extends AbstractTest{
 
     @Test
     @WithMockUser("carlos@mail.com")
-    public void whenReadingNotificationForCorrectUserShouldRead() throws Exception {
+    public void whenReadingNewMemberNotificationForCorrectUserShouldRead() throws Exception {
         String uri = "/notification/" + data.newMemberNotification1.getId() + "/read";
         MvcResult mvcResult = mvc.perform(
                 MockMvcRequestBuilders.post(uri)
@@ -211,5 +211,31 @@ public class NotificationControllerTest extends AbstractTest{
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         assertEquals(1, userInviteNotificationRepository.findAllByUserId(data.user2.getId()).size());
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void whenReadingNewPostNotificationForCorrectUserShouldRead() throws Exception {
+        String uri = "/notification/" + data.newPostNotification1.getId() + "/read";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200,status);
+        boolean isRead = newPostNotificationRepository.findById(data.newPostNotification1.getId()).get().isRead();
+        assertTrue(isRead);
+    }
+
+    @Test
+    @WithMockUser("carlos@mail.com")
+    public void whenReadingGroupInviteNotificationForCorrectUserShouldRead() throws Exception {
+        String uri = "/notification/" + data.groupInviteNotification1.getId() + "/read";
+        MvcResult mvcResult = mvc.perform(
+                MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200,status);
+        boolean isRead = groupInviteNotificationRepository.findById(data.groupInviteNotification1.getId()).get().isRead();
+        assertTrue(isRead);
     }
 }

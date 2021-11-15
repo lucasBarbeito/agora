@@ -606,22 +606,6 @@ public class UserControllerTest extends AbstractTest{
     }
 
     @Test
-    @WithMockUser("tolkien@gmail.com")
-    public void editUserWithWrongContactLinksReturnsOk() throws Exception {
-        String uri = "/user/me";
-        List<ContactLink> contactLinks = new ArrayList<>();
-        contactLinks.add(new ContactLink());
-        EditUserForm form = new EditUserForm("Manuel","Gimenez","Manuel123", contactLinks);
-        MvcResult mvcResult = mvc.perform(
-                MockMvcRequestBuilders.post(uri)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(mapToJson(form))
-        ).andReturn();
-        int statusCode = mvcResult.getResponse().getStatus();
-        assertEquals(400, statusCode);
-    }
-
-    @Test
     @Transactional
     @WithMockUser("tolkien@gmail.com")
     public void editUserEditsCorrectly() throws Exception {
@@ -640,7 +624,6 @@ public class UserControllerTest extends AbstractTest{
         User user = userOptional.get();
         assertEquals(form.getName(), user.getName());
         assertEquals(form.getSurname(), user.getSurname());
-        assertEquals(form.getPassword(), user.getPassword());
         assertEquals(contactLinks.get(0).getId(), user.getContactLinks().get(0).getId());
     }
 

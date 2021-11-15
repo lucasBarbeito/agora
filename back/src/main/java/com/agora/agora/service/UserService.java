@@ -167,9 +167,6 @@ public class UserService {
         if(userOptional.isPresent()){
             User user = userOptional.get();
             if (changedUserData.getContactLinks() != null) {
-                for (ContactLink contactLink: user.getContactLinks()) {
-                    contactLinkRepository.deleteById(contactLink.getId());
-                }
                 user.setContactLinks(changedUserData.getContactLinks());
                 contactLinkRepository.saveAll(changedUserData.getContactLinks());
             }
