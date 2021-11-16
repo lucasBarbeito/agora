@@ -62,28 +62,20 @@ class Notification extends Component {
   };
 
   getGroup = async () => {
-    const response = await fetch(`${baseUrl}/studyGroup/paged?page=0`, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        Authorization: `Bearer ${this.context.token}`,
-      },
-    });
-    const page1 = await response.json();
-
-    const res = await fetch(`${baseUrl}/studyGroup/paged?page=1`, {
-      method: "GET",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        Authorization: `Bearer ${this.context.token}`,
-      },
-    });
-    const page2 = await res.json();
+    const response = await fetch(
+      `${baseUrl}/studyGroup/${this.props.groupId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${this.context.token}`,
+        },
+      }
+    );
+    const group = await response.json();
 
     this.setState({
-      group: page1.content
-        .concat(page2.content)
-        .find((item) => item.id === this.props.groupId).name,
+      group: group.name,
     });
     this.setState({ fetchingData: false });
   };
@@ -131,12 +123,11 @@ class Notification extends Component {
               id="notification-menu-item"
               onClick={() => {
                 this.ifNotificationsHasNotBeenReaded(
-                  this.props.handleNotificationClick,
+                  this.props.handleNotificationClick
                 );
                 this.props.close();
                 this.props.history.push(`/group/${this.props.groupId}`);
-              }
-              }
+              }}
             >
               <Grid item xs={2}>
                 {notificationsIcons[this.props.type]}
@@ -144,7 +135,7 @@ class Notification extends Component {
               <Grid item xs={8} zeroMinWidth>
                 <Typography id="notification-message">
                   {this.message[this.props.type] !== "NEW_POST_NOTIFICATION" &&
-                  this.state.name + " " + this.state.surname}
+                    this.state.name + " " + this.state.surname}
                   {this.message[this.props.type]}
                   {this.state.group}
                 </Typography>
@@ -154,7 +145,7 @@ class Notification extends Component {
               <IconButton
                 onClick={() =>
                   this.ifNotificationsHasNotBeenReaded(
-                    this.props.readNotification,
+                    this.props.readNotification
                   )
                 }
               >

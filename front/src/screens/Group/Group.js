@@ -161,7 +161,8 @@ class Group extends Component {
         this.setState({
           announcements: announcementFormat,
           totalPages: res.totalPages,
-        });      }
+        });
+      }
     } catch (e) {
       alert("Error, no es posible conectarse al back-end");
     }
@@ -180,6 +181,7 @@ class Group extends Component {
       });
       this.setState({ requestLoading: false });
       if (response.ok) {
+        this.context.reloadUser();
         this.props.history.push("/home");
       } else {
         this.setState({
@@ -353,11 +355,9 @@ class Group extends Component {
     }
   }
 
-  //need to check specific date format
   handleDateConfirmation(date) {
-    /* Hable con los del back y dijieron que dateFrom no inlcuye el dia de inicio */
     const start = moment(date.startDate).toISOString();
-    const end = moment(date.endDate).toISOString();
+    const end = moment(date.endDate).add(1, "day").startOf("day").toISOString();
     this.setState({
       dateRange: [start, end],
       range: [
@@ -628,7 +628,7 @@ class Group extends Component {
                         this.setState({
                           datePicker: !this.state.datePicker,
                           dateRange: [],
-                          range: []
+                          range: [],
                         })
                       }
                     >

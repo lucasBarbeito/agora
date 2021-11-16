@@ -59,6 +59,7 @@ class App extends Component {
 
     this.reloadUser = () => {
       this.getUserInfoNoRedirect();
+      this.getNotifications(this.state.token);
     };
 
     this.state = {

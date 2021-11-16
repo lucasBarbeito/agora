@@ -117,6 +117,7 @@ class Navbar extends Component {
         <Toolbar />
         {this.isLoggedIn() && (
           <NotificationDrawer
+            notifications={this.context.notifications}
             open={this.state.drawerIsOpen}
             onClose={() => this.setState({ drawerIsOpen: false })}
             history={this.props.history}

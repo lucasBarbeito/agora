@@ -11,35 +11,18 @@ class NotificationDrawer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      notifications: [],
+      notifications: this.props.notifications,
       openReadNotificationErrorSnack: false,
     };
   }
 
-  componentDidMount() {
-    this.getNotifications();
-  }
-
-  getNotifications = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/user/notification/me`, {
-        method: "GET",
-        headers: {
-          "Content-type": "application/json; charset=UTF-8",
-          Authorization: `Bearer ${this.context.token}`,
-        },
+  componentDidUpdate(prevProps) {
+    if (prevProps.notifications !== this.props.notifications) {
+      this.setState({
+        notifications: this.props.notifications,
       });
-
-      if (!response.ok) {
-        this.setState({ openReadNotificationErrorSnack: true });
-      } else {
-        const res = await response.json();
-        this.setState({ notifications: res });
-      }
-    } catch (e) {
-      alert("Error, no es posible conectarse al back-end");
     }
-  };
+  }
 
   readNotification = async (id) => {
     const updatedNotifications = this.context.notifications;
