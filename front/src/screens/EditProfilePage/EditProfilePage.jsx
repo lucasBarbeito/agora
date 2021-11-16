@@ -111,6 +111,7 @@ function EditProfilePage(props) {
           "Ha ocurrido un error. Por favor, intente nuevamente."
         );
       } else {
+        props.context.reloadUser();
         setSnackBarMsg("¡Medios de contacto actualizados con éxito!");
         setOpenSnackbar(true);
       }

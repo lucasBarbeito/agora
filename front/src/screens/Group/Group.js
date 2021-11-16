@@ -97,6 +97,12 @@ class Group extends Component {
     this.fetchGroupInformation();
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.fetchGroupInformation();
+    }
+  }
+
   getAnnouncements = async (contacts) => {
     const groupId = this.props.match.params.id;
 

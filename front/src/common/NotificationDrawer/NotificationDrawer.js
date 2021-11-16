@@ -95,6 +95,7 @@ class NotificationDrawer extends Component {
               type={notification.notificationType}
               handleNotificationClick={this.handleNotificationClick}
               readNotification={this.readNotification}
+              close={this.props.closeDrawer}
             />
           ))}
         </MenuList>

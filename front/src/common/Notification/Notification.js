@@ -129,10 +129,13 @@ class Notification extends Component {
           <>
             <MenuItem
               id="notification-menu-item"
-              onClick={() =>
+              onClick={() => {
                 this.ifNotificationsHasNotBeenReaded(
-                  this.props.handleNotificationClick
-                )
+                  this.props.handleNotificationClick,
+                );
+                this.props.close();
+                this.props.history.push(`/group/${this.props.groupId}`);
+              }
               }
             >
               <Grid item xs={2}>
@@ -141,7 +144,7 @@ class Notification extends Component {
               <Grid item xs={8} zeroMinWidth>
                 <Typography id="notification-message">
                   {this.message[this.props.type] !== "NEW_POST_NOTIFICATION" &&
-                    this.state.name + " " + this.state.surname}
+                  this.state.name + " " + this.state.surname}
                   {this.message[this.props.type]}
                   {this.state.group}
                 </Typography>
@@ -151,7 +154,7 @@ class Notification extends Component {
               <IconButton
                 onClick={() =>
                   this.ifNotificationsHasNotBeenReaded(
-                    this.props.readNotification
+                    this.props.readNotification,
                   )
                 }
               >
