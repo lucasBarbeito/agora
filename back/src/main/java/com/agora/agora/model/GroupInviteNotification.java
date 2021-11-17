@@ -22,4 +22,9 @@ public class GroupInviteNotification extends Notification{
         super(user, isRead, creationDate);
         this.group = group;
     }
+
+    public StudyGroup getGroup() {
+        return group;
+    }
+
 }

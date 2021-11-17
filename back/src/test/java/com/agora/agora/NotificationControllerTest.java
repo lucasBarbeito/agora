@@ -20,9 +20,6 @@ import static org.junit.Assert.*;
 public class NotificationControllerTest extends AbstractTest{
 
     @Autowired
-    private UserInviteNotificationRepository userInviteNotificationRepository;
-
-    @Autowired
     private NewMemberNotificationRepository newMemberNotificationRepository;
 
     @Autowired
@@ -92,7 +89,6 @@ public class NotificationControllerTest extends AbstractTest{
 
         void rollback() {
             studyGroupUsersRepository.deleteAll();
-            userInviteNotificationRepository.deleteAll();
             newMemberNotificationRepository.deleteAll();
             newPostNotificationRepository.deleteAll();
             groupInviteNotificationRepository.deleteAll();
@@ -210,7 +206,7 @@ public class NotificationControllerTest extends AbstractTest{
         ).andReturn();
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
-        assertEquals(1, userInviteNotificationRepository.findAllByUserId(data.user2.getId()).size());
+        assertEquals(2, groupInviteNotificationRepository.findAllByUserId(data.user2.getId()).size());
     }
 
     @Test

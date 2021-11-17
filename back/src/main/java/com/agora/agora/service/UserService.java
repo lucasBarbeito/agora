@@ -31,10 +31,9 @@ public class UserService {
     private GroupInviteNotificationRepository groupInviteNotificationRepository;
     private PostRepository postRepository;
     private ContactLinkRepository contactLinkRepository;
-    private UserInviteNotificationRepository userInviteNotificationRepository;
 
     @Autowired
-    public UserService(PostRepository postRepository, UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService, NewPostNotificationRepository newPostNotificationRepository, NewMemberNotificationRepository newMemberNotificationRepository, GroupInviteNotificationRepository groupInviteNotificationRepository, ContactLinkRepository contactLinkRepository, UserInviteNotificationRepository userInviteNotificationRepository) {
+    public UserService(PostRepository postRepository, UserRepository userRepository, StudyGroupRepository studyGroupRepository, StudyGroupUsersRepository studyGroupUsersRepository, EmailService emailService, NewPostNotificationRepository newPostNotificationRepository, NewMemberNotificationRepository newMemberNotificationRepository, GroupInviteNotificationRepository groupInviteNotificationRepository, ContactLinkRepository contactLinkRepository) {
         this.userRepository = userRepository;
         this.studyGroupRepository = studyGroupRepository;
         this.studyGroupUsersRepository = studyGroupUsersRepository;
@@ -44,7 +43,6 @@ public class UserService {
         this.groupInviteNotificationRepository = groupInviteNotificationRepository;
         this.postRepository = postRepository;
         this.contactLinkRepository = contactLinkRepository;
-        this.userInviteNotificationRepository = userInviteNotificationRepository;
     }
 
 
@@ -116,7 +114,7 @@ public class UserService {
             User user = userOptional.get();
             List<NewMemberNotification> memberNotifications = newMemberNotificationRepository.findAllByUserId(user.getId());
             List<NewPostNotification> postNotifications = newPostNotificationRepository.findAllByUserId(user.getId());
-            List<UserInviteNotification> userInviteNotifications = userInviteNotificationRepository.findAllByUserId(user.getId());
+            List<GroupInviteNotification> userInviteNotifications = groupInviteNotificationRepository.findAllByUserId(user.getId());
 
             if(!memberNotifications.isEmpty() && !postNotifications.isEmpty()){
                 List<NotificationDTO> notifications = new ArrayList<>();

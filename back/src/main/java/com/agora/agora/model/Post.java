@@ -25,6 +25,7 @@ public class Post implements Identifiable{
     private StudyGroup studyGroup;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User creator;
 
     @Column

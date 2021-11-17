@@ -39,12 +39,12 @@ public class StudyGroupService {
     private LabelRepository labelRepository;
     private NewMemberNotificationRepository newMemberNotificationRepository;
     private NewPostNotificationRepository newPostNotificationRepository;
-    private UserInviteNotificationRepository userInviteNotificationRepository;
+    private GroupInviteNotificationRepository groupInviteNotificationRepository;
 
     private UserService userService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService, NewMemberNotificationRepository newMemberNotificationRepository, NewPostNotificationRepository newPostNotificationRepository, UserInviteNotificationRepository userInviteNotificationRepository) {
+    public StudyGroupService(StudyGroupRepository groupRepository, UserRepository userRepository, PostRepository postRepository, StudyGroupUsersRepository studyGroupUsersRepository, StudyGroupLabelRepository studyGroupLabelRepository, LabelRepository labelRepository, UserService userService, NewMemberNotificationRepository newMemberNotificationRepository, NewPostNotificationRepository newPostNotificationRepository, GroupInviteNotificationRepository groupInviteNotificationRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
@@ -54,7 +54,7 @@ public class StudyGroupService {
         this.newMemberNotificationRepository = newMemberNotificationRepository;
         this.newPostNotificationRepository = newPostNotificationRepository;
         this.userService = userService;
-        this.userInviteNotificationRepository = userInviteNotificationRepository;
+        this.groupInviteNotificationRepository = groupInviteNotificationRepository;
     }
 
     public int create(StudyGroupForm studyGroup) {
@@ -500,7 +500,7 @@ public class StudyGroupService {
                 if (studyGroupUserByStudyGroupIdAndAndUserId.isPresent()) {
                     Optional<User> optionalUser = userRepository.findById(userId);
                     if (optionalUser.isPresent()) {
-                            userInviteNotificationRepository.save(new UserInviteNotification(optionalUser.get(), false, LocalDate.now(), groupOptional.get()));
+                            groupInviteNotificationRepository.save(new GroupInviteNotification(optionalUser.get(), false, LocalDate.now(), groupOptional.get()));
                     } else {
                         throw new NoSuchElementException("User does not exist");
                     }

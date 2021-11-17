@@ -135,15 +135,6 @@ public class ModelTest extends AbstractTest{
         data.rollback();
     }
 
-    /**
-     * Invite Notification model test
-     */
-    @Test
-    public void userInviteNotificationModelTest(){
-        UserInviteNotification model = new UserInviteNotification(data.user1, false, LocalDate.now(), data.group1);
-        model.setGroup(data.group2);
-        assertEquals(data.group2, model.getGroup());
-    }
 
     @Test
     public void studyGroupUserModelTest(){

@@ -33,16 +33,18 @@ public class StartUpDatabase {
     private final PostRepository postRepository;
     private final ContactLinkRepository contactLinkRepository;
     private final NewPostNotificationRepository newPostNotificationRepository;
+    private final GroupInviteNotificationRepository groupInviteNotificationRepository;
 
     @Autowired
 
-    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository, ContactLinkRepository contactLinkRepository, NewPostNotificationRepository newPostNotificationRepository) {
+    public StartUpDatabase(UserService userService, StudyGroupService studyGroupService, LabelRepository labelRepository, PostRepository postRepository, ContactLinkRepository contactLinkRepository, NewPostNotificationRepository newPostNotificationRepository, GroupInviteNotificationRepository groupInviteNotificationRepository) {
         this.userService = userService;
         this.studyGroupService = studyGroupService;
         this.labelRepository = labelRepository;
         this.postRepository = postRepository;
         this.contactLinkRepository = contactLinkRepository;
         this.newPostNotificationRepository = newPostNotificationRepository;
+        this.groupInviteNotificationRepository = groupInviteNotificationRepository;
     }
 
     private void addManyToGroup(int groupId, List<Integer> userId){
@@ -53,9 +55,9 @@ public class StartUpDatabase {
         for (int i = 0; i < users.size(); i++) {
             for (Post post : posts) {
                 if (Math.random() > 0.5) {
-                    newPostNotificationRepository.save(new NewPostNotification(users.get(i), true, posts.get(i).getCreationDateTime().toLocalDate(), post, studyGroup));
+                    newPostNotificationRepository.save(new NewPostNotification(users.get(i), true, post.getCreationDateTime().toLocalDate(), post, studyGroup));
                 } else {
-                    newPostNotificationRepository.save(new NewPostNotification(users.get(i), false, posts.get(i).getCreationDateTime().toLocalDate(), post, studyGroup));
+                    newPostNotificationRepository.save(new NewPostNotification(users.get(i), false, post.getCreationDateTime().toLocalDate(), post, studyGroup));
                 }
             }
         }
@@ -624,7 +626,20 @@ public class StartUpDatabase {
                 postNotificationsToUsersInGroup(sg14, Arrays.asList(u2, u3, u4), Arrays.asList(p67, p68, p69));
                 postNotificationsToUsersInGroup(sg15, Arrays.asList(u3, u4, u5), Arrays.asList(p70, p71));
 
-            } catch (Exception ignored){}
+
+                GroupInviteNotification i1 = new GroupInviteNotification(u1, false, LocalDate.now(), sg2);
+                GroupInviteNotification i2 = new GroupInviteNotification(u1, false, LocalDate.now(), sg4);
+                GroupInviteNotification i3 = new GroupInviteNotification(u2, false, LocalDate.now(), sg6);
+                GroupInviteNotification i4 = new GroupInviteNotification(u3, false, LocalDate.now(), sg7);
+
+                groupInviteNotificationRepository.save(i1);
+                groupInviteNotificationRepository.save(i2);
+                groupInviteNotificationRepository.save(i3);
+                groupInviteNotificationRepository.save(i4);
+
+            } catch (Exception ignored){
+                ignored.printStackTrace();
+            }
         }
     }
 }
